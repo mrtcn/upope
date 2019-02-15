@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope", "Upope\Upope.csproj", "{CED6BCAF-0E23-492F-A5AA-2A2E75F32F73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.Identity", "Upope.Identity\Upope.Identity.csproj", "{FEB894F8-6665-4CA9-9FF3-9C016ED95151}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Identity", "Upope.Identity\Upope.Identity.csproj", "{FEB894F8-6665-4CA9-9FF3-9C016ED95151}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.ClientTests", "Upope.ClientTests\Upope.ClientTests.csproj", "{FBC76D28-5618-4534-A105-A5CE3D5E6068}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FEB894F8-6665-4CA9-9FF3-9C016ED95151}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB894F8-6665-4CA9-9FF3-9C016ED95151}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEB894F8-6665-4CA9-9FF3-9C016ED95151}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBC76D28-5618-4534-A105-A5CE3D5E6068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBC76D28-5618-4534-A105-A5CE3D5E6068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC76D28-5618-4534-A105-A5CE3D5E6068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC76D28-5618-4534-A105-A5CE3D5E6068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
