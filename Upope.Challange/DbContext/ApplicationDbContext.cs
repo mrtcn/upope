@@ -33,7 +33,7 @@ namespace Upope.Challange
             //    modelBuilder.ApplyConfiguration(configurationInstance);
             //}
 
-            modelBuilder.ApplyConfiguration<Challenge>(new ChallangeMapping());
+            modelBuilder.ApplyConfiguration<Challenge>(new ChallengeMapping());
         }
     }
 }

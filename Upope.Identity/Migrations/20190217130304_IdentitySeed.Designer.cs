@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Upope.Identity.DbContext;
 
 namespace Upope.Identity.Migrations
 {
     [DbContext(typeof(ApplicationUserDbContext))]
-    partial class ApplicationUserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190217130304_IdentitySeed")]
+    partial class IdentitySeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,8 +138,6 @@ namespace Upope.Identity.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
-                    b.Property<DateTime?>("Birthday");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -202,10 +202,9 @@ namespace Upope.Identity.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "328c1309-cf33-45b8-97bf-88d4b7bbc2bd",
+                            Id = "38fdfc79-1707-42e0-8ff5-6d28a5505824",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "80701080-e639-4bf7-b855-ecff85c67476",
+                            ConcurrencyStamp = "220692e9-18a9-40ca-b82d-8ebe48ac6fb3",
                             Email = "muratcantuna1@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -222,10 +221,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "da62bff3-02be-4cd8-bb32-352e98a063a7",
+                            Id = "8debfdd1-d35a-4a11-bdd0-931fc5b7938e",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "c17c4a36-3544-4ed5-98d8-7665b90c3ea6",
+                            ConcurrencyStamp = "8c05e272-8835-40f9-a2de-df7adfa60bd0",
                             Email = "muratcantuna2@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -242,10 +240,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "c74cdb77-f3a8-4cdd-8cb7-3e98d33fa462",
+                            Id = "ecd204e8-4e62-4a7f-8b00-b3e8edbfa87d",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "43fee1a5-66ce-4a4d-979d-4ce1454aa7f3",
+                            ConcurrencyStamp = "0e7884ba-0275-4517-999e-50e089051ccf",
                             Email = "muratcantuna3@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -262,10 +259,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "2074d2ab-72b7-4521-8e92-d6e0b822e512",
+                            Id = "23e722fc-58f0-4e0e-b2a8-e17995fe0f75",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "a7588ad0-1bb9-4062-88a8-82b9cb7d7591",
+                            ConcurrencyStamp = "5ae996f2-3c16-492b-8b44-96b22ec83ccb",
                             Email = "muratcantuna4@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -282,10 +278,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "98791941-a1c5-4dd0-a45e-7da9fa1eb7cd",
+                            Id = "8d4e94f1-7af1-4410-9a98-8e8f1d4837cb",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "082d4471-3ed6-4be6-98a6-1fa109341ca1",
+                            ConcurrencyStamp = "6dc9444e-a527-489e-bdb2-0dfbbd379187",
                             Email = "muratcantuna5@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -302,10 +297,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "08072102-865c-4323-9adf-21650226210b",
+                            Id = "954aa953-0238-447e-84ad-3f93002e57ba",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "edb1eb52-2640-4950-bfd7-16f3044dd044",
+                            ConcurrencyStamp = "689800b6-414b-4668-924d-3ea9bfac16d6",
                             Email = "muratcantuna6@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -322,10 +316,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "7e065a0c-8fc6-4e1d-8994-ad4895400104",
+                            Id = "4361fa5d-1c6f-4cc4-8179-8e146b5d3169",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "98250ddd-994b-4818-b28f-7b610795303e",
+                            ConcurrencyStamp = "0cd88d89-bd90-45be-bc73-1b951aeb3ea4",
                             Email = "muratcantuna7@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -342,10 +335,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "10dde44f-b55a-4039-9eed-8445d10f302c",
+                            Id = "0452a935-1339-41bf-9810-67af374463ee",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "beae29a7-15ec-409d-8730-ab9bc20f0f22",
+                            ConcurrencyStamp = "acc6aa5f-d17b-4c40-b8af-0d499c7a7959",
                             Email = "muratcantuna8@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -362,10 +354,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "60a349ed-d69a-464c-9296-83378ae449fa",
+                            Id = "75234d08-19f1-4811-bfba-18fab85da5b2",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "8866703e-41a6-4529-bf8c-230a618da4e9",
+                            ConcurrencyStamp = "f3a9c783-ae01-4961-9ab6-03745a071111",
                             Email = "muratcantuna9@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",
@@ -382,10 +373,9 @@ namespace Upope.Identity.Migrations
                         },
                         new
                         {
-                            Id = "c2d5e928-b1a6-40de-adfd-a5656ead3da1",
+                            Id = "85360474-9f83-4b91-b870-296cbe50c5d8",
                             AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "164750c9-8f77-4cc4-8a1e-b97f02f1e5da",
+                            ConcurrencyStamp = "75311b71-561f-49be-872f-f80e1a0f2da4",
                             Email = "muratcantuna10@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Murat",

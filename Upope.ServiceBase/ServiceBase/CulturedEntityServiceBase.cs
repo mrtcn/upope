@@ -28,10 +28,12 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
         where TCulturedEntity : class, IHasParent<TEntity>, IHasCulture, IHasCulturedEntityStatus, ICulturedEntity, new() {
 
         private readonly DbContext _applicationDbContext;
+        private readonly IMapper _mapper;
 
-        protected CulturedEntityServiceBase(DbContext applicationDbContext)
-            : base(applicationDbContext) {
+        protected CulturedEntityServiceBase(DbContext applicationDbContext, IMapper mapper)
+            : base(applicationDbContext, mapper) {
             _applicationDbContext = applicationDbContext;
+            _mapper = mapper;
         }
 
         public IQueryable<TCulturedEntity> CulturedEntities {
@@ -47,7 +49,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
             var culturedEntity = (IEntity)entityParams;
             var culturedEntityId = culturedEntity != null ? culturedEntity.Id : 0;
             var entity = Entities.First(x => x.Id == baseEntityId);
-            Mapper.Map(entity, entityParams);
+            _mapper.Map(entity, entityParams);
             ((IEntity)entityParams).Id = culturedEntityId;
             return entityParams;
         }
@@ -62,11 +64,11 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
             var entityParams = new TEntityParams();
 
             if (baseOnCulture) {
-                Mapper.Map(entity, entityParams);
-                Mapper.Map(culturedEntity ?? new TCulturedEntity(), entityParams);
+                _mapper.Map(entity, entityParams);
+                _mapper.Map(culturedEntity ?? new TCulturedEntity(), entityParams);
             } else {
-                Mapper.Map(culturedEntity ?? new TCulturedEntity(), entityParams);
-                Mapper.Map(entity, entityParams);
+                _mapper.Map(culturedEntity ?? new TCulturedEntity(), entityParams);
+                _mapper.Map(entity, entityParams);
             }            
 
             if (culturedEntity == null && entityParams is IHasCulturedEntityStatus) {
@@ -133,7 +135,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
 
 
             if (culturedEntity == null) {
-                var map = Mapper.Map<TCulturedEntity>(entityParams);
+                var map = _mapper.Map<TCulturedEntity>(entityParams);
                 map.BaseEntityId = baseEntityId;
 
                 if (map is OperatorFields && entityParams is IHasOperator) {
@@ -148,7 +150,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
             } else {
                 ((IEntity)entityParams).Id = culturedEntity.Id;
                 var culturedEntityStatus = culturedEntity.CulturedEntityStatus;
-                Mapper.Map(entityParams, culturedEntity,
+                _mapper.Map(entityParams, culturedEntity,
                     entityParams.GetType(), typeof(TCulturedEntity));
 
                 culturedEntity.CulturedEntityStatus = culturedEntityStatus;

@@ -9,6 +9,7 @@ using Upope.ServiceBase;
 using Upope.Challange.Data.Entities;
 using Upope.Challange.Services.Interfaces;
 using Upope.Challange.Services;
+using Upope.Challange.EntityParams;
 
 namespace Upope.Challange
 {
@@ -28,13 +29,9 @@ namespace Upope.Challange
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
             });
-            services.AddAutoMapper(conf => {
-                //conf.CreateMap<IEnt>
-            });
-            services.AddTransient<IChallengeService, ChallengeService>(sp => {
-                var applicationDb = sp.GetRequiredService<ApplicationDbContext>();
-                return new ChallengeService(applicationDb);
-            });
+            services.AddAutoMapper();
+
+            services.AddTransient<IChallengeService, ChallengeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

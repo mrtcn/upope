@@ -28,5 +28,7 @@ namespace Upope.Identity.Entities
 
         public String PictureUrl { get; set; }
 
+        public DateTime? Birthday { get; set; }
+
     }
 }

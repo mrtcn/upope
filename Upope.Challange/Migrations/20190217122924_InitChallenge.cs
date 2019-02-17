@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Upope.Challange.Migrations
 {
-    public partial class Init : Migration
+    public partial class InitChallenge : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

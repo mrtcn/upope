@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -68,29 +67,31 @@ namespace Upope.Identity.Controllers
             AppId = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppId");
             AppSecret = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppSecret");
         }
-
-
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> Test()
-        {
-            return Ok("asd");
-        }
-
+        
         [HttpPost]
-        [Route("token")]
-        public async Task<IActionResult> CreateToken([FromBody] LoginModel loginModel)
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             if (ModelState.IsValid)
             {
-                var loginResult = await signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
+                var user = await userManager.FindByNameAsync(loginModel.Username);
+
+                if(user == null)
+                {
+                    user = await userManager.FindByEmailAsync(loginModel.Username);
+                }
+
+                if(user == null)
+                {
+                    return BadRequest();
+                }
+
+                var loginResult = await signInManager.PasswordSignInAsync(user.UserName, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
 
                 if (!loginResult.Succeeded)
                 {
                     return BadRequest();
                 }
-
-                var user = await userManager.FindByNameAsync(loginModel.Username);
 
                 return Ok(GetToken(user));
             }

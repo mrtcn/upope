@@ -18,13 +18,14 @@ namespace Upope.ServiceBase {
 
     public abstract class EntityServiceBase<TEntity> : IEntityServiceBase<TEntity> where TEntity : class, IEntity {
         private readonly DbContext _applicationDbContext;
-
-        protected EntityServiceBase(DbContext applicationDbContext) {
+        private readonly IMapper _mapper;
+        protected EntityServiceBase(DbContext applicationDbContext, IMapper mapper) {
             _applicationDbContext = applicationDbContext;
+            _mapper = mapper;
         }
 
         private TEntity CreateEntity(IEntityParams entityParams) {
-            var entity = Mapper.Map<TEntity>(entityParams);
+            var entity = _mapper.Map<TEntity>(entityParams);
 
             if (entity is OperatorFields && entityParams is IHasOperator) {
                 var operatorFields = entity as OperatorFields;
@@ -36,7 +37,7 @@ namespace Upope.ServiceBase {
 
             OnSaveChanges(entityParams, entity);
 
-            Mapper.Map(entityParams, entity, entityParams.GetType(), typeof(TEntity));
+            _mapper.Map(entityParams, entity, entityParams.GetType(), typeof(TEntity));
 
             _applicationDbContext.Add(entity);
             _applicationDbContext.SaveChanges();
@@ -137,7 +138,7 @@ namespace Upope.ServiceBase {
                     hasOperator.OperatorType, hasOperator.OperatorId);
             }
 
-            Mapper.Map(entityParams, entity,
+            _mapper.Map(entityParams, entity,
                 entityParams.GetType(), typeof(TEntity));
 
             _applicationDbContext.Update(entity);

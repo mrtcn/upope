@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using Upope.Challange.Enums;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
 
 namespace Upope.Challange.Data.Entities
 {
-    public interface IChallenge : IEntity, IHasStatus
+    public interface IChallengeRequest : IEntity, IHasStatus
     {
         int ChallengeOwnerId { get; set; }
         int? ChallengerId { get; set; }
-        int RewardPoint { get; set; }
-        int? WinnerId { get; set; }
+        ChallengeRequestStatus ChallengeRequestStatus { get; set; }
     }
-    public class Challenge: IChallenge
+    public class ChallengeRequest : IChallengeRequest
     {
         public int Id { get; set; }
         public Status Status { get; set; }
         public int ChallengeOwnerId { get; set; }
         public int? ChallengerId { get; set; }
-        public int RewardPoint { get; set; }
-        public int?  WinnerId { get; set; }
-        public List<ChallengeRequest> ChallengeRequests { get; set; }
+        public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
+        public int ChallengeId { get; set; }
+        public Challenge Challenge { get; set; }
     }
 }

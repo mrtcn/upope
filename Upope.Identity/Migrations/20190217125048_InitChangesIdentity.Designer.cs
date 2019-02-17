@@ -10,8 +10,8 @@ using Upope.Identity.DbContext;
 namespace Upope.Identity.Migrations
 {
     [DbContext(typeof(ApplicationUserDbContext))]
-    [Migration("20190212224711_InitIdentity")]
-    partial class InitIdentity
+    [Migration("20190217125048_InitChangesIdentity")]
+    partial class InitChangesIdentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -198,6 +198,24 @@ namespace Upope.Identity.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "efe709a7-7269-429f-ae0f-2997432e9b77",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "5c60052c-fa50-4a93-85c0-64110a907fc2",
+                            Email = "muratcantuna1@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Murat",
+                            Gender = 1,
+                            LastName = "Tuna",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MURATCANTUNA1@GMAIL.COM",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "muratcantuna1"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

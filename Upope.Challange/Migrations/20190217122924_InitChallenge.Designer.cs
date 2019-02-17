@@ -5,13 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Upope.Challange;
-using Upope.ServiceBase;
 
 namespace Upope.Challange.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190215172518_Init")]
-    partial class Init
+    [Migration("20190217122924_InitChallenge")]
+    partial class InitChallenge
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
