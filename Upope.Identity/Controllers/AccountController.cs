@@ -180,7 +180,7 @@ namespace Upope.Identity.Controllers
             }
 
             // generate the jwt for the local user...
-            var localUser = await userManager.FindByNameAsync(facebookUser.Email);
+            var localUser = await userManager.FindByEmailAsync(facebookUser.Email);
 
             if (localUser == null)
             {
