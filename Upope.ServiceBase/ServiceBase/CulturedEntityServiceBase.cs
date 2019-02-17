@@ -27,9 +27,9 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
         where TEntity : class, IEntity, IHasOperator, IHasCulturedEntities<TCulturedEntity>
         where TCulturedEntity : class, IHasParent<TEntity>, IHasCulture, IHasCulturedEntityStatus, ICulturedEntity, new() {
 
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly DbContext _applicationDbContext;
 
-        protected CulturedEntityServiceBase(ApplicationDbContext applicationDbContext)
+        protected CulturedEntityServiceBase(DbContext applicationDbContext)
             : base(applicationDbContext) {
             _applicationDbContext = applicationDbContext;
         }

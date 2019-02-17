@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <Compile Remove="DataManagement\**" />
+    <Compile Remove="DbContext\**" />
     <EmbeddedResource Remove="DataManagement\**" />
+    <EmbeddedResource Remove="DbContext\**" />
     <None Remove="DataManagement\**" />
+    <None Remove="DbContext\**" />
   </ItemGroup>
 
   <ItemGroup>

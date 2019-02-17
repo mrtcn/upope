@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using Upope.ServiceBase.Enums;
@@ -16,9 +17,9 @@ namespace Upope.ServiceBase {
     }
 
     public abstract class EntityServiceBase<TEntity> : IEntityServiceBase<TEntity> where TEntity : class, IEntity {
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly DbContext _applicationDbContext;
 
-        protected EntityServiceBase(ApplicationDbContext applicationDbContext) {
+        protected EntityServiceBase(DbContext applicationDbContext) {
             _applicationDbContext = applicationDbContext;
         }
 

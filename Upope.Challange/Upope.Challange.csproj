@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DbContext\**" />
-    <Content Remove="DbContext\**" />
-    <EmbeddedResource Remove="DbContext\**" />
-    <None Remove="DbContext\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Migrations\20190215162843_InitChallange.cs" />
     <Compile Remove="Migrations\20190215162843_InitChallange.Designer.cs" />
     <Compile Remove="Migrations\20190215172220_InitChallange2.cs" />
