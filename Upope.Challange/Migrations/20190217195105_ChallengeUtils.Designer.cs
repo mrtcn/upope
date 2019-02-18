@@ -10,8 +10,8 @@ using Upope.Challange;
 namespace Upope.Challange.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190217140050_ChallengeRequestRel")]
-    partial class ChallengeRequestRel
+    [Migration("20190217195105_ChallengeUtils")]
+    partial class ChallengeUtils
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Upope.Identity.Migrations
 {
-    public partial class InitChangesIdentity : Migration
+    public partial class IdentityInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,7 +46,8 @@ namespace Upope.Identity.Migrations
                     Gender = table.Column<int>(nullable: false),
                     FacebookId = table.Column<string>(maxLength: 250, nullable: true),
                     GoogleId = table.Column<string>(maxLength: 250, nullable: true),
-                    PictureUrl = table.Column<string>(nullable: true)
+                    PictureUrl = table.Column<string>(nullable: true),
+                    Birthday = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -161,8 +162,20 @@ namespace Upope.Identity.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FacebookId", "FirstName", "Gender", "GoogleId", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PictureUrl", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "efe709a7-7269-429f-ae0f-2997432e9b77", 0, "5c60052c-fa50-4a93-85c0-64110a907fc2", "muratcantuna1@gmail.com", true, null, "Murat", 1, null, "Tuna", false, null, "MURATCANTUNA1@GMAIL.COM", null, null, null, false, null, null, false, "muratcantuna1" });
+                columns: new[] { "Id", "AccessFailedCount", "Birthday", "ConcurrencyStamp", "Email", "EmailConfirmed", "FacebookId", "FirstName", "Gender", "GoogleId", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PictureUrl", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "0fc04ca0-cc8d-4896-a50d-b9fe247cf152", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "6d77fe32-7856-4b9f-b404-4c0b608b926d", "muratcantuna1@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA1@GMAIL.COM", "MURATCANTUNA1", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna1" },
+                    { "3282d1a0-ed0e-4f8a-8720-8f3474c21ecf", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "c4c69d08-5c9a-4458-868f-17021d0a4b0f", "muratcantuna2@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA2@GMAIL.COM", "MURATCANTUNA2", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna2" },
+                    { "ad687285-5202-4f81-8220-0a424dae3566", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "88429df2-76b3-464a-afc9-153cded3430b", "muratcantuna3@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA3@GMAIL.COM", "MURATCANTUNA3", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna3" },
+                    { "897b2d91-6c1a-4bed-a4fc-9e84441e4b2d", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "b3c78a3d-8de9-40f3-96c5-ef418c003ed3", "muratcantuna4@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA4@GMAIL.COM", "MURATCANTUNA4", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna4" },
+                    { "5961efe4-8ad8-488f-8727-022417b612a0", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "dce0bfcc-8dfa-4080-ac51-56c2f895bbed", "muratcantuna5@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA5@GMAIL.COM", "MURATCANTUNA5", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna5" },
+                    { "d589a0cf-7172-4b44-bb49-609fcc7d56be", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "57faa83d-4ea0-436f-8138-520977033f22", "muratcantuna6@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA6@GMAIL.COM", "MURATCANTUNA6", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna6" },
+                    { "e21b42d9-ca1f-49d5-b2f8-565a1bff3754", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "2a54ef71-8908-48b4-be9a-ba67e580caf4", "muratcantuna7@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA7@GMAIL.COM", "MURATCANTUNA7", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna7" },
+                    { "b41b9a6b-00da-46dc-8115-67066009b211", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "83ce299a-3030-40ff-98f5-4f1603117414", "muratcantuna8@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA8@GMAIL.COM", "MURATCANTUNA8", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna8" },
+                    { "3eec55e4-3f38-4191-b43f-ba950108b296", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "41e0f628-d542-4c32-9291-096fd4d6bd26", "muratcantuna9@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA9@GMAIL.COM", "MURATCANTUNA9", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna9" },
+                    { "04dc0f14-65ce-4d93-8505-124d9f3b9276", 0, new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified), "e29f5149-3db0-4946-83f6-7c17bf4653b8", "muratcantuna10@gmail.com", true, null, "Murat", 1, null, "Tuna", true, null, "MURATCANTUNA10@GMAIL.COM", "MURATCANTUNA10", "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==", null, false, null, "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD", false, "muratcantuna10" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

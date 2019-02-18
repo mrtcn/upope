@@ -16,6 +16,10 @@
     <Compile Remove="Migrations\20190215172518_Init.Designer.cs" />
     <Compile Remove="Migrations\20190217122553_InitChallenge.cs" />
     <Compile Remove="Migrations\20190217122553_InitChallenge.Designer.cs" />
+    <Compile Remove="Migrations\20190217122924_InitChallenge.cs" />
+    <Compile Remove="Migrations\20190217122924_InitChallenge.Designer.cs" />
+    <Compile Remove="Migrations\20190217140050_ChallengeRequestRel.cs" />
+    <Compile Remove="Migrations\20190217140050_ChallengeRequestRel.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

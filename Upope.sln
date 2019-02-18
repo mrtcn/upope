@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Identity", "Upope.Ide
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.ClientTests", "Upope.ClientTests\Upope.ClientTests.csproj", "{FBC76D28-5618-4534-A105-A5CE3D5E6068}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.Challange", "Upope.Challange\Upope.Challange.csproj", "{B99B5200-AAD1-4110-B7D3-AFA305C78135}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Challange", "Upope.Challange\Upope.Challange.csproj", "{B99B5200-AAD1-4110-B7D3-AFA305C78135}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.ServiceBase", "Upope.ServiceBase\Upope.ServiceBase.csproj", "{4700E485-6D7A-4E19-A2B9-39FC9874DC04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.ServiceBase", "Upope.ServiceBase\Upope.ServiceBase.csproj", "{4700E485-6D7A-4E19-A2B9-39FC9874DC04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.Loyalty", "Upope.Loyalty\Upope.Loyalty.csproj", "{24F0DE38-99A9-4B47-B34E-B2BB1927C183}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{4700E485-6D7A-4E19-A2B9-39FC9874DC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4700E485-6D7A-4E19-A2B9-39FC9874DC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4700E485-6D7A-4E19-A2B9-39FC9874DC04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F0DE38-99A9-4B47-B34E-B2BB1927C183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F0DE38-99A9-4B47-B34E-B2BB1927C183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F0DE38-99A9-4B47-B34E-B2BB1927C183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F0DE38-99A9-4B47-B34E-B2BB1927C183}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

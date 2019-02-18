@@ -3,31 +3,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Upope.Challange.Migrations
 {
-    public partial class ChallengeRequestRel : Migration
+    public partial class ChallengeUtils : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "ChallengeOwnerId",
-                table: "Challenge",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "ChallengerId",
-                table: "Challenge",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "RewardPoint",
-                table: "Challenge",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "WinnerId",
-                table: "Challenge",
-                nullable: true);
+            migrationBuilder.CreateTable(
+                name: "Challenge",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Status = table.Column<int>(nullable: false),
+                    ChallengeOwnerId = table.Column<int>(nullable: false),
+                    ChallengerId = table.Column<int>(nullable: true),
+                    RewardPoint = table.Column<int>(nullable: false),
+                    WinnerId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Challenge", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ChallengeRequest",
@@ -63,21 +58,8 @@ namespace Upope.Challange.Migrations
             migrationBuilder.DropTable(
                 name: "ChallengeRequest");
 
-            migrationBuilder.DropColumn(
-                name: "ChallengeOwnerId",
-                table: "Challenge");
-
-            migrationBuilder.DropColumn(
-                name: "ChallengerId",
-                table: "Challenge");
-
-            migrationBuilder.DropColumn(
-                name: "RewardPoint",
-                table: "Challenge");
-
-            migrationBuilder.DropColumn(
-                name: "WinnerId",
-                table: "Challenge");
+            migrationBuilder.DropTable(
+                name: "Challenge");
         }
     }
 }

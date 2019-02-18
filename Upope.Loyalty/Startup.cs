@@ -1,18 +1,21 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
-using Upope.Challange.Services.Interfaces;
-using Upope.Challange.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.Identity.DbContext;
+using Upope.Identity.Entities;
+using Upope.Loyalty.Services;
+using Upope.Loyalty.Services.Interfaces;
 
-namespace Upope.Challange
+namespace Upope.Loyalty
 {
     public class Startup
     {
@@ -26,6 +29,12 @@ namespace Upope.Challange
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationUserDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationUserDbContext>();
+
             #region Add Authentication
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]));
             services.AddAuthentication(options =>
@@ -74,11 +83,11 @@ namespace Upope.Challange
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(opt => {
-                opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
+                opt.UseSqlServer(Configuration["ConnectionStrings:UpopeLoyalty"]);
             });
             services.AddAutoMapper();
 
-            services.AddTransient<IChallengeService, ChallengeService>();
+            services.AddTransient<ILoyaltyService, LoyaltyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
