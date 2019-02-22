@@ -7,15 +7,17 @@ namespace Upope.Challange.EntityParams
     public class ChallengeParams: IEntityParams, IChallenge
     {
         public ChallengeParams() { }
-        public ChallengeParams(Status status)
+        public ChallengeParams(Status status, string userId, int points)
         {
             Status = status;
+            ChallengeOwnerId = userId;
+            RewardPoint = points;
         }
         public int Id { get; set; }
         public Status Status { get; set; }
-        public int ChallengeOwnerId { get; set; }
-        public int? ChallengerId { get; set; }
+        public string ChallengeOwnerId { get; set; }
+        public string ChallengerId { get; set; }
         public int RewardPoint { get; set; }
-        public int? WinnerId { get; set; }
+        public string WinnerId { get; set; }
     }
 }

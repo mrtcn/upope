@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,12 +14,15 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
+using Upope.Identity.GlobalSettings;
+using Upope.Identity.Handlers;
 using Upope.Identity.Helpers;
 using Upope.Identity.Helpers.Interfaces;
 using Upope.Identity.Models.FacebookResponse;
 using Upope.Identity.Models.GoogleResponse;
 using Upope.Identity.Services;
 using Upope.Identity.Services.Interfaces;
+using Upope.ServiceBase.Handler;
 
 namespace Upope.Identity
 {
@@ -27,6 +31,7 @@ namespace Upope.Identity
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BuildAppSettingsProvider();
         }
 
         public IConfiguration Configuration { get; }
@@ -76,7 +81,7 @@ namespace Upope.Identity
                 googleOptions.ClientId = Configuration["ExternalAuthentication:Google:ClientId"];
                 googleOptions.ClientSecret = Configuration["ExternalAuthentication:Google:ClientSecret"];
             }) 
-            .AddJwtBearer(config =>
+            .AddJwtBearer("UpopeIdentity", config =>
             {
                 config.RequireHttpsMetadata = false;
                 config.SaveToken = true;
@@ -93,13 +98,21 @@ namespace Upope.Identity
             });
             #endregion
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
+                });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Upope Identity API", Version = "v1" });
             });
+
+            services.AddAutoMapper();
+
+            services.AddHttpClient();
+            services.AddTransient<IHttpHandler, HttpHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -114,7 +127,7 @@ namespace Upope.Identity
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
 
@@ -130,6 +143,12 @@ namespace Upope.Identity
             });
 
             app.UseMvc();
+        }
+
+        private void BuildAppSettingsProvider()
+        {
+            AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
         }
     }
 }

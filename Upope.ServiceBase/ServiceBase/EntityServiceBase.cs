@@ -37,6 +37,12 @@ namespace Upope.ServiceBase {
 
             OnSaveChanges(entityParams, entity);
 
+            if(entity is IHasStatus && entityParams is IHasStatus)
+            {
+                var statusParams = entityParams as IHasStatus;
+                statusParams.Status = Status.Active;
+            }
+            
             _mapper.Map(entityParams, entity, entityParams.GetType(), typeof(TEntity));
 
             _applicationDbContext.Add(entity);
@@ -67,7 +73,7 @@ namespace Upope.ServiceBase {
 
         }
 
-        protected virtual void OnSaveChanges(IEntityParams entityParams, TEntity entity) {
+        protected virtual void OnSaveChanges(IEntityParams entityParams, TEntity entity) {            
         }
 
         public RemoveResultStatus Remove(IRemoveEntityParams removeEntityParams) {
@@ -150,7 +156,7 @@ namespace Upope.ServiceBase {
         }
 
         public virtual IQueryable<TEntity> Entities {
-            get { return _applicationDbContext.Query<TEntity>(); }
+            get { return _applicationDbContext.Set<TEntity>(); }
         }
     }
 }

@@ -10,6 +10,9 @@ namespace Upope.Challange
         {
             CreateMap<Challenge, ChallengeParams>();
             CreateMap<ChallengeParams, Challenge>();
+
+            CreateMap<ChallengeRequest, ChallengeRequestParams>();
+            CreateMap<ChallengeRequestParams, ChallengeRequest>();
         }
     }
 }

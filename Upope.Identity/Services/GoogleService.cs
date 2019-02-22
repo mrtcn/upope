@@ -16,7 +16,7 @@ namespace Upope.Identity.Services
         public async Task<GoogleResponse> GetAccountAsync(string accessToken)
         {
             var result = await _googleClient.GetAsync<GoogleResponse>(
-                accessToken, "v1/userinfo?scope=email");
+                accessToken, "userinfo");
 
             if (result == null)
             {

@@ -1,4 +1,5 @@
-﻿namespace Upope.ServiceBase.Models {
+﻿
+namespace Upope.ServiceBase.Models {
     public interface IEntityParams {
     }
 }

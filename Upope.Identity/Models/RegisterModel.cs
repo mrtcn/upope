@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.ComponentModel.DataAnnotations;
 using Upope.Identity.Enum;
 
@@ -24,11 +26,9 @@ namespace Upope.Identity.Models
         public String PasswordConfirmation { get; set; }
 
         [Required]
-        [StringLength(50)]
         public Gender Gender { get; set; }
 
         [Required]
-        [StringLength(50)]
         public DateTime Birthday { get; set; }
     }
 }

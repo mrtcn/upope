@@ -11,6 +11,7 @@ namespace Upope.Challange.Data.Mappings
             builder.HasKey(x => x.Id);
             builder.HasOne(x => x.Challenge)
                 .WithMany(x => x.ChallengeRequests)
+                .HasForeignKey(x => x.ChallengeId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -8,12 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
+using Upope.Loyalty.GlobalSettings;
 using Upope.Loyalty.Services;
 using Upope.Loyalty.Services.Interfaces;
+using Upope.ServiceBase.Handler;
 
 namespace Upope.Loyalty
 {
@@ -22,6 +25,7 @@ namespace Upope.Loyalty
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BuildAppSettingsProvider();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,12 +33,6 @@ namespace Upope.Loyalty
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationUserDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection")));
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationUserDbContext>();
-
             #region Add Authentication
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]));
             services.AddAuthentication(options =>
@@ -88,6 +86,8 @@ namespace Upope.Loyalty
             services.AddAutoMapper();
 
             services.AddTransient<ILoyaltyService, LoyaltyService>();
+            services.AddHttpClient();
+            services.AddTransient<IHttpHandler, HttpHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +108,11 @@ namespace Upope.Loyalty
             app.UseMvc();
 
             //app.UseSignalR(routes => routes.MapHub<ChallangeHub>("/challangehub"));
+        }
+
+        private void BuildAppSettingsProvider()
+        {
+            AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
         }
     }
 }

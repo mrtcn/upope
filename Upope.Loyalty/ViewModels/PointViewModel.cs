@@ -3,7 +3,7 @@ namespace Upope.Loyalty.ViewModels
 {
     public class PointViewModel
     {
-        public int Point { get; set; }
+        public int Points { get; set; }
         public string UserId { get; set; }
     }
 
@@ -15,11 +15,11 @@ namespace Upope.Loyalty.ViewModels
 
     public class GetPointViewModel
     {
-        public int Point { get; set; }
+        public int Points { get; set; }
     }
 
     public class GetSufficientPointViewModel
     {
-        public int Point { get; set; }
+        public int Points { get; set; }
     }
 }

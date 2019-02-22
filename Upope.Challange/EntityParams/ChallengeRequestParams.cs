@@ -12,10 +12,26 @@ namespace Upope.Challange.EntityParams
         {
             Status = status;
         }
+
+        public ChallengeRequestParams(
+            Status status, 
+            string challengeOwnerId, 
+            string challengerId, 
+            int challengeId,
+            ChallengeRequestStatus challengeRequestStatus)
+        {
+            Status = status;
+            ChallengeOwnerId = challengeOwnerId;
+            ChallengerId = challengerId;
+            ChallengeId = challengeId;
+            ChallengeRequestStatus = challengeRequestStatus;
+        }
+
         public int Id { get; set; }
         public Status Status { get; set; }
-        public int ChallengeOwnerId { get; set; }
-        public int? ChallengerId { get; set; }
+        public string ChallengeOwnerId { get; set; }
+        public string ChallengerId { get; set; }
+        public int ChallengeId { get; set; }
         public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
-    }
+    }    
 }

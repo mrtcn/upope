@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 using System.Text;
 using System.Threading.Tasks;
-using Upope.Hubs;
 
 namespace Upope
 {
@@ -29,7 +30,7 @@ namespace Upope
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(config =>
+            }).AddJwtBearer("UpopeIdentity", config =>
             {
                 config.RequireHttpsMetadata = false;
                 config.SaveToken = true;
@@ -57,7 +58,7 @@ namespace Upope
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/challangehub")))
+                            (path.StartsWithSegments("/challangehubs")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -65,16 +66,15 @@ namespace Upope
                         return Task.CompletedTask;
                     }
                 };
-
             });
             #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSignalR();
+            services.AddOcelot(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -86,12 +86,11 @@ namespace Upope
                 app.UseHsts();
             }            
 
-            app.UseWebSockets();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
-            app.UseSignalR(routes => routes.MapHub<ChallangeHub>("/challangehub"));
+            await app.UseOcelot();
         }
     }
 }

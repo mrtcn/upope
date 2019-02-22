@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Reflection;
 using Upope.Loyalty.Data.Entities;
 using Upope.Loyalty.Data.Mappings;
 using Upope.ServiceBase.Enums;

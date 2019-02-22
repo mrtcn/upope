@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Collections.Generic;
 using Upope.Loyalty.Data.Entities;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.ViewModels;

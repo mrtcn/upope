@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.Challange.GlobalSettings;
+using Upope.ServiceBase.Handler;
+using Microsoft.AspNetCore.SignalR;
+using Upope.Challange.Hubs;
 
 namespace Upope.Challange
 {
@@ -19,6 +23,7 @@ namespace Upope.Challange
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BuildAppSettingsProvider();
         }
 
         public IConfiguration Configuration { get; }
@@ -60,7 +65,7 @@ namespace Upope.Challange
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/challangehub")))
+                            (path.StartsWithSegments("/challangehubs")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -78,7 +83,13 @@ namespace Upope.Challange
             });
             services.AddAutoMapper();
 
+            services.AddHttpClient();
+            services.AddTransient<IHttpHandler, HttpHandler>();
+
             services.AddTransient<IChallengeService, ChallengeService>();
+            services.AddTransient<IChallengeRequestService, ChallengeRequestService>();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,7 +109,13 @@ namespace Upope.Challange
             app.UseAuthentication();
             app.UseMvc();
 
-            //app.UseSignalR(routes => routes.MapHub<ChallangeHub>("/challangehub"));
+            app.UseSignalR(routes => routes.MapHub<ChallengeHubs>("/challangehubs"));
+        }
+
+        private void BuildAppSettingsProvider()
+        {
+            AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
         }
     }
 }

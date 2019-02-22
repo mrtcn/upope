@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
@@ -6,13 +7,16 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
+using Upope.Identity.Enum;
 using Upope.Identity.Helpers.Interfaces;
 using Upope.Identity.Models;
 using Upope.Identity.Models.FacebookResponse;
@@ -30,6 +34,8 @@ namespace Upope.Identity.Controllers
     {
         readonly UserManager<ApplicationUser> userManager;
         readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ApplicationUserDbContext _dbContext;
+        private readonly IMapper _mapper;
         readonly IRandomPasswordHelper _randomPasswordHelper;
         readonly IExternalAuthService<FacebookResponse> _facebookService;
         readonly IExternalAuthService<GoogleResponse> _googleService;
@@ -47,6 +53,8 @@ namespace Upope.Identity.Controllers
         public AccountController(
            UserManager<ApplicationUser> userManager,
            SignInManager<ApplicationUser> signInManager,
+           ApplicationUserDbContext dbContext,
+           IMapper mapper,
            IRandomPasswordHelper randomPasswordHelper,
            IExternalAuthService<FacebookResponse> facebookService,
            IExternalAuthService<GoogleResponse> googleService,
@@ -55,6 +63,8 @@ namespace Upope.Identity.Controllers
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            _dbContext = dbContext;
+            _mapper = mapper;
             _randomPasswordHelper = randomPasswordHelper;
             _facebookService = facebookService;
             _googleService = googleService;
@@ -67,7 +77,7 @@ namespace Upope.Identity.Controllers
             AppId = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppId");
             AppSecret = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppSecret");
         }
-        
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
@@ -93,7 +103,7 @@ namespace Upope.Identity.Controllers
                     return BadRequest();
                 }
 
-                return Ok(GetToken(user));
+                return Ok(new TokenModel(GetToken(user)));
             }
             return BadRequest(ModelState);
 
@@ -108,41 +118,57 @@ namespace Upope.Identity.Controllers
                 User.Identity.Name ??
                 User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
                 );
-            return Ok(GetToken(user));
+            return Ok(new TokenModel(GetToken(user)));
 
         }
 
+        [HttpPost]
+        [Route("profile")]
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await GetUserAsync();
+            var profileViewModel = _mapper.Map<ProfileViewModel>(user);
+            profileViewModel.Point = 112;
+            return Ok(profileViewModel);
+        }
 
         [HttpPost]
         [Route("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = new ApplicationUser
+                if (ModelState.IsValid)
                 {
-                    //TODO: Use Automapper instaed of manual binding
+                    var user = new ApplicationUser
+                    {
+                        //TODO: Use Automapper instaed of manual binding
 
-                    UserName = registerModel.Username,
-                    FirstName = registerModel.FirstName,
-                    LastName = registerModel.LastName,
-                    Email = registerModel.Email
-                };
+                        UserName = registerModel.Username,
+                        FirstName = registerModel.FirstName,
+                        LastName = registerModel.LastName,
+                        Email = registerModel.Email
+                    };
 
-                var identityResult = await userManager.CreateAsync(user, registerModel.Password);
-                if (identityResult.Succeeded)
-                {
-                    await signInManager.SignInAsync(user, isPersistent: false);
-                    return Ok(GetToken(user));
+                    var identityResult = await userManager.CreateAsync(user, registerModel.Password);
+                    if (identityResult.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        return Ok(new TokenModel(GetToken(user)));
+                    }
+                    else
+                    {
+                        return BadRequest(identityResult.Errors);
+                    }
                 }
-                else
-                {
-                    return BadRequest(identityResult.Errors);
-                }
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
-
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
 
         }
 
@@ -151,44 +177,57 @@ namespace Upope.Identity.Controllers
         [Route("facebook")]
         public async Task<IActionResult> Facebook([FromBody]FacebookAuthViewModel model)
         {
-            var facebookUser = await _facebookService.GetAccountAsync(model.AccessToken);
-
-            if (facebookUser == null || string.IsNullOrEmpty(facebookUser.Id))
+            try
             {
-                return BadRequest("Invalid facebook token.");
-            }
+                var facebookUser = await _facebookService.GetAccountAsync(model.AccessToken);
 
-            // 4. ready to create the local user account (if necessary) and jwt
-            var user = await userManager.FindByEmailAsync(facebookUser.Email);
-
-            if (user == null)
-            {
-                var appUser = new ApplicationUser
+                if (string.IsNullOrEmpty(facebookUser.Id))
                 {
-                    FirstName = facebookUser.FirstName,
-                    LastName = facebookUser.LastName,
-                    FacebookId = facebookUser.Id,
-                    Email = facebookUser.Email,
-                    UserName = Regex.Replace(facebookUser.Name, @"[^\w]", ""),
-                    PictureUrl = facebookUser.Picture.Data.Url
-                };
+                    return BadRequest("Invalid facebook token.");
+                }
 
-                var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
-                
-                if (!result.Succeeded) {
-                    return new BadRequestObjectResult(result.Errors.FirstOrDefault());
-                }                
-            }
+                // 4. ready to create the local user account (if necessary) and jwt
+                var user = GetUserByExternalId(facebookUser.Id, ExternalProviderTyper.Facebook);
 
-            // generate the jwt for the local user...
-            var localUser = await userManager.FindByEmailAsync(facebookUser.Email);
+                if (user == null)
+                {
+                    var appUser = new ApplicationUser
+                    {
+                        FirstName = facebookUser.FirstName,
+                        LastName = facebookUser.LastName,
+                        FacebookId = facebookUser.Id,
+                        Email = facebookUser.Email,
+                        Nickname = Regex.Replace(facebookUser.Name, @"[^\w]", ""),
+                        UserName = Guid.NewGuid().ToString(),
+                        PictureUrl = facebookUser.Picture.Data.Url,
+                        Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                        //Gender = facebookUser.Gender
+                    };
+                    if (!IsEmailUnique(appUser.Email))
+                        return BadRequest("Email baska bir kullaniciya ait.");
 
-            if (localUser == null)
+                    var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
+
+                    if (!result.Succeeded)
+                    {
+                        return new BadRequestObjectResult(result.Errors.FirstOrDefault());
+                    }
+                }
+
+                // generate the jwt for the local user...
+                var localUser = GetUserByExternalId(facebookUser.Id, ExternalProviderTyper.Facebook);
+
+                if (localUser == null)
+                {
+                    return BadRequest("Failed to create local user account.");
+                }
+
+                return Ok(new TokenModel(GetToken(localUser)));
+            }catch(Exception ex)
             {
-                return BadRequest("Failed to create local user account.");
+                return BadRequest(ex);
             }
-
-            return Ok(new TokenModel(GetToken(localUser)));
+            
         }
 
 
@@ -197,15 +236,15 @@ namespace Upope.Identity.Controllers
         [Route("google")]
         public async Task<IActionResult> Google([FromBody]GoogleAuthViewModel model)
         {
-            var googleUser = await _googleService.GetAccountAsync(model.UserId);
+            var googleUser = await _googleService.GetAccountAsync(model.AccessToken);
 
-            if (googleUser == null && string.IsNullOrEmpty(googleUser.Sub))
+            if (string.IsNullOrEmpty(googleUser.Sub))
             {
                 return BadRequest("Invalid google token.");
             }
 
             // 4. ready to create the local user account (if necessary) and jwt
-            var user = await userManager.FindByEmailAsync(googleUser.Email);
+            var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
 
             if (user == null)
             {
@@ -215,10 +254,15 @@ namespace Upope.Identity.Controllers
                     LastName = googleUser.FamilyName,
                     GoogleId = googleUser.Sub,
                     Email = googleUser.Email,
-                    UserName = Regex.Replace(googleUser.Name, @"[^\w]", ""),
+                    Nickname = Regex.Replace(googleUser.Name, @"[^\w]", ""),
+                    UserName = Guid.NewGuid().ToString(),
                     PictureUrl = googleUser.Picture
+                    //Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture)
                 };
-                
+
+                if (!IsEmailUnique(appUser.Email))
+                    return BadRequest("Email baska bir kullaniciya ait.");
+
                 var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                 if (!result.Succeeded)
@@ -228,7 +272,7 @@ namespace Upope.Identity.Controllers
             }
 
             // generate the jwt for the local user...
-            var localUser = await userManager.FindByNameAsync(googleUser.Email);
+            var localUser = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
 
             if (localUser == null)
             {
@@ -238,32 +282,63 @@ namespace Upope.Identity.Controllers
             return Ok(new TokenModel(GetToken(localUser)));
         }
 
-        private String GetToken(IdentityUser user)
+        private ApplicationUser GetUserByExternalId(string externalId, ExternalProviderTyper providerType)
+        {
+            if (string.IsNullOrEmpty(externalId))
+                return null;
+
+             if(providerType == ExternalProviderTyper.Facebook)
             {
-                var utcNow = DateTime.UtcNow;
-
-                var claims = new Claim[]
-                {
-                            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                            new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
-                };
-
-                var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenKey));
-                var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-                var jwt = new JwtSecurityToken(
-                    signingCredentials: signingCredentials,
-                    claims: claims,
-                    notBefore: utcNow,
-                    expires: TokenLifetime,
-                    audience: TokenAudience,
-                    issuer: TokenIssuer
-                    );
-
-                return new JwtSecurityTokenHandler().WriteToken(jwt);
-
+                return _dbContext.Users.FirstOrDefault(x => x.FacebookId == externalId);
             }
-
+            else
+            {
+                return _dbContext.Users.FirstOrDefault(x => x.GoogleId == externalId);
+            }
         }
+
+        private bool IsEmailUnique(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return true;
+            }
+            return !_dbContext.Users.Any(x => x.Email == email);
+            
+        }
+        private String GetToken(IdentityUser user)
+        {
+            var utcNow = DateTime.UtcNow;
+
+            var claims = new Claim[]
+            {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
+            };
+
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenKey));
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var jwt = new JwtSecurityToken(
+                signingCredentials: signingCredentials,
+                claims: claims,
+                notBefore: utcNow,
+                expires: TokenLifetime,
+                audience: TokenAudience,
+                issuer: TokenIssuer
+                );
+
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+
+        private async Task<ApplicationUser> GetUserAsync()
+        {
+            var user = await userManager.FindByNameAsync(
+                User.Identity.Name ??
+                User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault());
+
+            return user;
+        }
+    }
 }

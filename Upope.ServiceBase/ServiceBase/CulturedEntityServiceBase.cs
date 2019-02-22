@@ -37,7 +37,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
         }
 
         public IQueryable<TCulturedEntity> CulturedEntities {
-            get { return _applicationDbContext.Query<TCulturedEntity>().Include(x => x.BaseEntity); }
+            get { return _applicationDbContext.Set<TCulturedEntity>().Include(x => x.BaseEntity); }
         }
 
         public TCulturedEntity CulturedEntityGet(int id) {

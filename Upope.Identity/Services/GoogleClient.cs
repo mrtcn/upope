@@ -16,7 +16,7 @@ namespace Upope.Identity.Services
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://openidconnect.googleapis.com/")
+                BaseAddress = new Uri("https://www.googleapis.com/oauth2/v3/")
             };
             _httpClient.DefaultRequestHeaders
                 .Accept

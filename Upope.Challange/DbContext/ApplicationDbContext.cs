@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Reflection;
 using Upope.Challange.Data.Entities;
 using Upope.Challange.Data.Mappings;
 
@@ -34,6 +31,7 @@ namespace Upope.Challange
             //}
 
             modelBuilder.ApplyConfiguration<Challenge>(new ChallengeMapping());
+            modelBuilder.ApplyConfiguration<ChallengeRequest>(new ChallengeRequestMapping());
         }
     }
 }

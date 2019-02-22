@@ -17,6 +17,9 @@ namespace Upope.Identity.Entities
         [MaxLength(250)]
         public String LastName { get; set; }
 
+        [MaxLength(250)]
+        public String Nickname { get; set; }
+
         [JsonConverter(typeof(StringEnumConverter))]
         public Gender Gender { get; set; }
 

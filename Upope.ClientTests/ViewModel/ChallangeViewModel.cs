@@ -13,9 +13,9 @@ namespace Upope.ClientTests.ViewModel
             var ip = "localhost";
 
             hubConnection = new HubConnectionBuilder()
-                .WithUrl($"http://{ip}:58836/challangehub", options =>
+                .WithUrl($"https://{ip}:44324/challangehubs", options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult("");
+                    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWU2MjM4OS1jOTgxLTRjMTctOGU1Yy01ZmNhZWVmOTMwYjciLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTciLCJqdGkiOiI3ZTc3Yzg2MC02ODY4LTQ3MGMtOGJlNS1hYzVhNDhlOWI4ODciLCJpYXQiOiIyMi8wMi8yMDE5IDE0OjEwOjE0IiwibmJmIjoxNTUwODQ0NjE0LCJleHAiOjE1NTA5MzEwMTEsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTUwODAiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDQ0MyJ9.nsYf7gaTgkavenF1CCCCYGuV_16h8V-NnIqo43FvpCw");
                 })
                 .Build();
         }
@@ -26,9 +26,15 @@ namespace Upope.ClientTests.ViewModel
             {
                 await hubConnection.StartAsync();
 
-                hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+                hubConnection.On<string>("SendChallenge", (message) =>
                 {
-                    var finalMessage = $"{user} says {message}";
+                    var finalMessage = message;
+                    // Update the UI
+                });
+
+                hubConnection.On<string>("RemoveChallengeRequest", (message) =>
+                {
+                    var finalMessage = message;
                     // Update the UI
                 });
             }

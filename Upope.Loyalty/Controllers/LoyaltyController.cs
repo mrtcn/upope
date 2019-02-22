@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Upope.Identity.Entities;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.Loyalty.ViewModels;
+using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Handler;
 
 namespace Upope.Loyalty.Controllers
 {
@@ -18,23 +17,25 @@ namespace Upope.Loyalty.Controllers
     public class LoyaltyController : ControllerBase
     {
         private readonly ILoyaltyService _loyaltyService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
-        public LoyaltyController(ILoyaltyService loyaltyService, UserManager<ApplicationUser> userManager, IMapper mapper)
+        public LoyaltyController(ILoyaltyService loyaltyService, IMapper mapper, IHttpHandler httpHandler)
         {
             _loyaltyService = loyaltyService;
-            _userManager = userManager;
+            _httpHandler = httpHandler;
             _mapper = mapper;
         }
 
         [HttpPost]
         [Authorize]
         [Route("GetPoint")]
-        public async Task<IActionResult> GetPoint()
+        public IActionResult GetPoint()
         {
-            var user = await GetCurrentUserAsync();
-            var point = _loyaltyService.GetPointByUserId(user.Id);
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            //TODO: GetPointByUserId does not accept accesstoken. Should be fixed
+            var point = _loyaltyService.GetPointByUserId(accessToken);
+
             var pointViewModel = _mapper.Map<GetPointViewModel>(point);
 
             return Ok(pointViewModel);
@@ -42,15 +43,13 @@ namespace Upope.Loyalty.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> GetSufficientPoints(GetSufficientPointViewModel model)
+        [Route("SufficientPoints")]
+        public IActionResult SufficientPoints(GetSufficientPointViewModel model)
         {
-            var user = await GetCurrentUserAsync();
-            var sufficientPoints = _loyaltyService.GetSufficientPoints(model.Point);
-            var pointsViewModel = _mapper.Map<List<PointViewModel>>(sufficientPoints);
+            var sufficientPoints = _loyaltyService.SufficientPoints(model.Points);
+            IReadOnlyList<string> userIds = sufficientPoints.Select(x => x.UserId).ToList<string>();
 
-            return Ok(pointsViewModel);
+            return Ok(userIds);
         }
-
-        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(User);
     }
 }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Content Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20190215162843_InitChallange.cs" />
     <Compile Remove="Migrations\20190215162843_InitChallange.Designer.cs" />
     <Compile Remove="Migrations\20190215172220_InitChallange2.cs" />
@@ -20,6 +27,10 @@
     <Compile Remove="Migrations\20190217122924_InitChallenge.Designer.cs" />
     <Compile Remove="Migrations\20190217140050_ChallengeRequestRel.cs" />
     <Compile Remove="Migrations\20190217140050_ChallengeRequestRel.Designer.cs" />
+    <Compile Remove="Migrations\20190217195105_ChallengeUtils.cs" />
+    <Compile Remove="Migrations\20190217195105_ChallengeUtils.Designer.cs" />
+    <Compile Remove="Migrations\20190219180733_ChallengeUtils3.cs" />
+    <Compile Remove="Migrations\20190219180733_ChallengeUtils3.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,10 +41,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>
