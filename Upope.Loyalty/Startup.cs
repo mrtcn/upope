@@ -2,18 +2,15 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Upope.Identity.DbContext;
-using Upope.Identity.Entities;
 using Upope.Loyalty.GlobalSettings;
+using Upope.Loyalty.Handlers;
 using Upope.Loyalty.Services;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase.Handler;
@@ -102,7 +99,7 @@ namespace Upope.Loyalty
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();

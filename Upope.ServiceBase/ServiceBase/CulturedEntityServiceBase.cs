@@ -114,7 +114,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
             }            
         }
 
-        protected override void OnSaveChanged(IEntityParams entityParams, TEntity entity) {
+        protected override void OnSaveChangedAsync(IEntityParams entityParams, TEntity entity) {
             var baseEntityId = entity.Id;
 
             if (!(entityParams is IHasCulture)) {

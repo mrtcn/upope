@@ -26,13 +26,19 @@ namespace Upope.ClientTests.ViewModel
             {
                 await hubConnection.StartAsync();
 
-                hubConnection.On<string>("SendChallenge", (message) =>
+                hubConnection.On<string>("ChallengeRequestReceived", (message) =>
                 {
                     var finalMessage = message;
                     // Update the UI
                 });
 
-                hubConnection.On<string>("RemoveChallengeRequest", (message) =>
+                hubConnection.On<string>("ChallengeRequestAccepted", (message) =>
+                {
+                    var finalMessage = message;
+                    // Update the UI
+                });
+
+                hubConnection.On<string>("ChallengeRequestRemoved", (message) =>
                 {
                     var finalMessage = message;
                     // Update the UI

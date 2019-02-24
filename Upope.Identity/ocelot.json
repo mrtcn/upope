@@ -1,7 +1,7 @@
 {
   "ReRoutes": [
     {
-      "DownstreamPathTemplate": "/api/account/{action}",
+      "DownstreamPathTemplate": "/api/account/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -9,24 +9,12 @@
           "Port": 55080
         }
       ],
-      "UpstreamPathTemplate": "/api/auth/account/{action}",
+      "UpstreamPathTemplate": "/api/a/account/{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "UpopeIdentity",
         "AllowedScopes": []
       }
-    },
-    {
-      "DownstreamPathTemplate": "/api/account/anonymous/{action}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 55080
-        }
-      ],
-      "UpstreamPathTemplate": "/api/account/anonymous/{action}",
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     },
     {
       "DownstreamPathTemplate": "/api/challenge/{everything}",

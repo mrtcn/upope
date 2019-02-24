@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
-namespace Upope.Identity.Handlers
+namespace Upope.Challange.Handlers
 {
     public static class ExceptionMiddlewareExtensions
     {

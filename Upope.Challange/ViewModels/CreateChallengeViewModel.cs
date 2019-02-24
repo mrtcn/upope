@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Upope.Challange.Enum;
 
 namespace Upope.Challange.ViewModels
 {
     public class CreateChallengeViewModel
     {
         public int RewardPoint { get; set; }
+        public int Range { get; set; }
+        public Gender Gender { get; set; }
     }
 }

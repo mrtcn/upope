@@ -78,6 +78,17 @@ namespace Upope.Identity.Controllers
             AppSecret = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppSecret");
         }
 
+        private Task<ApplicationUser> GetCurrentUserAsync() => userManager.GetUserAsync(HttpContext.User);
+
+        [HttpPost]
+        [Route("getuserid")]
+        [Authorize]
+        public async Task<IActionResult> GetUserId()
+        {
+            var user = await GetCurrentUserAsync();
+            return Ok(user.Id);
+        }
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)

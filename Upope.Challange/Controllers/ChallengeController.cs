@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Upope.Challange.CustomExceptions;
 using Upope.Challange.EntityParams;
 using Upope.Challange.Hubs;
 using Upope.Challange.Services.Interfaces;
@@ -40,9 +42,9 @@ namespace Upope.Challange.Controllers
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var userId = await _challengeService.GetUserId(accessToken);
 
-            var challengerRequestParamList = _challengeRequestService.ChallengeRequests(userId);
+            var challengerRequestList = _challengeRequestService.ChallengeRequests(userId);
 
-            return Ok(challengerRequestParamList);
+            return Ok(challengerRequestList);
         }
 
         [HttpPost]
@@ -66,16 +68,23 @@ namespace Upope.Challange.Controllers
         [Route("UpdateChallenge")]
         public IActionResult UpdateChallenge(UpdateChallengeInputViewModel model)
         {
-            var challengeRequest = _challengeRequestService.Get(model.ChallengeRequestId);
-            var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
-            challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestStatus;
-
-            _challengeRequestService.CreateOrUpdate(challengeRequestParams);
-
-            if(model.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
+            try
             {
-                _challengeRequestService.SetChallengeRequestsToMissed(challengeRequestParams.ChallengeId, challengeRequestParams.Id);
+                var challengeRequest = _challengeRequestService.Get(model.ChallengeRequestId);
+                var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
+                challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestStatus;
+
+                _challengeRequestService.CreateOrUpdate(challengeRequestParams);
             }
+            catch(UserNotAvailableException ex)
+            {
+                return BadRequest("User is in another game. Please select another game");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occured during creating a new game. Please select another game or try in a few seconds again.");
+            }
+
             return Ok();
         }
     }

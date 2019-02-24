@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
@@ -81,7 +83,7 @@ namespace Upope.Identity
                 googleOptions.ClientId = Configuration["ExternalAuthentication:Google:ClientId"];
                 googleOptions.ClientSecret = Configuration["ExternalAuthentication:Google:ClientSecret"];
             }) 
-            .AddJwtBearer("UpopeIdentity", config =>
+            .AddJwtBearer(config =>
             {
                 config.RequireHttpsMetadata = false;
                 config.SaveToken = true;
@@ -113,10 +115,12 @@ namespace Upope.Identity
 
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
+
+            //services.AddOcelot(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -143,6 +147,7 @@ namespace Upope.Identity
             });
 
             app.UseMvc();
+            //await app.UseOcelot();
         }
 
         private void BuildAppSettingsProvider()

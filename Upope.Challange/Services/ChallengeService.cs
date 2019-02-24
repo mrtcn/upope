@@ -14,7 +14,10 @@ namespace Upope.Challange.Services
         private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
-        public ChallengeService(ApplicationDbContext applicationDbContext, IMapper mapper, IHttpHandler httpHandler) : base(applicationDbContext, mapper)
+        public ChallengeService(
+            ApplicationDbContext applicationDbContext, 
+            IMapper mapper, 
+            IHttpHandler httpHandler) : base(applicationDbContext, mapper)
         {
             _applicationDbContext = applicationDbContext;
             _httpHandler = httpHandler;

@@ -47,7 +47,7 @@ namespace Upope.Loyalty.Controllers
         public IActionResult SufficientPoints(GetSufficientPointViewModel model)
         {
             var sufficientPoints = _loyaltyService.SufficientPoints(model.Points);
-            IReadOnlyList<string> userIds = sufficientPoints.Select(x => x.UserId).ToList<string>();
+            var userIds = sufficientPoints.Select(x => new { userId = x.UserId }).ToList();
 
             return Ok(userIds);
         }

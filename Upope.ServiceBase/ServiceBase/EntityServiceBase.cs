@@ -50,7 +50,7 @@ namespace Upope.ServiceBase {
 
             entityParams.SetPropertyValue("Id", entity.Id);
             
-            OnSaveChanged(entityParams, entity);
+            OnSaveChangedAsync(entityParams, entity);
 
             return entity;
         }
@@ -69,7 +69,7 @@ namespace Upope.ServiceBase {
         protected virtual void OnRemoved(IRemoveEntityParams removeEntityParams, TEntity entity) {
         }
 
-        protected virtual void OnSaveChanged(IEntityParams entityParams, TEntity entity) {
+        protected virtual void OnSaveChangedAsync(IEntityParams entityParams, TEntity entity) {
 
         }
 
@@ -150,7 +150,7 @@ namespace Upope.ServiceBase {
             _applicationDbContext.Update(entity);
             _applicationDbContext.SaveChanges();
 
-            OnSaveChanged(entityParams, entity);
+            OnSaveChangedAsync(entityParams, entity);
 
             return entity;
         }

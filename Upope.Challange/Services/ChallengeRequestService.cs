@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Upope.Challange.CustomExceptions;
 using Upope.Challange.Data.Entities;
 using Upope.Challange.EntityParams;
 using Upope.Challange.GlobalSettings;
@@ -14,6 +15,7 @@ using Upope.Challange.Services.Models;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Handler;
+using Upope.ServiceBase.Models;
 
 namespace Upope.Challange.Services
 {
@@ -36,16 +38,63 @@ namespace Upope.Challange.Services
             _httpHandler = httpHandler;
         }
 
-        public List<ChallengeRequestParams> ChallengeRequests(string userId)
+        protected override void OnSaveChanges(IEntityParams entityParams, ChallengeRequest entity)
+        {
+            base.OnSaveChanges(entityParams, entity);
+
+            var challengeRequestParams = entityParams as ChallengeRequestParams;
+
+            // If the Challenger tries to accept a game which its user is already in another game
+            if (challengeRequestParams.Id == 0 
+                && challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted 
+                && IsUserInTheGame(challengeRequestParams.ChallengerId))
+            {
+                throw new UserNotAvailableException();
+            }
+        }
+
+        protected override async void OnSaveChangedAsync(IEntityParams entityParams, ChallengeRequest entity)
+        {
+            base.OnSaveChangedAsync(entityParams, entity);
+
+            var challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
+
+            if (challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
+            {
+                var userIds = SetChallengeRequestsToMissed(challengeRequestParams.ChallengeId, challengeRequestParams.Id);
+
+                await _hubContext.Clients.Users(userIds)
+                .SendAsync("ChallengeRequestRemoved", challengeRequestParams.Id);
+            }
+
+            if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)
+            {
+                var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
+
+                await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
+                .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel() {
+                    ChallengeRequestId = challengeRequestParams.Id,
+                    Point = challengeRequestModel.Point,
+                    Range = "500 Meter",
+                    UserName = "Ahmet",
+                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                }));
+            }
+        }
+
+        public List<ChallengeRequestModel> ChallengeRequests(string userId)
         {
             var challengeRequestsParamList = Entities
+                .Include(x => x.Challenge)
                 .Where(x => x.ChallengerId == userId && x.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Waiting)
-                .Select(x => new ChallengeRequestParams(
-                    x.Status, 
-                    x.ChallengeOwnerId, 
-                    x.ChallengerId, 
-                    x.ChallengeId, 
-                    x.ChallengeRequestStatus))
+                .Select(x => new ChallengeRequestModel()
+                {
+                    ChallengeRequestId = x.Id,
+                    Point = x.Challenge.RewardPoint,
+                    Range = "500 Meter",
+                    UserName = "Ahmet",
+                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                })
                 .ToList();
             return challengeRequestsParamList;
 
@@ -64,9 +113,16 @@ namespace Upope.Challange.Services
             }
             
             await _hubContext.Clients.Users(userIds)
-                .SendAsync("SendChallenge", JsonConvert.SerializeObject(challengeRequestParams));
+                .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
 
             return userIds;
+        }
+
+        private bool IsUserInTheGame(string userId)
+        {
+            return Entities
+                .Any(x => (x.Challenge.ChallengerId == userId) || (x.Challenge.ChallengeOwnerId == userId) 
+                && x.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted);
         }
 
         private List<string> NotAvailableUserIds(List<string> userIds)
@@ -93,7 +149,7 @@ namespace Upope.Challange.Services
             return userIds;
         }
 
-        public async Task SetChallengeRequestsToMissed(int challengeId, int challengeRequestId)
+        private List<string> SetChallengeRequestsToMissed(int challengeId, int challengeRequestId)
         {
             var challengeRequestIds = Entities.Where(x => x.ChallengeId == challengeId && x.Id != challengeRequestId).Select(x => x.Id).ToList();
 
@@ -110,8 +166,24 @@ namespace Upope.Challange.Services
                 userIds.Add(challengeRequest.ChallengerId);
             }
 
-            await _hubContext.Clients.Users(userIds)
-                .SendAsync("RemoveChallengeRequest", JsonConvert.SerializeObject(challengeRequestParams));
+            return userIds;            
+        }
+
+        private ChallengeRequestModel GetChallengeRequest(int challengeRequestId)
+        {
+            var challengeRequestModel = Entities
+                .Include(x => x.Challenge)
+                .Where(x => x.Id == challengeRequestId)
+                .Select(x => new ChallengeRequestModel()
+                {
+                    ChallengeRequestId = x.Id,
+                    Point = x.Challenge.RewardPoint,
+                    Range = "500 Meter",
+                    UserName = "Ahmet",
+                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                }).FirstOrDefault();
+
+            return challengeRequestModel;
         }
     }
 }

@@ -35,7 +35,10 @@ namespace Upope.Loyalty.Services
 
         public List<PointParams> SufficientPoints(int point)
         {
-            var sufficientPoints = Entities.Where(x => x.Points >= point && x.Status == Status.Active).Take(5);
+            var sufficientPoints = Entities
+                .Where(x => x.Points >= point && x.Status == Status.Active)
+                .Take(5).ToList();
+
             var pointParams = _mapper.Map<List<PointParams>>(sufficientPoints);
 
             return pointParams;
