@@ -13,6 +13,11 @@ namespace Upope.Identity.ViewModels
         public Gender Gender { get; set; }
         public String PictureUrl { get; set; }
         public DateTime? Birthday { get; set; }
-        public int Point { get; set; }
+        public int Win { get; set; }
+        public int Credit { get; set; }
+        public int Score { get; set; }
+        public UserType UserType { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

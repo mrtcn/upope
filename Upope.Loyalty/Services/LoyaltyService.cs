@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Upope.Loyalty.Data.Entities;
 using Upope.Loyalty.EntityParams;
-using Upope.Loyalty.GlobalSettings;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
@@ -12,49 +9,36 @@ using Upope.ServiceBase.Handler;
 
 namespace Upope.Loyalty.Services
 {    
-    public class LoyaltyService : EntityServiceBase<Point>, ILoyaltyService
+    public class LoyaltyService : EntityServiceBase<Data.Entities.Loyalty>, ILoyaltyService
     {
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
-        public LoyaltyService(ApplicationDbContext applicationDbContext, IMapper mapper, IHttpHandler httpHandler) : base(applicationDbContext, mapper)
+        public LoyaltyService(
+            ApplicationDbContext applicationDbContext, 
+            IMapper mapper) : base(applicationDbContext, mapper)
         {
             _applicationDbContext = applicationDbContext;
-            _httpHandler = httpHandler;
             _mapper = mapper;
         }
 
-        public PointParams GetPointByUserId(string userId)
+        public LoyaltyParams GetLoyaltyByUserId(string userId)
         {
-            var point = Entities.FirstOrDefault(x => x.UserId == userId && x.Status == Status.Active);
-            var pointParams = _mapper.Map<PointParams>(point);
+            var loyalty = Entities.FirstOrDefault(x => x.UserId == userId && x.Status == Status.Active);
+            var loyaltyParams = _mapper.Map<LoyaltyParams>(loyalty);
 
-            return pointParams;
+            return loyaltyParams;
         }
 
-        public List<PointParams> SufficientPoints(int point)
+        public List<LoyaltyParams> SufficientPoints(int point)
         {
             var sufficientPoints = Entities
-                .Where(x => x.Points >= point && x.Status == Status.Active)
+                .Where(x => x.Credit >= point && x.Status == Status.Active)
                 .Take(5).ToList();
 
-            var pointParams = _mapper.Map<List<PointParams>>(sufficientPoints);
+            var loyaltyParams = _mapper.Map<List<LoyaltyParams>>(sufficientPoints);
 
-            return pointParams;
-        }
-
-        public async Task<string> GetUserId(string token, string baseUrl = null, string api = null)
-        {
-            if (string.IsNullOrEmpty(baseUrl))
-                baseUrl = AppSettingsProvider.IdentityBaseUrl;
-
-            if (string.IsNullOrEmpty(api))
-                api = "/api/Account/GetUserId";
-            
-            var userId = await _httpHandler.AuthPostAsync<string>(token, baseUrl, api);
-
-            return userId;
+            return loyaltyParams;
         }
     }
 }

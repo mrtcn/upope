@@ -21,26 +21,30 @@ namespace Upope.Challange.Controllers
         private readonly IChallengeService _challengeService;
         private readonly IMapper _mapper;
         private readonly IChallengeRequestService _challengeRequestService;
+        private readonly IIdentityService _identityService;
         private readonly IHubContext<ChallengeHubs> _hubContext;
 
         public ChallengeController(
             IChallengeService challengeService,
+            IIdentityService identityService,
             IMapper mapper,
             IHubContext<ChallengeHubs> hubContext,
             IChallengeRequestService challengeRequestService)
         {
             _challengeService = challengeService;
+            _identityService = identityService;
             _hubContext = hubContext;
             _mapper = mapper;
             _challengeRequestService = challengeRequestService;
         }
 
         [HttpPost]
+        [Authorize]
         [Route("ChallengeRequests")]
         public async Task<IActionResult> ChallengeRequests()
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _challengeService.GetUserId(accessToken);
+            var userId = await _identityService.GetUserId(accessToken);
 
             var challengerRequestList = _challengeRequestService.ChallengeRequests(userId);
 
@@ -53,7 +57,7 @@ namespace Upope.Challange.Controllers
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _challengeService.GetUserId(accessToken);
+            var userId = await _identityService.GetUserId(accessToken);
 
             var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, model.RewardPoint);
             var challenge = _challengeService.CreateOrUpdate(challengeParams);

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Model\**" />
+    <Content Remove="Services\Model\**" />
+    <EmbeddedResource Remove="Services\Model\**" />
+    <None Remove="Services\Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20190220224747_InitIdentity.cs" />
     <Compile Remove="Migrations\20190220224747_InitIdentity.Designer.cs" />
     <Compile Remove="Models\FacebookAppAccessToken.cs" />

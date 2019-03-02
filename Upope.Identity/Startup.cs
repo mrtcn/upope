@@ -152,8 +152,9 @@ namespace Upope.Identity
 
         private void BuildAppSettingsProvider()
         {
-            AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
-            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
+            AppSettingsProvider.ChallengeBaseUrl = Configuration["Upope.Challenge:BaseUrl"].ToString();
+            AppSettingsProvider.CreateOrUpdateUser = Configuration["Upope.Challenge:CreateOrUpdate"].ToString();
+            AppSettingsProvider.CreateOrUpdateLoyalty = Configuration["Upope.Loyalty:CreateOrUpdate"].ToString();
         }
     }
 }

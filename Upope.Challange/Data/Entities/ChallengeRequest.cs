@@ -20,5 +20,6 @@ namespace Upope.Challange.Data.Entities
         public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
         public int ChallengeId { get; set; }
         public Challenge Challenge { get; set; }
+        public User Challenger { get; set; }
     }
 }

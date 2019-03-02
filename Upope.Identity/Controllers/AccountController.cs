@@ -23,6 +23,7 @@ using Upope.Identity.Models.FacebookResponse;
 using Upope.Identity.Models.GoogleResponse;
 using Upope.Identity.Services.Interfaces;
 using Upope.Identity.ViewModels;
+using Upope.ServiceBase.Extensions;
 
 namespace Upope.Identity.Controllers
 {
@@ -41,6 +42,8 @@ namespace Upope.Identity.Controllers
         readonly IExternalAuthService<GoogleResponse> _googleService;
         readonly IConfiguration configuration;
         readonly ILogger<AccountController> logger;
+        private readonly IChallengeUserSyncService _challengeUserSyncService;
+        private readonly ILoyaltySyncService _loyaltySyncService;
         readonly DateTime? TokenLifetime;
         readonly string TokenAudience;
         readonly string TokenIssuer;
@@ -59,7 +62,9 @@ namespace Upope.Identity.Controllers
            IExternalAuthService<FacebookResponse> facebookService,
            IExternalAuthService<GoogleResponse> googleService,
            IConfiguration configuration,
-           ILogger<AccountController> logger)
+           ILogger<AccountController> logger,
+           IChallengeUserSyncService challengeUserSyncService,
+           ILoyaltySyncService loyaltySyncService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -70,6 +75,8 @@ namespace Upope.Identity.Controllers
             _googleService = googleService;
             this.configuration = configuration;
             this.logger = logger;
+            _challengeUserSyncService = challengeUserSyncService;
+            _loyaltySyncService = loyaltySyncService;
             TokenLifetime = DateTime.UtcNow.AddSeconds(this.configuration.GetValue<int>("Tokens:Lifetime"));
             TokenAudience = configuration.GetValue<String>("Tokens:Audience");
             TokenIssuer = configuration.GetValue<String>("Tokens:Issuer");
@@ -90,7 +97,7 @@ namespace Upope.Identity.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
+        [Route("anon/login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             if (ModelState.IsValid)
@@ -139,13 +146,14 @@ namespace Upope.Identity.Controllers
         public async Task<IActionResult> Profile()
         {
             var user = await GetUserAsync();
+
             var profileViewModel = _mapper.Map<ProfileViewModel>(user);
-            profileViewModel.Point = 112;
+
             return Ok(profileViewModel);
         }
 
         [HttpPost]
-        [Route("register")]
+        [Route("anon/register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
         {
@@ -160,7 +168,11 @@ namespace Upope.Identity.Controllers
                         UserName = registerModel.Username,
                         FirstName = registerModel.FirstName,
                         LastName = registerModel.LastName,
-                        Email = registerModel.Email
+                        Email = registerModel.Email,
+                        UserType = registerModel.UserType,
+                        Birthday = registerModel.Birthday,
+                        Latitute = registerModel.Latitute,
+                        Longitude = registerModel.Longitude
                     };
 
                     var identityResult = await userManager.CreateAsync(user, registerModel.Password);
@@ -185,7 +197,7 @@ namespace Upope.Identity.Controllers
 
         // POST api/externalauth/facebook
         [HttpPost]
-        [Route("facebook")]
+        [Route("anon/facebook")]
         public async Task<IActionResult> Facebook([FromBody]FacebookAuthViewModel model)
         {
             try
@@ -199,8 +211,9 @@ namespace Upope.Identity.Controllers
 
                 // 4. ready to create the local user account (if necessary) and jwt
                 var user = GetUserByExternalId(facebookUser.Id, ExternalProviderTyper.Facebook);
+                var isCreate = user == null;
 
-                if (user == null)
+                if (isCreate)
                 {
                     var appUser = new ApplicationUser
                     {
@@ -212,8 +225,11 @@ namespace Upope.Identity.Controllers
                         UserName = Guid.NewGuid().ToString(),
                         PictureUrl = facebookUser.Picture.Data.Url,
                         Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
-                        //Gender = facebookUser.Gender
+                        Gender = facebookUser.Gender.TryConvertToEnum<Gender>().GetValueOrDefault(),
+                        Latitute = model.Latitude,
+                        Longitude = model.Longitude
                     };
+
                     if (!IsEmailUnique(appUser.Email))
                         return BadRequest("Email baska bir kullaniciya ait.");
 
@@ -233,18 +249,52 @@ namespace Upope.Identity.Controllers
                     return BadRequest("Failed to create local user account.");
                 }
 
-                return Ok(new TokenModel(GetToken(localUser)));
-            }catch(Exception ex)
+                var accessToken = GetToken(localUser);
+
+                // Syncing the Challange DB User table
+                await SyncChallengeUserTable(localUser, accessToken);
+
+                // Syncing the Loyalty DB Loyalty table
+                await SyncLoyaltyTable(isCreate, localUser, accessToken);
+
+                return Ok(new TokenModel(accessToken));
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex);
             }
             
         }
 
+        private async Task SyncChallengeUserTable(ApplicationUser localUser, string accessToken)
+        {
+            // Syncing the Challenge DB User table
+            var createChallengeUserViewModel = _mapper.Map<ApplicationUser, CreateOrUpdateChallengeUserViewModel>(localUser);
+            createChallengeUserViewModel.UserId = localUser.Id;
+
+            await _challengeUserSyncService.SyncChallengeUserTable(createChallengeUserViewModel, accessToken);
+        }
+
+        private async Task SyncLoyaltyTable(bool isCreate, ApplicationUser localUser, string accessToken)
+        {
+            if (isCreate)
+            {
+                var createOrUpdateLoyaltyViewModel = new CreateOrUpdateLoyaltyViewModel()
+                {
+                    UserId = localUser.Id,
+                    Credit = 50,
+                    Score = 0,
+                    Win = 0
+                };
+                await _loyaltySyncService.SyncLoyaltyTable(createOrUpdateLoyaltyViewModel, accessToken);
+
+            }
+        }
+
 
         // POST api/externalauth/google
         [HttpPost]
-        [Route("google")]
+        [Route("anon/google")]
         public async Task<IActionResult> Google([FromBody]GoogleAuthViewModel model)
         {
             var googleUser = await _googleService.GetAccountAsync(model.AccessToken);
@@ -256,6 +306,7 @@ namespace Upope.Identity.Controllers
 
             // 4. ready to create the local user account (if necessary) and jwt
             var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
+            var isCreate = user == null;
 
             if (user == null)
             {
@@ -267,8 +318,10 @@ namespace Upope.Identity.Controllers
                     Email = googleUser.Email,
                     Nickname = Regex.Replace(googleUser.Name, @"[^\w]", ""),
                     UserName = Guid.NewGuid().ToString(),
-                    PictureUrl = googleUser.Picture
-                    //Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture)
+                    PictureUrl = googleUser.Picture,
+                    Latitute = model.Latitude,
+                    Longitude = model.Longitude,
+                    Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture)
                 };
 
                 if (!IsEmailUnique(appUser.Email))
@@ -289,6 +342,14 @@ namespace Upope.Identity.Controllers
             {
                 return BadRequest("Failed to create local user account.");
             }
+
+            var accessToken = GetToken(localUser);
+
+            // Syncing the Challange DB User table
+            await SyncChallengeUserTable(localUser, accessToken);
+
+            // Syncing the Loyalty DB Loyalty table
+            await SyncLoyaltyTable(isCreate, localUser, accessToken);
 
             return Ok(new TokenModel(GetToken(localUser)));
         }

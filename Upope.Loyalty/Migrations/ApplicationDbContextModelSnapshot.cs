@@ -18,93 +18,25 @@ namespace Upope.Loyalty.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Upope.Loyalty.Data.Entities.Point", b =>
+            modelBuilder.Entity("Upope.Loyalty.Data.Entities.Loyalty", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Points");
+                    b.Property<int>("Credit");
+
+                    b.Property<int>("Score");
 
                     b.Property<int>("Status");
 
                     b.Property<string>("UserId");
 
+                    b.Property<int>("Win");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Point");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Points = 10,
-                            Status = 1,
-                            UserId = "334e4cea-dcd5-49af-8ff2-cf5addaa5e1e"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Points = 20,
-                            Status = 1,
-                            UserId = "6a1cb14d-49e0-498c-8a10-4a08f1e059f0"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Points = 30,
-                            Status = 1,
-                            UserId = "7a41ec8c-c42f-46ef-a0e9-e840f058df5b"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Points = 40,
-                            Status = 1,
-                            UserId = "50d7fc43-e90b-48c8-9d07-455dab9c8753"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Points = 50,
-                            Status = 1,
-                            UserId = "ceb3bc69-f4b8-4407-955e-76ffde854ad8"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Points = 60,
-                            Status = 1,
-                            UserId = "c37a7280-1190-4f87-ac96-5f3b71cdbd2b"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Points = 70,
-                            Status = 1,
-                            UserId = "6c0093b8-4d59-40be-b75b-00f65015f9cb"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Points = 80,
-                            Status = 1,
-                            UserId = "ec0e747a-bd66-47e5-9c2f-6b9eb187cee4"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Points = 90,
-                            Status = 1,
-                            UserId = "09c2d09d-7961-4ba2-8959-c6df64b6fad9"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Points = 100,
-                            Status = 1,
-                            UserId = "3e30b604-7d9c-4a3b-a483-7b74c62756d6"
-                        });
+                    b.ToTable("Loyalty");
                 });
 #pragma warning restore 612, 618
         }

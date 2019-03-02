@@ -59,7 +59,38 @@ namespace Upope.Challange.Migrations
 
                     b.HasIndex("ChallengeId");
 
+                    b.HasIndex("ChallengerId");
+
                     b.ToTable("ChallengeRequest");
+                });
+
+            modelBuilder.Entity("Upope.Challange.Data.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(250);
+
+                    b.Property<string>("Nickname")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("PictureUrl");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Upope.Challange.Data.Entities.ChallengeRequest", b =>
@@ -67,6 +98,12 @@ namespace Upope.Challange.Migrations
                     b.HasOne("Upope.Challange.Data.Entities.Challenge", "Challenge")
                         .WithMany("ChallengeRequests")
                         .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Upope.Challange.Data.Entities.User", "Challenger")
+                        .WithMany("ChallengeRequests")
+                        .HasForeignKey("ChallengerId")
+                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

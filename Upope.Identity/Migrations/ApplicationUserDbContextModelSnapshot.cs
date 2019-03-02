@@ -162,9 +162,13 @@ namespace Upope.Identity.Migrations
                         .IsRequired()
                         .HasMaxLength(250);
 
+                    b.Property<double>("Latitute");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<double>("Longitude");
 
                     b.Property<string>("Nickname")
                         .HasMaxLength(250);
@@ -190,6 +194,8 @@ namespace Upope.Identity.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
+                    b.Property<int>("UserType");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -201,208 +207,6 @@ namespace Upope.Identity.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "c0db8061-c991-4147-b93e-554bdaea543e",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "e6759694-6302-4bd3-8ea7-8daa5f9b8e31",
-                            Email = "muratcantuna1@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA1@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA1",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna1"
-                        },
-                        new
-                        {
-                            Id = "e6702e37-8ea6-416f-97d4-9bcb51624b60",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "804f91e8-0ddb-48f4-b4e2-c226ae11a48d",
-                            Email = "muratcantuna2@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA2@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA2",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna2"
-                        },
-                        new
-                        {
-                            Id = "fca630c6-8c3b-469d-bec1-553b045d2468",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "7f50744f-e216-4bfe-9f15-1d12536db6e2",
-                            Email = "muratcantuna3@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA3@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA3",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna3"
-                        },
-                        new
-                        {
-                            Id = "48f91b9f-dd87-43b4-8541-7c34289036ac",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "600601c2-0098-4243-b28c-5ba1cb09674b",
-                            Email = "muratcantuna4@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA4@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA4",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna4"
-                        },
-                        new
-                        {
-                            Id = "3008a7a8-6600-4008-8b98-4f800ad0d063",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "7190d052-0b63-4a07-9a39-d4f624f0c9ae",
-                            Email = "muratcantuna5@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA5@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA5",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna5"
-                        },
-                        new
-                        {
-                            Id = "8c9d6ccf-d242-4488-8145-f0df9ae916a5",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "3e7dbe6b-8526-4627-9d15-5628bb32a71f",
-                            Email = "muratcantuna6@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA6@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA6",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna6"
-                        },
-                        new
-                        {
-                            Id = "432ef23e-c09f-40eb-8edf-a73ea3adb435",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "e6d6ea6f-a947-48bc-8e94-fdb846283be9",
-                            Email = "muratcantuna7@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA7@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA7",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna7"
-                        },
-                        new
-                        {
-                            Id = "a1a379fe-91b2-4989-929e-f4fed91dd3bd",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "3032bba2-b33e-4fdf-a7eb-241814649192",
-                            Email = "muratcantuna8@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA8@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA8",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna8"
-                        },
-                        new
-                        {
-                            Id = "58286732-b828-4217-b7f2-9eaead3f4a6e",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "34f2b028-869f-476b-9dc5-f8aee39034d8",
-                            Email = "muratcantuna9@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA9@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA9",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna9"
-                        },
-                        new
-                        {
-                            Id = "fe5f3b72-c8e8-43dc-b379-2fcfbaf4d541",
-                            AccessFailedCount = 0,
-                            Birthday = new DateTime(1984, 12, 16, 12, 23, 26, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "f1017804-0b7e-4b4d-ad78-2ed51bd8dc82",
-                            Email = "muratcantuna10@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Murat",
-                            Gender = 1,
-                            LastName = "Tuna",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "MURATCANTUNA10@GMAIL.COM",
-                            NormalizedUserName = "MURATCANTUNA10",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
-                            TwoFactorEnabled = false,
-                            UserName = "muratcantuna10"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

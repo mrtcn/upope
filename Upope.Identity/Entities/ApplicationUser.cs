@@ -32,6 +32,8 @@ namespace Upope.Identity.Entities
         public String PictureUrl { get; set; }
 
         public DateTime? Birthday { get; set; }
-
+        public UserType UserType { get; set; }
+        public double Latitute { get; set; }
+        public double Longitude { get; set; }
     }
 }

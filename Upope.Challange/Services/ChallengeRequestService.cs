@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,36 +65,40 @@ namespace Upope.Challange.Services
                 var userIds = SetChallengeRequestsToMissed(challengeRequestParams.ChallengeId, challengeRequestParams.Id);
 
                 await _hubContext.Clients.Users(userIds)
-                .SendAsync("ChallengeRequestRemoved", challengeRequestParams.Id);
+                .SendAsync("ChallengeRequestAccepted", challengeRequestParams.Id);
             }
 
             if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)
             {
                 var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
+                var rnd = new Random();
 
                 await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
-                .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel() {
+                .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {
                     ChallengeRequestId = challengeRequestParams.Id,
                     Point = challengeRequestModel.Point,
-                    Range = "500 Meter",
-                    UserName = "Ahmet",
-                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                    Range = rnd.Next(1, 150).ToString() + " Meter",
+                    UserName = entity.Challenger.Nickname,
+                    UserImagePath = entity.Challenger.PictureUrl
                 }));
             }
         }
 
         public List<ChallengeRequestModel> ChallengeRequests(string userId)
         {
+            Random rnd = new Random();
+
             var challengeRequestsParamList = Entities
                 .Include(x => x.Challenge)
+                .Include(x => x.Challenger)
                 .Where(x => x.ChallengerId == userId && x.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Waiting)
                 .Select(x => new ChallengeRequestModel()
                 {
                     ChallengeRequestId = x.Id,
                     Point = x.Challenge.RewardPoint,
-                    Range = "500 Meter",
-                    UserName = "Ahmet",
-                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                    Range =  rnd.Next(1, 150).ToString() + " Meter",
+                    UserName = x.Challenger.Nickname,
+                    UserImagePath = x.Challenger.PictureUrl
                 })
                 .ToList();
             return challengeRequestsParamList;
@@ -103,7 +108,7 @@ namespace Upope.Challange.Services
         public async Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model)
         {
             var points = JsonConvert.SerializeObject(new PointsModel(model.Points));
-            var userIds = await GetChallengerIds(new HttpCallModel(model.AccessToken, AppSettingsProvider.LoyaltyBaseUrl, "api/Loyalty/GetChallengerIds", points));
+            var userIds = await GetChallengerIds(new HttpCallModel(model.AccessToken, AppSettingsProvider.LoyaltyBaseUrl, AppSettingsProvider.SufficientPointsUrl, points));
             var challengeRequestParams = new ChallengeRequestParams();
 
             foreach (var userId in userIds)
@@ -139,7 +144,7 @@ namespace Upope.Challange.Services
                 model.BaseUrl = AppSettingsProvider.LoyaltyBaseUrl;
 
             if (string.IsNullOrEmpty(model.Api))
-                model.Api = "/api/Loyalty/SufficientPoints";
+                model.Api = AppSettingsProvider.SufficientPointsUrl;
 
             var userIds = await _httpHandler.AuthPostAsync<IReadOnlyList<string>>(model.AccessToken, model.BaseUrl, model.Api, model.MessageBody);
 
@@ -171,6 +176,8 @@ namespace Upope.Challange.Services
 
         private ChallengeRequestModel GetChallengeRequest(int challengeRequestId)
         {
+            var rnd = new Random();
+
             var challengeRequestModel = Entities
                 .Include(x => x.Challenge)
                 .Where(x => x.Id == challengeRequestId)
@@ -178,9 +185,9 @@ namespace Upope.Challange.Services
                 {
                     ChallengeRequestId = x.Id,
                     Point = x.Challenge.RewardPoint,
-                    Range = "500 Meter",
-                    UserName = "Ahmet",
-                    UserImagePath = "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10158656563945029&height=50&width=50&ext=1553295113&hash=AeR9wrq0vjYhFhgk"
+                    Range = rnd.Next(1, 150).ToString() + " Meter",
+                    UserName = x.Challenger.Nickname,
+                    UserImagePath = x.Challenger.PictureUrl
                 }).FirstOrDefault();
 
             return challengeRequestModel;

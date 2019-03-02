@@ -30,5 +30,8 @@ namespace Upope.Identity.Models
 
         [Required]
         public DateTime Birthday { get; set; }
+        public UserType UserType { get; set; }
+        public double Latitute { get; set; }
+        public double Longitude { get; set; }
     }
 }

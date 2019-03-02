@@ -110,6 +110,7 @@ namespace Upope.Loyalty
         private void BuildAppSettingsProvider()
         {
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
+            AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
         }
     }
 }

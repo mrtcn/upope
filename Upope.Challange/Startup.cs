@@ -88,6 +88,8 @@ namespace Upope.Challange
 
             services.AddTransient<IChallengeService, ChallengeService>();
             services.AddTransient<IChallengeRequestService, ChallengeRequestService>();
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddSignalR();
         }
@@ -115,7 +117,11 @@ namespace Upope.Challange
         private void BuildAppSettingsProvider()
         {
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
-            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
+            AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
+
+
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();      
+            AppSettingsProvider.SufficientPointsUrl = Configuration["Upope.Loyalty:SufficientPointsUrl"].ToString();
         }
     }
 }

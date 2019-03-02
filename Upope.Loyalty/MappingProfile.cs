@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using System.Collections.Generic;
-using Upope.Loyalty.Data.Entities;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.ViewModels;
 
@@ -10,14 +8,14 @@ namespace Upope.Challange
     {
         public MappingProfile()
         {
-            CreateMap<Point, PointParams>();
-            CreateMap<PointParams, Point>();
+            CreateMap<Loyalty.Data.Entities.Loyalty, LoyaltyParams>();
+            CreateMap<LoyaltyParams, Loyalty.Data.Entities.Loyalty>();
 
-            CreateMap<PointParams, GetPointViewModel>();
-            CreateMap<GetPointViewModel, PointParams>();
+            CreateMap<LoyaltyParams, GetPointViewModel>();
+            CreateMap<GetPointViewModel, LoyaltyParams>();
 
-            CreateMap<PointParams, PointViewModel>();
-            CreateMap<PointViewModel, PointParams>();
+            CreateMap<LoyaltyParams, PointViewModel>();
+            CreateMap<PointViewModel, LoyaltyParams>();
 
             
         }

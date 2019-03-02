@@ -33,5 +33,8 @@ namespace Upope.Identity.Models.GoogleResponse
 
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
+
+        [JsonProperty(PropertyName = "birthday")]
+        public string Birthday { get; set; }
     }
 }

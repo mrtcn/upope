@@ -1,6 +1,18 @@
 {
   "ReRoutes": [
     {
+      "DownstreamPathTemplate": "/api/account/anon/{action}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/a/account/anon/{action}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/account/{action}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -9,7 +21,7 @@
           "Port": 55080
         }
       ],
-      "UpstreamPathTemplate": "/api/auth/account/{action}",
+      "UpstreamPathTemplate": "/api/a/account/{action}",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "UpopeIdentity",
@@ -17,15 +29,15 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/account/anonymous/{action}",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/challenge/anonymous/{everything}",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 55080
+          "Port": 44324
         }
       ],
-      "UpstreamPathTemplate": "/api/account/anonymous/{action}",
+      "UpstreamPathTemplate": "/api/c/challenge/anonymous/{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     },
     {
@@ -45,7 +57,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamPathTemplate": "/api/loyalty/anon/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -53,7 +65,23 @@
           "Port": 44332
         }
       ],
-      "UpstreamPathTemplate": "/api/l/{everything}",
+      "UpstreamPathTemplate": "/api/l/anon/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UpopeIdentity",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/loyalty/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44332
+        }
+      ],
+      "UpstreamPathTemplate": "/api/l/loyalty/{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "UpopeIdentity",

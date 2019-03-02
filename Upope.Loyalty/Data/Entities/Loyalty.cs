@@ -4,18 +4,22 @@ using Upope.ServiceBase.Interfaces;
 
 namespace Upope.Loyalty.Data.Entities
 {
-    public interface IPoint : IEntity, IHasStatus
+    public interface ILoyalty : IEntity, IHasStatus
     {
-        int Points { get; set; }
+        int Win { get; set; }
+        int Credit { get; set; }
+        int Score { get; set; }
         string UserId { get; set; }
     }
 
-    public class Point : IPoint
+    public class Loyalty : ILoyalty
     {
         [Key]
         public int Id { get; set; }
         public Status Status { get; set; }
-        public int Points { get; set; }
+        public int Win { get; set; }
+        public int Credit { get; set; }
+        public int Score { get; set; }
         public string UserId { get; set; }
     }
 }

@@ -30,6 +30,7 @@ namespace Upope.Challange
             //    modelBuilder.ApplyConfiguration(configurationInstance);
             //}
 
+            modelBuilder.ApplyConfiguration<User>(new UserMapping());
             modelBuilder.ApplyConfiguration<Challenge>(new ChallengeMapping());
             modelBuilder.ApplyConfiguration<ChallengeRequest>(new ChallengeRequestMapping());
         }

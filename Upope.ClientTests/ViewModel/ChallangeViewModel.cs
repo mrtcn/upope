@@ -15,7 +15,7 @@ namespace Upope.ClientTests.ViewModel
             hubConnection = new HubConnectionBuilder()
                 .WithUrl($"https://{ip}:44324/challangehubs", options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWU2MjM4OS1jOTgxLTRjMTctOGU1Yy01ZmNhZWVmOTMwYjciLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTciLCJqdGkiOiI3ZTc3Yzg2MC02ODY4LTQ3MGMtOGJlNS1hYzVhNDhlOWI4ODciLCJpYXQiOiIyMi8wMi8yMDE5IDE0OjEwOjE0IiwibmJmIjoxNTUwODQ0NjE0LCJleHAiOjE1NTA5MzEwMTEsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTUwODAiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDQ0MyJ9.nsYf7gaTgkavenF1CCCCYGuV_16h8V-NnIqo43FvpCw");
+                    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWU2MjM4OS1jOTgxLTRjMTctOGU1Yy01ZmNhZWVmOTMwYjciLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTciLCJqdGkiOiIzMWI1MzllZS1iMGM0LTQ0NDMtOGIyYi0wN2MwOGQ3ZjcwNDUiLCJpYXQiOiIyNS8wMi8yMDE5IDA1OjE4OjQ0IiwibmJmIjoxNTUxMDcxOTI0LCJleHAiOjE1NTExNTgzMTgsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTUwODAiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDQ0MyJ9.dPZsAIbHTm16bD3uWUzCeZp_c-s7tmpbMH20HX2icEE");
                 })
                 .Build();
         }
@@ -38,7 +38,7 @@ namespace Upope.ClientTests.ViewModel
                     // Update the UI
                 });
 
-                hubConnection.On<string>("ChallengeRequestRemoved", (message) =>
+                hubConnection.On<string>("ChallengeRequestRejected", (message) =>
                 {
                     var finalMessage = message;
                     // Update the UI
