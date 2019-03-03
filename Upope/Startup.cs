@@ -9,6 +9,7 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.Handlers;
 
 namespace Upope
 {
@@ -84,7 +85,8 @@ namespace Upope
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }            
+            }
+            app.ConfigureExceptionHandler();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

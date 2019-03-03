@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Upope.Identity.ViewModels;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.ViewModels;
 
@@ -17,7 +18,8 @@ namespace Upope.Challange
             CreateMap<LoyaltyParams, PointViewModel>();
             CreateMap<PointViewModel, LoyaltyParams>();
 
-            
+            CreateMap<LoyaltyParams, CreateOrUpdateViewModel>();
+            CreateMap<CreateOrUpdateViewModel, LoyaltyParams>();
         }
     }
 }

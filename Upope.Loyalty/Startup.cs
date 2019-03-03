@@ -85,6 +85,7 @@ namespace Upope.Loyalty
             services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
+            services.AddTransient<IIdentityService, IdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

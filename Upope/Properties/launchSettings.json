@@ -3,10 +3,20 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:58836",
-      "sslPort": 44365
+      "applicationUrl": "http://upope.com",
+      "sslPort": 443
     }
   },
+
+  //  "iisSettings": {
+  //    "windowsAuthentication": false,
+  //    "anonymousAuthentication": true,
+  //    "iisExpress": {
+  //      "applicationUrl": "http://localhost:58836",
+  //      "sslPort": 44365
+  //    }
+  //  },
+
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
@@ -24,7 +34,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44443;http://localhost:55080"
+      "applicationUrl": "http://identity.upope.com"
     },
     "Docker": {
       "commandName": "Docker",

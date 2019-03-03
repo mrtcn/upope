@@ -148,7 +148,12 @@ namespace Upope.Identity.Controllers
             var user = await GetUserAsync();
 
             var profileViewModel = _mapper.Map<ProfileViewModel>(user);
-
+            profileViewModel.Latitude = 13.12;
+            profileViewModel.Longitude = 15.32;
+            profileViewModel.Win = 0;
+            profileViewModel.Score = 0;
+            profileViewModel.Credit = 400;
+            
             return Ok(profileViewModel);
         }
 
@@ -179,6 +184,15 @@ namespace Upope.Identity.Controllers
                     if (identityResult.Succeeded)
                     {
                         await signInManager.SignInAsync(user, isPersistent: false);
+                        
+                        var accessToken = GetToken(user);
+
+                        // Syncing the Challange DB User table
+                        await SyncChallengeUserTable(user, accessToken);
+
+                        // Syncing the Loyalty DB Loyalty table
+                        await SyncLoyaltyTable(true, user, accessToken);
+
                         return Ok(new TokenModel(GetToken(user)));
                     }
                     else
@@ -282,7 +296,7 @@ namespace Upope.Identity.Controllers
                 var createOrUpdateLoyaltyViewModel = new CreateOrUpdateLoyaltyViewModel()
                 {
                     UserId = localUser.Id,
-                    Credit = 50,
+                    Credit = 50000,
                     Score = 0,
                     Win = 0
                 };

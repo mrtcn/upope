@@ -64,17 +64,26 @@ namespace Upope.Challange.Controllers
 
             var challengerIds = await _challengeRequestService.CreateChallengeRequests(new CreateChallengeRequestModel(accessToken, challenge.Id, userId, challenge.RewardPoint));
 
+            await _challengeRequestService.RejectAcceptChallenge(new RejectAcceptChallengeModel() { AccessToken = accessToken, ChallengeId = challenge.Id, UserId = userId });
+
             return Ok(challengeParams);
         }
 
         [HttpPost]
         [Authorize]
         [Route("UpdateChallenge")]
-        public IActionResult UpdateChallenge(UpdateChallengeInputViewModel model)
+        public async Task<IActionResult> UpdateChallenge(UpdateChallengeInputViewModel model)
         {
             try
             {
+                var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+                var userId = await _identityService.GetUserId(accessToken);
+
                 var challengeRequest = _challengeRequestService.Get(model.ChallengeRequestId);
+
+                if(challengeRequest.ChallengerId != userId)
+                    return BadRequest("An error occured. Please select another game or try in a few seconds again.");
+
                 var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
                 challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestStatus;
 
@@ -86,8 +95,19 @@ namespace Upope.Challange.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("An error occured during creating a new game. Please select another game or try in a few seconds again.");
+                return BadRequest("An error occured. Please select another game or try in a few seconds again.");
             }
+
+            return Ok();
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("ChallengeAccepted")]
+        public async Task<IActionResult> ChallengeAccepted(ChallengeAcceptedViewModel model)
+        {
+            // Challenge is rejected by 3 people and then accepted by someone
 
             return Ok();
         }

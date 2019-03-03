@@ -11,6 +11,8 @@ using Upope.ServiceBase.Extensions;
 
 namespace Upope.Challange.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class UserController : Controller
     {
         private readonly IMapper _mapper;
@@ -42,6 +44,7 @@ namespace Upope.Challange.Controllers
             if (user != null)
                 userParams.Id = user.Id;
 
+            userParams.UserId = userId;
             _userService.CreateOrUpdate(userParams);
 
             var result = _mapper.Map<UserParams, CreateUserViewModel>(userParams);

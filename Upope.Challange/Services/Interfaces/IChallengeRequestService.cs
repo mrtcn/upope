@@ -10,5 +10,6 @@ namespace Upope.Challange.Services.Interfaces
     {
         List<ChallengeRequestModel> ChallengeRequests(string userId);
         Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model);
+        Task RejectAcceptChallenge(RejectAcceptChallengeModel model);
     }
 }

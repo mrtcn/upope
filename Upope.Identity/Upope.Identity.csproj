@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190220224747_InitIdentity.cs" />
-    <Compile Remove="Migrations\20190220224747_InitIdentity.Designer.cs" />
     <Compile Remove="Models\FacebookAppAccessToken.cs" />
     <Compile Remove="Models\FacebookUserAccessTokenValidation.cs" />
     <Compile Remove="Models\FacebookUserData.cs" />
