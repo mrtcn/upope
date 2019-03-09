@@ -12,8 +12,8 @@ namespace Upope.ClientTests.ViewModel
             // localhost for UWP/iOS or special IP for Android
             var ip = "challenge.upope.com";
 
-            hubConnection = new HubConnectionBuilder() 
-                .WithUrl($"http://{ip}/challengehubs", options =>
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl($"http://{ip}/challangehubs", options =>
                 {
                     options.AccessTokenProvider = () => Task.FromResult(accessToken);
                 })
@@ -28,24 +28,40 @@ namespace Upope.ClientTests.ViewModel
 
                 hubConnection.On<string>("ChallengeRequestReceived", (message) =>
                 {
-                    Console.WriteLine("ChallengeRequestReceived" + message);
+                    Console.WriteLine("ChallengeRequestReceived");
+                    Console.Write(message);
+
                     var finalMessage = message;
                     // Update the UI
                 });
 
                 hubConnection.On<string>("ChallengeRequestAccepted", (message) =>
                 {
-                    Console.WriteLine("ChallengeRequestAccepted" + message);
+                    Console.WriteLine("ChallengeRequestAccepted");
+                    Console.Write(message);
+
                     var finalMessage = message;
                     // Update the UI
                 });
 
                 hubConnection.On<string>("ChallengeRequestRejected", (message) =>
                 {
-                    Console.WriteLine("ChallengeRequestRejected" + message);
+                    Console.WriteLine("ChallengeRequestRejected");
+                    Console.Write(message);
+
                     var finalMessage = message;
                     // Update the UI
                 });
+
+                hubConnection.On<string>("ChallengeRequestMissed", (message) =>
+                {
+                    Console.WriteLine("ChallengeRequestMissed");
+                    Console.Write(message);
+
+                    var finalMessage = message;
+                    // Update the UI
+                });
+                
             }
             catch (Exception ex)
             {

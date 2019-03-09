@@ -5,7 +5,6 @@ using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
-using Upope.ServiceBase.Handler;
 
 namespace Upope.Loyalty.Services
 {    
@@ -30,10 +29,12 @@ namespace Upope.Loyalty.Services
             return loyaltyParams;
         }
 
-        public List<LoyaltyParams> SufficientPoints(int point)
+        public List<LoyaltyParams> SufficientPoints(string userId, int point)
         {
             var sufficientPoints = Entities
-                .Where(x => x.Credit >= point && x.Status == Status.Active)
+                .Where(x => x.Credit >= point 
+                    && x.Status == Status.Active
+                    && x.UserId != userId)
                 .Take(5).ToList();
 
             var loyaltyParams = _mapper.Map<List<LoyaltyParams>>(sufficientPoints);

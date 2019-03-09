@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Upope.Challange.CustomExceptions;
 using Upope.Challange.Data.Entities;
@@ -23,17 +24,23 @@ namespace Upope.Challange.Services
     public class ChallengeRequestService : EntityServiceBase<ChallengeRequest>, IChallengeRequestService
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IUserService _userService;
+        private readonly IChallengeService _challengeService;
         private readonly IHubContext<ChallengeHubs> _hubContext;
         private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
         public ChallengeRequestService(
-            ApplicationDbContext applicationDbContext, 
+            ApplicationDbContext applicationDbContext,
+            IUserService userService,
+            IChallengeService challengeService,
             IMapper mapper, 
             IHttpHandler httpHandler,
             IHubContext<ChallengeHubs> hubContext) : base(applicationDbContext, mapper)
         {
             _applicationDbContext = applicationDbContext;
+            _userService = userService;
+            _challengeService = challengeService;
             _hubContext = hubContext;
             _mapper = mapper;
             _httpHandler = httpHandler;
@@ -58,15 +65,19 @@ namespace Upope.Challange.Services
         {
             base.OnSaveChangedAsync(entityParams, entity);
 
+            entity.Challenger = Entities
+                .Include(x => x.Challenger)
+                .Where(x => x.ChallengerId == entity.ChallengerId)
+                .Select(x => x.Challenger).FirstOrDefault();
+
             var challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
 
             if (challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
             {
                 var userIds = SetChallengeRequestsToMissed(challengeRequestParams.ChallengeId, challengeRequestParams.Id);
 
-                //await _hubContext.Clients.Users(userIds)
-                await _hubContext.Clients.All
-                .SendAsync("ChallengeRequestAccepted", challengeRequestParams.Id);
+                await _hubContext.Clients.Users(userIds)
+                .SendAsync("ChallengeRequestMissed", challengeRequestParams.Id);
             }
 
             if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)
@@ -74,14 +85,13 @@ namespace Upope.Challange.Services
                 var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
                 var rnd = new Random();
 
-                //await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
-                await _hubContext.Clients.All
+                await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
                 .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {
                     ChallengeRequestId = challengeRequestParams.Id,
                     Point = challengeRequestModel.Point,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
-                    UserName = "asd", //entity.Challenger.Nickname,
-                    UserImagePath = "dsa"//entity.Challenger.PictureUrl
+                    UserName = entity.Challenger.Nickname,
+                    UserImagePath = entity.Challenger.PictureUrl
                 }));
             }
         }
@@ -107,6 +117,71 @@ namespace Upope.Challange.Services
 
         }
 
+        public async Task RejectAcceptChallenge(RejectAcceptChallengeModel model)
+        {
+            var challengeRequestList = Entities
+                .Include(x => x.Challenge)
+                .Include(x => x.Challenger)
+                .Where(x => x.ChallengeId == model.ChallengeId).ToList();
+
+            var challengeRequestAmount = challengeRequestList.Count() - 1;
+
+            int index = 0;
+            var rnd = new Random();
+
+            foreach (var challengeRequest in challengeRequestList)
+            {
+                if(index != challengeRequestAmount)
+                {
+                    await _hubContext.Clients.User(challengeRequest.ChallengeOwnerId)
+                        .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel()
+                        {
+                            ChallengeRequestId = challengeRequest.Id,
+                            Point = challengeRequest.Challenge.RewardPoint,
+                            Range = rnd.Next(1, 150).ToString() + " Meter",
+                            UserName = challengeRequest.Challenger.Nickname,
+                            UserImagePath = challengeRequest.Challenger.PictureUrl
+                        }));
+                }
+                else
+                {
+                    await _hubContext.Clients.User(challengeRequest.ChallengeOwnerId)
+                        .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel()
+                        {
+                            ChallengeRequestId = challengeRequest.Id,
+                            Point = challengeRequest.Challenge.RewardPoint,
+                            Range = rnd.Next(1, 150).ToString() + " Meter",
+                            UserName = challengeRequest.Challenger.Nickname,
+                            UserImagePath = challengeRequest.Challenger.PictureUrl
+                        }));
+                }
+
+                index++;
+
+                Thread.Sleep(3000);
+            }
+
+            var users =_userService.Entities.Where(x => x.UserId != model.UserId).ToList();
+
+            foreach (var user in users)
+            {
+                var challenge = _challengeService.CreateOrUpdate(new ChallengeParams(Status.Active, user.UserId, 40));
+                await CreateChallengeRequestForUser(new CreateChallengeRequestForUserModel(model.AccessToken, challenge.Id, user.UserId, model.UserId, challenge.RewardPoint));
+
+                Thread.Sleep(3000);
+            }
+
+        }
+
+        public async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
+        {
+            var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
+            CreateOrUpdate(challengeRequestParams);
+
+            await _hubContext.Clients.Users(model.ChallengerId)
+                .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
+        }
+
         public async Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model)
         {
             var points = JsonConvert.SerializeObject(new PointsModel(model.Points));
@@ -118,9 +193,8 @@ namespace Upope.Challange.Services
                 challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
             }
-
-            //await _hubContext.Clients.Users(userIds)
-            await _hubContext.Clients.All
+            
+            await _hubContext.Clients.Users(userIds)
                 .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
 
             return userIds;

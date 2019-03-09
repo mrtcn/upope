@@ -29,7 +29,7 @@ namespace Upope.Identity.DbContext
             //        PasswordHash = "AQAAAAEAACcQAAAAEGwm9j42G7b3gTRJJiYW4YoO2Rw8AezwRHbOOhW7jGjhP2JOQoAm++6csGS7kOVSlg==",
             //        SecurityStamp = "36IOAJVIVOFKWA6ZZRIC6RJCANRROVHD",
             //        LockoutEnabled = true,
-            //        Birthday=new System.DateTime(1984, 12, 16, 12, 23, 26)
+            //        Birthday = new System.DateTime(1984, 12, 16, 12, 23, 26)
             //    },
             //new ApplicationUser()
             //{

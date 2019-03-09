@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -52,9 +51,12 @@ namespace Upope.Loyalty.Controllers
         [HttpPost]
         [Authorize]
         [Route("SufficientPoints")]
-        public IActionResult SufficientPoints(GetSufficientPointViewModel model)
+        public async Task<IActionResult> SufficientPoints(GetSufficientPointViewModel model)
         {
-            var sufficientPoints = _loyaltyService.SufficientPoints(model.Points);
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var sufficientPoints = _loyaltyService.SufficientPoints(userId, model.Points);
             var userIds = sufficientPoints.Select(x => x.UserId).ToList();
 
             return Ok(userIds);
