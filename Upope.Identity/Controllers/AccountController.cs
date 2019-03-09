@@ -179,6 +179,14 @@ namespace Upope.Identity.Controllers
                     if (identityResult.Succeeded)
                     {
                         await signInManager.SignInAsync(user, isPersistent: false);
+
+                        var accessToken = GetToken(user);
+                        // Syncing the Challange DB User table
+                        await SyncChallengeUserTable(user, accessToken);
+
+                        // Syncing the Loyalty DB Loyalty table
+                        await SyncLoyaltyTable(true, user, accessToken);
+
                         return Ok(new TokenModel(GetToken(user)));
                     }
                     else
@@ -290,7 +298,6 @@ namespace Upope.Identity.Controllers
 
             }
         }
-
 
         // POST api/externalauth/google
         [HttpPost]

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Upope.Challange.Data.Entities;
 using Upope.Challange.EntityParams;
+using Upope.Challange.ViewModels;
 
 namespace Upope.Challange
 {
@@ -16,6 +17,9 @@ namespace Upope.Challange
 
             CreateMap<UserParams, User>();
             CreateMap<User, UserParams>();
+
+            CreateMap<CreateUserViewModel, UserParams>();
+            CreateMap<UserParams, CreateUserViewModel>();
         }
     }
 }

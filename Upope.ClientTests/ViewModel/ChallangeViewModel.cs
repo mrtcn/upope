@@ -7,15 +7,15 @@ namespace Upope.ClientTests.ViewModel
     public class ChallengeViewModel
     {
         HubConnection hubConnection;
-        public ChallengeViewModel()
+        public ChallengeViewModel(string accessToken)
         {
             // localhost for UWP/iOS or special IP for Android
-            var ip = "localhost";
+            var ip = "challenge.upope.com";
 
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl($"https://{ip}:44324/challangehubs", options =>
+            hubConnection = new HubConnectionBuilder() 
+                .WithUrl($"http://{ip}/challengehubs", options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWU2MjM4OS1jOTgxLTRjMTctOGU1Yy01ZmNhZWVmOTMwYjciLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTciLCJqdGkiOiIzMWI1MzllZS1iMGM0LTQ0NDMtOGIyYi0wN2MwOGQ3ZjcwNDUiLCJpYXQiOiIyNS8wMi8yMDE5IDA1OjE4OjQ0IiwibmJmIjoxNTUxMDcxOTI0LCJleHAiOjE1NTExNTgzMTgsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTUwODAiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDQ0MyJ9.dPZsAIbHTm16bD3uWUzCeZp_c-s7tmpbMH20HX2icEE");
+                    options.AccessTokenProvider = () => Task.FromResult(accessToken);
                 })
                 .Build();
         }
@@ -28,18 +28,21 @@ namespace Upope.ClientTests.ViewModel
 
                 hubConnection.On<string>("ChallengeRequestReceived", (message) =>
                 {
+                    Console.WriteLine("ChallengeRequestReceived" + message);
                     var finalMessage = message;
                     // Update the UI
                 });
 
                 hubConnection.On<string>("ChallengeRequestAccepted", (message) =>
                 {
+                    Console.WriteLine("ChallengeRequestAccepted" + message);
                     var finalMessage = message;
                     // Update the UI
                 });
 
                 hubConnection.On<string>("ChallengeRequestRejected", (message) =>
                 {
+                    Console.WriteLine("ChallengeRequestRejected" + message);
                     var finalMessage = message;
                     // Update the UI
                 });

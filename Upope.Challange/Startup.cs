@@ -15,6 +15,7 @@ using Upope.Challange.GlobalSettings;
 using Upope.ServiceBase.Handler;
 using Upope.Challange.Hubs;
 using Upope.Challange.Handlers;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Upope.Challange
 {
@@ -65,7 +66,7 @@ namespace Upope.Challange
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/challangehubs")))
+                            (path.StartsWithSegments("/challengehubs")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -81,6 +82,13 @@ namespace Upope.Challange
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
             });
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Upope Identity API", Version = "v1" });
+            });
+
             services.AddAutoMapper();
 
             services.AddHttpClient();
@@ -91,7 +99,10 @@ namespace Upope.Challange
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IUserService, UserService>();
 
-            services.AddSignalR();
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,9 +120,21 @@ namespace Upope.Challange
             app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             app.UseAuthentication();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Upope Identity API V1");
+                c.RoutePrefix = string.Empty;
+            });
+
             app.UseMvc();
 
-            app.UseSignalR(routes => routes.MapHub<ChallengeHubs>("/challangehubs"));
+            app.UseSignalR(routes => routes.MapHub<ChallengeHubs>("/challengehubs"));
         }
 
         private void BuildAppSettingsProvider()

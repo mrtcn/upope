@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,9 @@ using Upope.ServiceBase.Extensions;
 
 namespace Upope.Challange.Controllers
 {
-    public class UserController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IIdentityService _identityService;
@@ -35,18 +38,27 @@ namespace Upope.Challange.Controllers
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var userId = await _identityService.GetUserId(accessToken);
 
-            var userParams = _mapper.Map<CreateUserViewModel, UserParams>(model);
+            try
+            {
+                var userParams = _mapper.Map<CreateUserViewModel, UserParams>(model);
+                userParams.UserId = userId;
 
-            var user = _userService.GetUserByUserId(userId);
+                var user = _userService.GetUserByUserId(userId);
 
-            if (user != null)
-                userParams.Id = user.Id;
+                if (user != null)
+                    userParams.Id = user.Id;
 
-            _userService.CreateOrUpdate(userParams);
+                _userService.CreateOrUpdate(userParams);
 
-            var result = _mapper.Map<UserParams, CreateUserViewModel>(userParams);
+                var result = _mapper.Map<UserParams, CreateUserViewModel>(userParams);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                var xx = 12;
+                throw ex;
+            }
         }
     }
 }

@@ -64,7 +64,8 @@ namespace Upope.Challange.Services
             {
                 var userIds = SetChallengeRequestsToMissed(challengeRequestParams.ChallengeId, challengeRequestParams.Id);
 
-                await _hubContext.Clients.Users(userIds)
+                //await _hubContext.Clients.Users(userIds)
+                await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestAccepted", challengeRequestParams.Id);
             }
 
@@ -73,13 +74,14 @@ namespace Upope.Challange.Services
                 var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
                 var rnd = new Random();
 
-                await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
+                //await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
+                await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {
                     ChallengeRequestId = challengeRequestParams.Id,
                     Point = challengeRequestModel.Point,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
-                    UserName = entity.Challenger.Nickname,
-                    UserImagePath = entity.Challenger.PictureUrl
+                    UserName = "asd", //entity.Challenger.Nickname,
+                    UserImagePath = "dsa"//entity.Challenger.PictureUrl
                 }));
             }
         }
@@ -116,8 +118,9 @@ namespace Upope.Challange.Services
                 challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
             }
-            
-            await _hubContext.Clients.Users(userIds)
+
+            //await _hubContext.Clients.Users(userIds)
+            await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
 
             return userIds;

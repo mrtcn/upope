@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Text;
 using System.Threading.Tasks;
 using Upope.Loyalty.GlobalSettings;
@@ -77,12 +78,20 @@ namespace Upope.Loyalty
             #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Upope Identity API", Version = "v1" });
+            });
+
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeLoyalty"]);
             });
             services.AddAutoMapper();
 
             services.AddTransient<ILoyaltyService, LoyaltyService>();
+            services.AddTransient<IIdentityService, IdentityService>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
         }
@@ -102,6 +111,18 @@ namespace Upope.Loyalty
             app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             app.UseAuthentication();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Upope Identity API V1");
+                c.RoutePrefix = string.Empty;
+            });
+
             app.UseMvc();
 
             //app.UseSignalR(routes => routes.MapHub<ChallangeHub>("/challangehub"));

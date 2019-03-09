@@ -24,6 +24,7 @@ using Upope.Identity.Models.FacebookResponse;
 using Upope.Identity.Models.GoogleResponse;
 using Upope.Identity.Services;
 using Upope.Identity.Services.Interfaces;
+using Upope.Identity.Services.Sync;
 using Upope.ServiceBase.Handler;
 
 namespace Upope.Identity
@@ -115,7 +116,8 @@ namespace Upope.Identity
 
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
-
+            services.AddTransient<IChallengeUserSyncService, ChallengeUserSyncService>();
+            services.AddTransient<ILoyaltySyncService, LoyaltySyncService>();
             //services.AddOcelot(Configuration);
         }
 
@@ -154,6 +156,8 @@ namespace Upope.Identity
         {
             AppSettingsProvider.ChallengeBaseUrl = Configuration["Upope.Challenge:BaseUrl"].ToString();
             AppSettingsProvider.CreateOrUpdateUser = Configuration["Upope.Challenge:CreateOrUpdate"].ToString();
+
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
             AppSettingsProvider.CreateOrUpdateLoyalty = Configuration["Upope.Loyalty:CreateOrUpdate"].ToString();
         }
     }

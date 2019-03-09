@@ -5,8 +5,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 55080
+          "Host": "identity.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/a/account/anon/{action}",
@@ -17,8 +17,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 55080
+          "Host": "identity.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/a/account/{action}",
@@ -30,11 +30,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/challenge/anonymous/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 44324
+          "Host": "challenge.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/c/challenge/anonymous/{everything}",
@@ -42,11 +42,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/challenge/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 44324
+          "Host": "challenge.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/c/challenge/{everything}",
@@ -58,11 +58,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/loyalty/anon/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 44332
+          "Host": "loyalty.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/l/anon/{everything}",
@@ -74,11 +74,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/loyalty/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 44332
+          "Host": "loyalty.upope",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/api/l/loyalty/{everything}",
