@@ -126,7 +126,7 @@ namespace Upope.Loyalty
 
             app.UseMvc();
 
-            //app.UseSignalR(routes => routes.MapHub<ChallangeHub>("/challangehub"));
+            //app.UseSignalR(routes => routes.MapHub<ChallengeHub>("/challangehub"));
         }
 
         private void BuildAppSettingsProvider()

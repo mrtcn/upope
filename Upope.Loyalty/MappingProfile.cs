@@ -3,7 +3,7 @@ using Upope.Identity.ViewModels;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.ViewModels;
 
-namespace Upope.Challange
+namespace Upope.Challenge
 {
     public class MappingProfile : Profile
     {

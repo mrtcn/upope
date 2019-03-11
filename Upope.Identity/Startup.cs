@@ -99,6 +99,7 @@ namespace Upope.Identity
                     ValidateIssuerSigningKey = true
                 };
             });
+
             #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

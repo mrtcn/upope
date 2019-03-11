@@ -181,7 +181,7 @@ namespace Upope.Identity.Controllers
                         await signInManager.SignInAsync(user, isPersistent: false);
 
                         var accessToken = GetToken(user);
-                        // Syncing the Challange DB User table
+                        // Syncing the Challenge DB User table
                         await SyncChallengeUserTable(user, accessToken);
 
                         // Syncing the Loyalty DB Loyalty table
@@ -259,7 +259,7 @@ namespace Upope.Identity.Controllers
 
                 var accessToken = GetToken(localUser);
 
-                // Syncing the Challange DB User table
+                // Syncing the Challenge DB User table
                 await SyncChallengeUserTable(localUser, accessToken);
 
                 // Syncing the Loyalty DB Loyalty table
@@ -352,7 +352,7 @@ namespace Upope.Identity.Controllers
 
             var accessToken = GetToken(localUser);
 
-            // Syncing the Challange DB User table
+            // Syncing the Challenge DB User table
             await SyncChallengeUserTable(localUser, accessToken);
 
             // Syncing the Loyalty DB Loyalty table

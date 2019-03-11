@@ -12,10 +12,11 @@ namespace Upope.ClientTests
             Console.WriteLine("Enter your AccessToken!"); 
             var accessToken = Console.ReadLine();
 
-            var challangeViewModel = new ChallengeViewModel(accessToken);
-            await challangeViewModel.Connect();
+            var challengeViewModel = new ChallengeViewModel(accessToken);
+            await challengeViewModel.Connect();
             Thread.Sleep(500);
-            //challangeViewModel.SendMessage("User XXX", "Message 1");
+            await challengeViewModel.SendChallenge();
+            //challengeViewModel.SendMessage("User XXX", "Message 1");
             //var key = Console.ReadKey();
             //if (key.KeyChar == 1)
             //    Console.WriteLine(1);
