@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System.Net;
+using Upope.Identity.Models;
 
 namespace Upope.Identity.Handlers
 {
@@ -19,9 +21,8 @@ namespace Upope.Identity.Handlers
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        var xx = contextFeature.Error;
-
-                        await context.Response.WriteAsync(context.Response.StatusCode.ToString());
+                        var httpResponseModel = new HttpResponseModel(contextFeature.Error.ToString(), context.Response.StatusCode.ToString());
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(httpResponseModel));
                     }
                 });
             });

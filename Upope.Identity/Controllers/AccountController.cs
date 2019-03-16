@@ -35,6 +35,8 @@ namespace Upope.Identity.Controllers
     {
         readonly UserManager<ApplicationUser> userManager;
         readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ITokenService _tokenService;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly ApplicationUserDbContext _dbContext;
         private readonly IMapper _mapper;
         readonly IRandomPasswordHelper _randomPasswordHelper;
@@ -56,6 +58,8 @@ namespace Upope.Identity.Controllers
         public AccountController(
            UserManager<ApplicationUser> userManager,
            SignInManager<ApplicationUser> signInManager,
+           ITokenService tokenService,
+           IPasswordHasher passwordHasher,
            ApplicationUserDbContext dbContext,
            IMapper mapper,
            IRandomPasswordHelper randomPasswordHelper,
@@ -68,6 +72,7 @@ namespace Upope.Identity.Controllers
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            _tokenService = tokenService;
             _dbContext = dbContext;
             _mapper = mapper;
             _randomPasswordHelper = randomPasswordHelper;
@@ -121,7 +126,13 @@ namespace Upope.Identity.Controllers
                     return BadRequest();
                 }
 
-                return Ok(new TokenModel(GetToken(user)));
+                var accessToken = _tokenService.GenerateAccessToken(user);
+                var refreshToken = _tokenService.GenerateRefreshToken();
+
+                user.RefreshToken = refreshToken;
+                await userManager.UpdateAsync(user);
+
+                return Ok(new TokenModel(accessToken, refreshToken));
             }
             return BadRequest(ModelState);
 
@@ -130,14 +141,46 @@ namespace Upope.Identity.Controllers
         [Authorize]
         [HttpPost]
         [Route("refreshtoken")]
-        public async Task<IActionResult> RefreshToken()
+        public async Task<IActionResult> RefreshToken(TokenModel model)
         {
+            var principal = _tokenService.GetPrincipalFromExpiredToken(model.AccessToken);
+            var username = principal.Identity.Name; //this is mapped to the Name claim by default
+
             var user = await userManager.FindByNameAsync(
-                User.Identity.Name ??
+                username ??
                 User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
                 );
-            return Ok(new TokenModel(GetToken(user)));
 
+            if (user == null || user.RefreshToken != model.RefreshToken) return BadRequest();
+
+            var newJwtToken = _tokenService.GenerateAccessToken(user);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+
+            await userManager.UpdateAsync(user);
+
+            return Ok(new TokenModel(newJwtToken, newRefreshToken));
+
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Revoke()
+        {
+            var username = User.Identity.Name;
+
+            var user = await userManager.FindByNameAsync(
+               username ??
+               User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
+               );
+
+            if (user == null) return BadRequest();
+
+            user.RefreshToken = null;
+
+            await userManager.UpdateAsync(user);
+
+            return NoContent();
         }
 
         [HttpPost]
@@ -159,6 +202,8 @@ namespace Upope.Identity.Controllers
         {
             try
             {
+                var refreshToken = _tokenService.GenerateRefreshToken();
+
                 if (ModelState.IsValid)
                 {
                     var user = new ApplicationUser
@@ -172,7 +217,8 @@ namespace Upope.Identity.Controllers
                         UserType = registerModel.UserType,
                         Birthday = registerModel.Birthday,
                         Latitute = registerModel.Latitute,
-                        Longitude = registerModel.Longitude
+                        Longitude = registerModel.Longitude,
+                        RefreshToken = refreshToken
                     };
 
                     var identityResult = await userManager.CreateAsync(user, registerModel.Password);
@@ -180,14 +226,14 @@ namespace Upope.Identity.Controllers
                     {
                         await signInManager.SignInAsync(user, isPersistent: false);
 
-                        var accessToken = GetToken(user);
+                        var accessToken = _tokenService.GenerateAccessToken(user);
                         // Syncing the Challenge DB User table
                         await SyncChallengeUserTable(user, accessToken);
 
                         // Syncing the Loyalty DB Loyalty table
                         await SyncLoyaltyTable(true, user, accessToken);
 
-                        return Ok(new TokenModel(GetToken(user)));
+                        return Ok(new TokenModel(accessToken, refreshToken));
                     }
                     else
                     {
@@ -221,6 +267,8 @@ namespace Upope.Identity.Controllers
                 var user = GetUserByExternalId(facebookUser.Id, ExternalProviderTyper.Facebook);
                 var isCreate = user == null;
 
+                var refreshToken = _tokenService.GenerateRefreshToken();
+
                 if (isCreate)
                 {
                     var appUser = new ApplicationUser
@@ -235,7 +283,8 @@ namespace Upope.Identity.Controllers
                         Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         Gender = facebookUser.Gender.TryConvertToEnum<Gender>().GetValueOrDefault(),
                         Latitute = model.Latitude,
-                        Longitude = model.Longitude
+                        Longitude = model.Longitude,
+                        RefreshToken = refreshToken
                     };
 
                     if (!IsEmailUnique(appUser.Email))
@@ -257,15 +306,15 @@ namespace Upope.Identity.Controllers
                     return BadRequest("Failed to create local user account.");
                 }
 
-                var accessToken = GetToken(localUser);
-
+                var accessToken = _tokenService.GenerateAccessToken(user);                
+                
                 // Syncing the Challenge DB User table
                 await SyncChallengeUserTable(localUser, accessToken);
 
                 // Syncing the Loyalty DB Loyalty table
                 await SyncLoyaltyTable(isCreate, localUser, accessToken);
 
-                return Ok(new TokenModel(accessToken));
+                return Ok(new TokenModel(accessToken, refreshToken));
             }
             catch (Exception ex)
             {
@@ -314,6 +363,7 @@ namespace Upope.Identity.Controllers
             // 4. ready to create the local user account (if necessary) and jwt
             var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
             var isCreate = user == null;
+            var refreshToken = _tokenService.GenerateRefreshToken();
 
             if (user == null)
             {
@@ -328,7 +378,8 @@ namespace Upope.Identity.Controllers
                     PictureUrl = googleUser.Picture,
                     Latitute = model.Latitude,
                     Longitude = model.Longitude,
-                    Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture)
+                    Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    RefreshToken = refreshToken
                 };
 
                 if (!IsEmailUnique(appUser.Email))
@@ -350,7 +401,7 @@ namespace Upope.Identity.Controllers
                 return BadRequest("Failed to create local user account.");
             }
 
-            var accessToken = GetToken(localUser);
+            var accessToken = _tokenService.GenerateAccessToken(user);
 
             // Syncing the Challenge DB User table
             await SyncChallengeUserTable(localUser, accessToken);
@@ -358,7 +409,7 @@ namespace Upope.Identity.Controllers
             // Syncing the Loyalty DB Loyalty table
             await SyncLoyaltyTable(isCreate, localUser, accessToken);
 
-            return Ok(new TokenModel(GetToken(localUser)));
+            return Ok(new TokenModel(accessToken, refreshToken));
         }
 
         private ApplicationUser GetUserByExternalId(string externalId, ExternalProviderTyper providerType)
@@ -384,31 +435,6 @@ namespace Upope.Identity.Controllers
             }
             return !_dbContext.Users.Any(x => x.Email == email);
             
-        }
-        private String GetToken(IdentityUser user)
-        {
-            var utcNow = DateTime.UtcNow;
-
-            var claims = new Claim[]
-            {
-                        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
-            };
-
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenKey));
-            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-            var jwt = new JwtSecurityToken(
-                signingCredentials: signingCredentials,
-                claims: claims,
-                notBefore: utcNow,
-                expires: TokenLifetime,
-                audience: TokenAudience,
-                issuer: TokenIssuer
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
         private async Task<ApplicationUser> GetUserAsync()

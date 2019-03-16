@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Upope.ClientTests.ViewModel;
@@ -10,7 +12,7 @@ namespace Upope.ClientTests
         static async Task Main(string[] args)
         {
             Console.WriteLine("Enter your AccessToken!"); 
-            var accessToken = Console.ReadLine();
+            var accessToken = ReadLine();
 
             var challengeViewModel = new ChallengeViewModel(accessToken);
             await challengeViewModel.Connect();
@@ -25,6 +27,17 @@ namespace Upope.ClientTests
                 Thread.Sleep(500);
             }
 
+        }
+
+        private static string ReadLine()
+        {
+            var readlineBufferSize = 2000;
+            Stream inputStream = Console.OpenStandardInput(readlineBufferSize);
+            byte[] bytes = new byte[readlineBufferSize];
+            int outputLength = inputStream.Read(bytes, 0, readlineBufferSize);
+            //Console.WriteLine(outputLength);
+            char[] chars = Encoding.UTF7.GetChars(bytes, 0, outputLength);
+            return new string(chars);
         }
     }
 }

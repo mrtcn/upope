@@ -187,6 +187,8 @@ namespace Upope.Identity.Migrations
 
                     b.Property<string>("PictureUrl");
 
+                    b.Property<string>("RefreshToken");
+
                     b.Property<string>("SecurityStamp");
 
                     b.Property<bool>("TwoFactorEnabled");

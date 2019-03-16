@@ -130,6 +130,8 @@ namespace Upope.Challenge.Services
             int index = 0;
             var rnd = new Random();
 
+            var previousChallengeRequest = new ChallengeRequest();
+
             foreach (var challengeRequest in challengeRequestList)
             {
                 if(index != challengeRequestAmount)
@@ -144,6 +146,18 @@ namespace Upope.Challenge.Services
                             UserName = challengeRequest.Challenger.Nickname,
                             UserImagePath = challengeRequest.Challenger.PictureUrl
                         }));
+
+                    Thread.Sleep(1000);
+
+                    if(previousChallengeRequest.Id > 0)
+                    {
+                        var challengeRequestParams = Mapper.Map<ChallengeRequestParams>(previousChallengeRequest);
+                        challengeRequestParams.ChallengeRequestStatus = Enums.ChallengeRequestStatus.Rejected;
+                        CreateOrUpdate(challengeRequestParams);
+                    }
+
+                    var challenge = _challengeService.CreateOrUpdate(new ChallengeParams(Status.Active, challengeRequest.ChallengerId, 20));
+                    previousChallengeRequest = CreateOrUpdate(new ChallengeRequestParams(Status.Active, challengeRequest.ChallengerId, model.UserId, challenge.Id, Enums.ChallengeRequestStatus.Waiting));
                 }
                 else
                 {

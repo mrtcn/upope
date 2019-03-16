@@ -119,6 +119,8 @@ namespace Upope.Identity
             services.AddTransient<IHttpHandler, HttpHandler>();
             services.AddTransient<IChallengeUserSyncService, ChallengeUserSyncService>();
             services.AddTransient<ILoyaltySyncService, LoyaltySyncService>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
             //services.AddOcelot(Configuration);
         }
 

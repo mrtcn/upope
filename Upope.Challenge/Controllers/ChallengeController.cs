@@ -62,9 +62,22 @@ namespace Upope.Challenge.Controllers
             var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, model.RewardPoint);
             var challenge = _challengeService.CreateOrUpdate(challengeParams);
 
-            var challengerIds = await _challengeRequestService.CreateChallengeRequests(new CreateChallengeRequestModel(accessToken, challenge.Id, userId, challenge.RewardPoint));
+            var challengerIds = await _challengeRequestService
+                .CreateChallengeRequests(
+                new CreateChallengeRequestModel(
+                    accessToken, 
+                    challenge.Id, 
+                    userId, 
+                    challenge.RewardPoint));
 
-            await _challengeRequestService.RejectAcceptChallenge(new RejectAcceptChallengeModel() { AccessToken = accessToken, ChallengeId = challenge.Id, UserId = userId });
+            await _challengeRequestService
+                .RejectAcceptChallenge(
+                new RejectAcceptChallengeModel()
+                {
+                    AccessToken = accessToken,
+                    ChallengeId = challenge.Id,
+                    UserId = userId
+                });
 
             return Ok(challengeParams);
         }
