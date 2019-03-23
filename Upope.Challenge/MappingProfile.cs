@@ -14,7 +14,7 @@ namespace Upope.Challenge
             CreateMap<ChallengeParams, ChallengeEntity>();
 
             CreateMap<ChallengeRequest, ChallengeRequestParams>();
-            CreateMap<ChallengeRequestParams, ChallengeRequest>();
+            CreateMap<ChallengeRequestParams, ChallengeRequest>();            
 
             CreateMap<UserParams, User>();
             CreateMap<User, UserParams>();

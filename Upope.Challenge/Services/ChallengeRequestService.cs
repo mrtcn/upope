@@ -151,7 +151,7 @@ namespace Upope.Challenge.Services
 
                     if(previousChallengeRequest.Id > 0)
                     {
-                        var challengeRequestParams = Mapper.Map<ChallengeRequestParams>(previousChallengeRequest);
+                        var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(previousChallengeRequest);
                         challengeRequestParams.ChallengeRequestStatus = Enums.ChallengeRequestStatus.Rejected;
                         CreateOrUpdate(challengeRequestParams);
                     }

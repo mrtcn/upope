@@ -12,7 +12,7 @@ namespace Upope.ClientTests.ViewModel
         {
             // localhost for UWP/iOS or special IP for Android
             //var ip = "challenge.upope.com";
-            var ip = $"localhost:56224";
+            var ip = "localhost:56224";
 
             try
             {
@@ -23,9 +23,9 @@ namespace Upope.ClientTests.ViewModel
                     }).Build();
 
                 //hubConnection = new HubConnectionBuilder()
-                //.WithUrl($"http://{ip}/challengehubs?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiI2ODk1YTJhMy00ZmY4LTRjOTYtYjkzYS00MzA0Nzc1ZDY0MjAiLCJpYXQiOiIzLzEwLzIwMTkgNzoxNDozNyBQTSIsIm5iZiI6MTU1MjI0NTI3NywiZXhwIjoxNTUyMzMxNjc2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.qp_dl6XANcABAuSgaEW8EzYPvdilxk1lmnUjvuq8vHY", options =>
+                //.WithUrl($"http://{ip}/challengehubs?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiIzMzY4MmZkZC01MTUxLTQwN2QtYWI4ZS0yZDRkNjA4NWZmMWYiLCJpYXQiOiIzLzE2LzIwMTkgMToyODozNCBQTSIsIm5iZiI6MTU1Mjc0MjkxNCwiZXhwIjoxNTUyODI5MzEzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.r2sC6p52wtw0JfFtPE7aj7GZDjJ3dQtOLnrUw_6wygc", options =>
                 //{
-                //    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiI2ODk1YTJhMy00ZmY4LTRjOTYtYjkzYS00MzA0Nzc1ZDY0MjAiLCJpYXQiOiIzLzEwLzIwMTkgNzoxNDozNyBQTSIsIm5iZiI6MTU1MjI0NTI3NywiZXhwIjoxNTUyMzMxNjc2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.qp_dl6XANcABAuSgaEW8EzYPvdilxk1lmnUjvuq8vHY");
+                //    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiIzMzY4MmZkZC01MTUxLTQwN2QtYWI4ZS0yZDRkNjA4NWZmMWYiLCJpYXQiOiIzLzE2LzIwMTkgMToyODozNCBQTSIsIm5iZiI6MTU1Mjc0MjkxNCwiZXhwIjoxNTUyODI5MzEzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.r2sC6p52wtw0JfFtPE7aj7GZDjJ3dQtOLnrUw_6wygc");
                 //})
                 //.Build();
             }

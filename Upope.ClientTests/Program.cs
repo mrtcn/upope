@@ -11,8 +11,8 @@ namespace Upope.ClientTests
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Enter your AccessToken!"); 
-            var accessToken = ReadLine();
+            Console.WriteLine("Enter your AccessToken!");
+            var accessToken = ReadLine().Replace("\r\n", "");
 
             var challengeViewModel = new ChallengeViewModel(accessToken);
             await challengeViewModel.Connect();
@@ -31,7 +31,7 @@ namespace Upope.ClientTests
 
         private static string ReadLine()
         {
-            var readlineBufferSize = 2000;
+            var readlineBufferSize = 1200;
             Stream inputStream = Console.OpenStandardInput(readlineBufferSize);
             byte[] bytes = new byte[readlineBufferSize];
             int outputLength = inputStream.Read(bytes, 0, readlineBufferSize);

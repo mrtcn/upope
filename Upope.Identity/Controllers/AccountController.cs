@@ -1,22 +1,21 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
 using Upope.Identity.Enum;
+using Upope.Identity.Helpers;
 using Upope.Identity.Helpers.Interfaces;
 using Upope.Identity.Models;
 using Upope.Identity.Models.FacebookResponse;
@@ -36,7 +35,6 @@ namespace Upope.Identity.Controllers
         readonly UserManager<ApplicationUser> userManager;
         readonly SignInManager<ApplicationUser> signInManager;
         private readonly ITokenService _tokenService;
-        private readonly IPasswordHasher _passwordHasher;
         private readonly ApplicationUserDbContext _dbContext;
         private readonly IMapper _mapper;
         readonly IRandomPasswordHelper _randomPasswordHelper;
@@ -44,6 +42,7 @@ namespace Upope.Identity.Controllers
         readonly IExternalAuthService<GoogleResponse> _googleService;
         readonly IConfiguration configuration;
         readonly ILogger<AccountController> logger;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
         readonly DateTime? TokenLifetime;
@@ -59,7 +58,6 @@ namespace Upope.Identity.Controllers
            UserManager<ApplicationUser> userManager,
            SignInManager<ApplicationUser> signInManager,
            ITokenService tokenService,
-           IPasswordHasher passwordHasher,
            ApplicationUserDbContext dbContext,
            IMapper mapper,
            IRandomPasswordHelper randomPasswordHelper,
@@ -67,6 +65,7 @@ namespace Upope.Identity.Controllers
            IExternalAuthService<GoogleResponse> googleService,
            IConfiguration configuration,
            ILogger<AccountController> logger,
+           IHostingEnvironment hostingEnvironment,
            IChallengeUserSyncService challengeUserSyncService,
            ILoyaltySyncService loyaltySyncService)
         {
@@ -80,6 +79,7 @@ namespace Upope.Identity.Controllers
             _googleService = googleService;
             this.configuration = configuration;
             this.logger = logger;
+            _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
             TokenLifetime = DateTime.UtcNow.AddSeconds(this.configuration.GetValue<int>("Tokens:Lifetime"));
@@ -196,6 +196,20 @@ namespace Upope.Identity.Controllers
         }
 
         [HttpPost]
+        [Route("UpdateLocation")]
+        [Authorize]
+        public async Task<IActionResult> UpdateLocation(LocationViewModel model)
+        {
+            var user = await GetUserAsync();
+            user.Latitute = model.Latitude;
+            user.Longitude = model.Longitude;
+
+            await userManager.UpdateAsync(user);
+
+            return Ok();
+        }
+
+        [HttpPost]
         [Route("anon/register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
@@ -268,6 +282,7 @@ namespace Upope.Identity.Controllers
                 var isCreate = user == null;
 
                 var refreshToken = _tokenService.GenerateRefreshToken();
+                var projectPath = _hostingEnvironment.ContentRootPath;
 
                 if (isCreate)
                 {
@@ -277,13 +292,11 @@ namespace Upope.Identity.Controllers
                         LastName = facebookUser.LastName,
                         FacebookId = facebookUser.Id,
                         Email = facebookUser.Email,
-                        Nickname = Regex.Replace(facebookUser.Name, @"[^\w]", ""),
+                        Nickname = Regex.Replace(facebookUser.Name, @"[^\w]", "").ToLower(),
                         UserName = Guid.NewGuid().ToString(),
-                        PictureUrl = facebookUser.Picture.Data.Url,
+                        PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png),
                         Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         Gender = facebookUser.Gender.TryConvertToEnum<Gender>().GetValueOrDefault(),
-                        Latitute = model.Latitude,
-                        Longitude = model.Longitude,
                         RefreshToken = refreshToken
                     };
 
@@ -306,7 +319,7 @@ namespace Upope.Identity.Controllers
                     return BadRequest("Failed to create local user account.");
                 }
 
-                var accessToken = _tokenService.GenerateAccessToken(user);                
+                var accessToken = _tokenService.GenerateAccessToken(localUser);                
                 
                 // Syncing the Challenge DB User table
                 await SyncChallengeUserTable(localUser, accessToken);
@@ -364,6 +377,7 @@ namespace Upope.Identity.Controllers
             var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
             var isCreate = user == null;
             var refreshToken = _tokenService.GenerateRefreshToken();
+            var projectPath = _hostingEnvironment.ContentRootPath;
 
             if (user == null)
             {
@@ -373,12 +387,10 @@ namespace Upope.Identity.Controllers
                     LastName = googleUser.FamilyName,
                     GoogleId = googleUser.Sub,
                     Email = googleUser.Email,
-                    Nickname = Regex.Replace(googleUser.Name, @"[^\w]", ""),
-                    UserName = Guid.NewGuid().ToString(),
-                    PictureUrl = googleUser.Picture,
-                    Latitute = model.Latitude,
-                    Longitude = model.Longitude,
-                    Birthday = DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    Nickname = Regex.Replace(googleUser.Name, @"[^\w]", "").ToLower(),
+                    UserName = Guid.NewGuid().ToString(),                    
+                    PictureUrl = SaveImageUrlToDisk.SaveImage(googleUser.Picture, projectPath, ImageFormat.Jpeg),
+                    Birthday = googleUser.Birthday != null ? DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture) : DateTime.MinValue,
                     RefreshToken = refreshToken
                 };
 
@@ -401,7 +413,7 @@ namespace Upope.Identity.Controllers
                 return BadRequest("Failed to create local user account.");
             }
 
-            var accessToken = _tokenService.GenerateAccessToken(user);
+            var accessToken = _tokenService.GenerateAccessToken(localUser);
 
             // Syncing the Challenge DB User table
             await SyncChallengeUserTable(localUser, accessToken);
