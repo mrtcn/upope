@@ -21,13 +21,6 @@ namespace Upope.ClientTests.ViewModel
                     {
                         options.AccessTokenProvider = () => Task.FromResult(accessToken);
                     }).Build();
-
-                //hubConnection = new HubConnectionBuilder()
-                //.WithUrl($"http://{ip}/challengehubs?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiI2ODk1YTJhMy00ZmY4LTRjOTYtYjkzYS00MzA0Nzc1ZDY0MjAiLCJpYXQiOiIzLzEwLzIwMTkgNzoxNDozNyBQTSIsIm5iZiI6MTU1MjI0NTI3NywiZXhwIjoxNTUyMzMxNjc2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.qp_dl6XANcABAuSgaEW8EzYPvdilxk1lmnUjvuq8vHY", options =>
-                //{
-                //    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiI2ODk1YTJhMy00ZmY4LTRjOTYtYjkzYS00MzA0Nzc1ZDY0MjAiLCJpYXQiOiIzLzEwLzIwMTkgNzoxNDozNyBQTSIsIm5iZiI6MTU1MjI0NTI3NywiZXhwIjoxNTUyMzMxNjc2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.qp_dl6XANcABAuSgaEW8EzYPvdilxk1lmnUjvuq8vHY");
-                //})
-                //.Build();
             }
             catch(Exception ex)
             {
@@ -46,8 +39,7 @@ namespace Upope.ClientTests.ViewModel
             catch(Exception ex)
             {
                 Console.Write(ex);
-            }
-            
+            }            
         }
 
         public async Task Connect()
@@ -90,8 +82,7 @@ namespace Upope.ClientTests.ViewModel
 
                     var finalMessage = message;
                     // Update the UI
-                });
-                
+                });              
             }
             catch (Exception ex)
             {
@@ -111,5 +102,4 @@ namespace Upope.ClientTests.ViewModel
             }
         }
     }
-
 }

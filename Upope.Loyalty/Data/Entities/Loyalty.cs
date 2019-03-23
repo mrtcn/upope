@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
 
 namespace Upope.Loyalty.Data.Entities
 {
-    public interface ILoyalty : IEntity, IHasStatus
+    public interface ILoyalty : IEntity, IHasStatus, IOperatorFields
     {
         int Win { get; set; }
         int Credit { get; set; }
@@ -21,5 +22,7 @@ namespace Upope.Loyalty.Data.Entities
         public int Credit { get; set; }
         public int Score { get; set; }
         public string UserId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
     }
 }

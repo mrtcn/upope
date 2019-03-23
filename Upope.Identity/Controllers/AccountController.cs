@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
 using Upope.Identity.Enum;
@@ -221,6 +217,7 @@ namespace Upope.Identity.Controllers
                         RefreshToken = refreshToken
                     };
 
+                    user.CreationDate = DateTime.Now;
                     var identityResult = await userManager.CreateAsync(user, registerModel.Password);
                     if (identityResult.Succeeded)
                     {
@@ -290,6 +287,7 @@ namespace Upope.Identity.Controllers
                     if (!IsEmailUnique(appUser.Email))
                         return BadRequest("Email baska bir kullaniciya ait.");
 
+                    appUser.CreationDate = DateTime.Now;
                     var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                     if (!result.Succeeded)
@@ -385,6 +383,7 @@ namespace Upope.Identity.Controllers
                 if (!IsEmailUnique(appUser.Email))
                     return BadRequest("Email baska bir kullaniciya ait.");
 
+                appUser.CreationDate = DateTime.Now;
                 var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                 if (!result.Succeeded)

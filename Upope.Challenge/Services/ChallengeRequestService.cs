@@ -71,6 +71,7 @@ namespace Upope.Challenge.Services
                 .Select(x => x.Challenger).FirstOrDefault();
 
             var challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
+            var rnd = new Random();
 
             if (challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
             {
@@ -78,13 +79,24 @@ namespace Upope.Challenge.Services
 
                 await _hubContext.Clients.Users(userIds)
                 //await _hubContext.Clients.All
-                .SendAsync("ChallengeRequestMissed", challengeRequestParams.Id);
+                .SendAsync("ChallengeRequestMissed", challengeRequestParams.ChallengeId);
+
+                await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
+                //await _hubContext.Clients.All
+                .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel()
+                {
+                    ChallengeRequestId = challengeRequestParams.Id,
+                    Point = entity.Challenge.RewardPoint,
+                    Range = rnd.Next(1, 150).ToString() + " Meter",
+                    UserName = entity.Challenger.Nickname,
+                    UserImagePath = entity.Challenger.PictureUrl
+                }));
             }
 
             if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)
             {
                 var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
-                var rnd = new Random();
+                
                 await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
                 //await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {

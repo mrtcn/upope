@@ -8,7 +8,6 @@ namespace Upope.Controllers
     [ApiController]
     public class UserManagementController : ControllerBase
     {
-
         [HttpPost]
         [Route("userprofile")]
         public async Task<IActionResult> UserProfile()
@@ -22,6 +21,13 @@ namespace Upope.Controllers
         public async Task<IActionResult> UserProfileAuth()
         {
             return Ok();
+        }
+
+        // POST api/values
+        [HttpPost]
+        [Route("ProcessDataCallback")]
+        public void ProcessDataCallback(object data)
+        {
         }
     }
 }
