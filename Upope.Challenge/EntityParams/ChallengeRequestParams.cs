@@ -1,11 +1,13 @@
-﻿using Upope.Challenge.Data.Entities;
+﻿using System;
+using Upope.Challenge.Data.Entities;
 using Upope.Challenge.Enums;
 using Upope.ServiceBase.Enums;
+using Upope.ServiceBase.Interfaces;
 using Upope.ServiceBase.Models;
 
 namespace Upope.Challenge.EntityParams
 {
-    public class ChallengeRequestParams : IEntityParams, IChallengeRequest
+    public class ChallengeRequestParams : IEntityParams, IChallengeRequest, IOperatorFields
     {
         public ChallengeRequestParams() { }
         public ChallengeRequestParams(Status status)
@@ -32,6 +34,8 @@ namespace Upope.Challenge.EntityParams
         public string ChallengeOwnerId { get; set; }
         public string ChallengerId { get; set; }
         public int ChallengeId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
         public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
     }    
 }

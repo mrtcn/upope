@@ -235,6 +235,7 @@ namespace Upope.Identity.Controllers
                         RefreshToken = refreshToken
                     };
 
+                    user.CreationDate = DateTime.Now;
                     var identityResult = await userManager.CreateAsync(user, registerModel.Password);
                     if (identityResult.Succeeded)
                     {
@@ -303,6 +304,7 @@ namespace Upope.Identity.Controllers
                     if (!IsEmailUnique(appUser.Email))
                         return BadRequest("Email baska bir kullaniciya ait.");
 
+                    appUser.CreationDate = DateTime.Now;
                     var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                     if (!result.Succeeded)
@@ -397,6 +399,7 @@ namespace Upope.Identity.Controllers
                 if (!IsEmailUnique(appUser.Email))
                     return BadRequest("Email baska bir kullaniciya ait.");
 
+                appUser.CreationDate = DateTime.Now;
                 var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                 if (!result.Succeeded)

@@ -36,5 +36,6 @@ namespace Upope.Identity.Entities
         public double Latitute { get; set; }
         public double Longitude { get; set; }
         public String RefreshToken { get; set; }
+        public DateTime CreationDate { get; set; }
     }
 }

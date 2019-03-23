@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
 
 namespace Upope.Challenge.Data.Entities
 {
-    public interface IChallenge : IEntity, IHasStatus
+    public interface IChallenge : IEntity, IHasStatus, IOperatorFields
     {
         string ChallengeOwnerId { get; set; }
         string ChallengerId { get; set; }
@@ -20,5 +21,7 @@ namespace Upope.Challenge.Data.Entities
         public int RewardPoint { get; set; }
         public string  WinnerId { get; set; }
         public List<ChallengeRequest> ChallengeRequests { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
     }
 }
