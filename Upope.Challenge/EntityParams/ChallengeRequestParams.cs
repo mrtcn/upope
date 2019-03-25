@@ -34,7 +34,7 @@ namespace Upope.Challenge.EntityParams
         public string ChallengeOwnerId { get; set; }
         public string ChallengerId { get; set; }
         public int ChallengeId { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
     }    

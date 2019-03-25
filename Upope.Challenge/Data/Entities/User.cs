@@ -6,7 +6,7 @@ using Upope.ServiceBase.Interfaces;
 
 namespace Upope.Challenge.Data.Entities
 {
-    public interface IUser : IEntity, IHasStatus
+    public interface IUser : IEntity, IHasStatus, IOperatorFields
     {
         String FirstName { get; set; }
         String LastName { get; set; }
@@ -30,5 +30,7 @@ namespace Upope.Challenge.Data.Entities
         public String PictureUrl { get; set; }
         public String UserId { get; set; }
         public List<ChallengeRequest> ChallengeRequests { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
     }
 }

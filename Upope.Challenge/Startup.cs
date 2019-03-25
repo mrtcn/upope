@@ -115,7 +115,7 @@ namespace Upope.Challenge
                 app.UseHsts();
             }
             app.ConfigureExceptionHandler();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.

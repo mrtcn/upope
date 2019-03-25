@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using System.Text;
@@ -88,10 +90,11 @@ namespace Upope
             }
             app.ConfigureExceptionHandler();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
+            app.UseWebSockets();
             await app.UseOcelot();
         }
     }

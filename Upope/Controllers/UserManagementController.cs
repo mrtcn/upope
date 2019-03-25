@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Upope.Controllers
 {
@@ -8,10 +10,17 @@ namespace Upope.Controllers
     [ApiController]
     public class UserManagementController : ControllerBase
     {
+        private readonly ILogger<UserManagementController> _logger;
+
+        public UserManagementController(ILogger<UserManagementController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost]
         [Route("userprofile")]
         public async Task<IActionResult> UserProfile()
-        {            
+        {
             return Ok();
         }
 

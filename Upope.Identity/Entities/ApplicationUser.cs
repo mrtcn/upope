@@ -33,7 +33,7 @@ namespace Upope.Identity.Entities
 
         public DateTime? Birthday { get; set; }
         public UserType UserType { get; set; }
-        public double Latitute { get; set; }
+        public double Latitude { get; set; }
         public double Longitude { get; set; }
         public String RefreshToken { get; set; }
         public DateTime CreationDate { get; set; }

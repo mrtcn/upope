@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Upope.Challenge.GlobalSettings;
 using Upope.Challenge.Services.Interfaces;
 using Upope.ServiceBase.Handler;

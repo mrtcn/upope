@@ -79,13 +79,13 @@ namespace Upope.Challenge.Services
 
                 await _hubContext.Clients.Users(userIds)
                 //await _hubContext.Clients.All
-                .SendAsync("ChallengeRequestMissed", challengeRequestParams.ChallengeId);
+                .SendAsync("ChallengeRequestMissed", challengeRequestParams.Id);
 
                 await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
                 //await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel()
                 {
-                    ChallengeRequestId = challengeRequestParams.Id,
+                    Id = challengeRequestParams.Id,
                     Point = entity.Challenge.RewardPoint,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
                     UserName = entity.Challenger.Nickname,
@@ -100,7 +100,7 @@ namespace Upope.Challenge.Services
                 await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
                 //await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {
-                    ChallengeRequestId = challengeRequestParams.Id,
+                    Id = challengeRequestParams.Id,
                     Point = challengeRequestModel.Point,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
                     UserName = entity.Challenger.Nickname,
@@ -119,7 +119,7 @@ namespace Upope.Challenge.Services
                 .Where(x => x.ChallengerId == userId && x.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Waiting)
                 .Select(x => new ChallengeRequestModel()
                 {
-                    ChallengeRequestId = x.Id,
+                    Id = x.Id,
                     Point = x.Challenge.RewardPoint,
                     Range =  rnd.Next(1, 150).ToString() + " Meter",
                     UserName = x.Challenger.Nickname,
@@ -152,7 +152,7 @@ namespace Upope.Challenge.Services
                     //await _hubContext.Clients.All
                         .SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel()
                         {
-                            ChallengeRequestId = challengeRequest.Id,
+                            Id = challengeRequest.Id,
                             Point = challengeRequest.Challenge.RewardPoint,
                             Range = rnd.Next(1, 150).ToString() + " Meter",
                             UserName = challengeRequest.Challenger.Nickname,
@@ -177,7 +177,7 @@ namespace Upope.Challenge.Services
                     //await _hubContext.Clients.All
                         .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel()
                         {
-                            ChallengeRequestId = challengeRequest.Id,
+                            Id = challengeRequest.Id,
                             Point = challengeRequest.Challenge.RewardPoint,
                             Range = rnd.Next(1, 150).ToString() + " Meter",
                             UserName = challengeRequest.Challenger.Nickname,
@@ -202,7 +202,7 @@ namespace Upope.Challenge.Services
 
         }
 
-        public async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
+        private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
         {
             var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
             CreateOrUpdate(challengeRequestParams);
@@ -291,7 +291,7 @@ namespace Upope.Challenge.Services
                 .Where(x => x.Id == challengeRequestId)
                 .Select(x => new ChallengeRequestModel()
                 {
-                    ChallengeRequestId = x.Id,
+                    Id = x.Id,
                     Point = x.Challenge.RewardPoint,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
                     UserName = x.Challenger.Nickname,

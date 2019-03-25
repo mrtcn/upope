@@ -22,7 +22,7 @@ namespace Upope.Challenge.Data.Entities
         public int ChallengeId { get; set; }
         public Challenge Challenge { get; set; }
         public User Challenger { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
 }

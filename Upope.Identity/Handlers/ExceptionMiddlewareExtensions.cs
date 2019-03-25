@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+using NLog.Web;
 using System.Net;
-using Upope.Identity.Models;
 
 namespace Upope.Identity.Handlers
 {
@@ -11,6 +9,8 @@ namespace Upope.Identity.Handlers
     {
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {
+            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
             app.UseExceptionHandler(appError =>
             {
                 appError.Run(async context =>
@@ -21,8 +21,9 @@ namespace Upope.Identity.Handlers
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        var httpResponseModel = new HttpResponseModel(contextFeature.Error.ToString(), context.Response.StatusCode.ToString());
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(httpResponseModel));
+                        logger.Error(contextFeature.Error);
+                        //var httpResponseModel = new HttpResponseModel(contextFeature.Error.ToString(), context.Response.StatusCode.ToString());
+                        //await context.Response.WriteAsync(JsonConvert.SerializeObject(httpResponseModel));
                     }
                 });
             });

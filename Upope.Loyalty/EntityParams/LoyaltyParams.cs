@@ -14,7 +14,7 @@ namespace Upope.Loyalty.EntityParams
         public int Credit { get; set; }
         public int Score { get; set; }
         public string UserId { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
 }

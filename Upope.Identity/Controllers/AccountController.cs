@@ -201,7 +201,7 @@ namespace Upope.Identity.Controllers
         public async Task<IActionResult> UpdateLocation(LocationViewModel model)
         {
             var user = await GetUserAsync();
-            user.Latitute = model.Latitude;
+            user.Latitude = model.Latitude;
             user.Longitude = model.Longitude;
 
             await userManager.UpdateAsync(user);
@@ -230,7 +230,7 @@ namespace Upope.Identity.Controllers
                         Email = registerModel.Email,
                         UserType = registerModel.UserType,
                         Birthday = registerModel.Birthday,
-                        Latitute = registerModel.Latitute,
+                        Latitude = registerModel.Latitude,
                         Longitude = registerModel.Longitude,
                         RefreshToken = refreshToken
                     };

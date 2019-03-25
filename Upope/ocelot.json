@@ -1,6 +1,18 @@
 {
   "ReRoutes": [
     {
+      "DownstreamPathTemplate": "/{catchAll}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44365
+        }
+      ],
+      "UpstreamPathTemplate": "/ws/{catchAll}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/account/anon/{action}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -95,6 +107,18 @@
   }
 
   //"ReRoutes": [
+  //{
+  //  "DownstreamPathTemplate": "/{catchAll}",
+  //  "DownstreamScheme": "ws",
+  //  "DownstreamHostAndPorts": [
+  //    {
+  //      "Host": "challenge.upope.com",
+  //      "Port": 80
+  //    }
+  //  ],
+  //  "UpstreamPathTemplate": "/gateway/{catchAll}",
+  //  "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+  //},
   //  {
   //    "DownstreamPathTemplate": "/api/account/anon/{action}",
   //    "DownstreamScheme": "http",

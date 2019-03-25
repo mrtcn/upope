@@ -141,6 +141,8 @@ namespace Upope.Identity.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<DateTime>("CreationDate");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -162,7 +164,7 @@ namespace Upope.Identity.Migrations
                         .IsRequired()
                         .HasMaxLength(250);
 
-                    b.Property<double>("Latitute");
+                    b.Property<double>("Latitude");
 
                     b.Property<bool>("LockoutEnabled");
 

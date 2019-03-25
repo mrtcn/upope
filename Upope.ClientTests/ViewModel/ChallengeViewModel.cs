@@ -11,23 +11,16 @@ namespace Upope.ClientTests.ViewModel
         public ChallengeViewModel(string accessToken)
         {
             // localhost for UWP/iOS or special IP for Android
-            //var ip = "challenge.upope.com";
-            var ip = "localhost:56224";
+            var ip = "challenge.upope.com";
+            //var ip = "localhost:56224";
 
             try
             {
                 hubConnection = new HubConnectionBuilder()
-                    .WithUrl($"http://{ip}/challengehubs?access_token={accessToken}", options =>
+                    .WithUrl($"http://{ip}/challengehubs", options =>
                     {
                         options.AccessTokenProvider = () => Task.FromResult(accessToken);
                     }).Build();
-
-                //hubConnection = new HubConnectionBuilder()
-                //.WithUrl($"http://{ip}/challengehubs?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiIzMzY4MmZkZC01MTUxLTQwN2QtYWI4ZS0yZDRkNjA4NWZmMWYiLCJpYXQiOiIzLzE2LzIwMTkgMToyODozNCBQTSIsIm5iZiI6MTU1Mjc0MjkxNCwiZXhwIjoxNTUyODI5MzEzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.r2sC6p52wtw0JfFtPE7aj7GZDjJ3dQtOLnrUw_6wygc", options =>
-                //{
-                //    options.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiIzMzY4MmZkZC01MTUxLTQwN2QtYWI4ZS0yZDRkNjA4NWZmMWYiLCJpYXQiOiIzLzE2LzIwMTkgMToyODozNCBQTSIsIm5iZiI6MTU1Mjc0MjkxNCwiZXhwIjoxNTUyODI5MzEzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.r2sC6p52wtw0JfFtPE7aj7GZDjJ3dQtOLnrUw_6wygc");
-                //})
-                //.Build();
             }
             catch(Exception ex)
             {

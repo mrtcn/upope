@@ -11,8 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Ocelot.DependencyInjection;
-using Ocelot.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;

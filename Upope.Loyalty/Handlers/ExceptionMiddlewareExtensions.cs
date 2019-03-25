@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
+using NLog.Web;
 using System.Net;
 
 namespace Upope.Loyalty.Handlers
@@ -9,6 +9,8 @@ namespace Upope.Loyalty.Handlers
     {
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {
+            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
             app.UseExceptionHandler(appError =>
             {
                 appError.Run(async context =>
@@ -19,9 +21,7 @@ namespace Upope.Loyalty.Handlers
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        var xx = contextFeature.Error;
-
-                        await context.Response.WriteAsync(context.Response.StatusCode.ToString());
+                        logger.Error(contextFeature.Error);
                     }
                 });
             });
