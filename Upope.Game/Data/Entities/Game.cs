@@ -23,5 +23,7 @@ namespace Upope.Game.Data.Entities
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public List<GameRound> GameRounds { get; set; }
+        public User HostUser { get; set; }
+        public User GuestUser { get; set; }
     }
 }

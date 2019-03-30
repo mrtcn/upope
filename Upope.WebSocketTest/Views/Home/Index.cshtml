@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <button onclick="connectToSocket()">Connect</button>
+</div>
+
+<script type="text/javascript">
+    function connectToSocket() {
+        var exampleSocket = new WebSocket("ws://challenge.upope.com/challengehubs?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYjI2N2E3ZC1kZjQ5LTRmNmEtOGY1OC03MDFkNzA2NmQ4MzQiLCJ1bmlxdWVfbmFtZSI6Im11cmF0Y2FudHVuYTEiLCJqdGkiOiIzY2JhYTAyOC1kOGM1LTRlNDUtODAxNS1jYTFjNWNlZDY3ZWMiLCJpYXQiOiIzLzI2LzIwMTkgNzozNDo1OCBQTSIsIm5iZiI6MTU1MzYyODg5OCwiZXhwIjoxNTUzNzE1Mjk2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjU1MDgwIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0NDMifQ.TcBni0QGz6xphqbYv4c9M7pvjyY4op0Q2EiCP6wVVpU&ConnectionId=12334343");
+
+        exampleSocket.addEventListener("open", function (event) {
+            alert("Connected");
+        });
+
+        // Display messages received from the server
+        exampleSocket.addEventListener("message", function (event) {
+            alert("Server Says: " + event.data);
+        });
+
+        // Display any errors that occur
+        exampleSocket.addEventListener("error", function (event) {
+            alert("Error: " + event);
+        });
+
+        exampleSocket.addEventListener("close", function (event) {
+            alert("Not Connected");
+        });
+    }
+</script>

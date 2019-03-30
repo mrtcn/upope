@@ -22,14 +22,11 @@ namespace Upope.Challenge.Hubs
 
         public override Task OnConnectedAsync()
         {
-            var id = this.Context.User.Identity.Name;
-
             return base.OnConnectedAsync();            
         }
 
         public async Task SendMessage(string user, string message)
         {
-            var xx = Context.User;
             await Clients.Caller.SendAsync("ReceiveMessage", user, message);
         }
 

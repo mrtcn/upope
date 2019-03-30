@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Upope.Challenge.CustomExceptions;
 using Upope.Challenge.EntityParams;
-using Upope.Challenge.Hubs;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
 using Upope.Challenge.ViewModels;
@@ -22,18 +20,15 @@ namespace Upope.Challenge.Controllers
         private readonly IMapper _mapper;
         private readonly IChallengeRequestService _challengeRequestService;
         private readonly IIdentityService _identityService;
-        private readonly IHubContext<ChallengeHubs> _hubContext;
 
         public ChallengeController(
             IChallengeService challengeService,
             IIdentityService identityService,
             IMapper mapper,
-            IHubContext<ChallengeHubs> hubContext,
             IChallengeRequestService challengeRequestService)
         {
             _challengeService = challengeService;
             _identityService = identityService;
-            _hubContext = hubContext;
             _mapper = mapper;
             _challengeRequestService = challengeRequestService;
         }

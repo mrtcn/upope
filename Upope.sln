@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.ServiceBase", "Upope.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Loyalty", "Upope.Loyalty\Upope.Loyalty.csproj", "{24F0DE38-99A9-4B47-B34E-B2BB1927C183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.Game", "Upope.Game\Upope.Game.csproj", "{4736C94F-44A7-4996-994C-943C913373FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Game", "Upope.Game\Upope.Game.csproj", "{4736C94F-44A7-4996-994C-943C913373FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.WebSocketTest", "Upope.WebSocketTest\Upope.WebSocketTest.csproj", "{1C7326AC-970B-4146-B4E0-BD44E98086E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{4736C94F-44A7-4996-994C-943C913373FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4736C94F-44A7-4996-994C-943C913373FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4736C94F-44A7-4996-994C-943C913373FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C7326AC-970B-4146-B4E0-BD44E98086E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C7326AC-970B-4146-B4E0-BD44E98086E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C7326AC-970B-4146-B4E0-BD44E98086E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C7326AC-970B-4146-B4E0-BD44E98086E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

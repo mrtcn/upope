@@ -16,7 +16,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Upope.Challenge.Hubs;
 using Upope.Game.Handlers;
+using Upope.Game.Services;
+using Upope.Game.Services.Interfaces;
 
 namespace Upope.Game
 {
@@ -83,13 +86,19 @@ namespace Upope.Game
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Upope Identity API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Upope Game API", Version = "v1" });
             });
 
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeGame"]);
             });
             services.AddAutoMapper();
+
+            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IGameRoundService, GameRoundService>();
+
+            services.AddSignalR(hubOptions => {
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -121,6 +130,8 @@ namespace Upope.Game
             });
 
             app.UseMvc();
+
+            app.UseSignalR(routes => routes.MapHub<GameHubs>("/gamehubs"));
         }
     }
 }

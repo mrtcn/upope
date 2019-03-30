@@ -24,7 +24,7 @@ namespace Upope.ClientTests.ViewModel
             }
             catch(Exception ex)
             {
-                var xx = ex;
+                throw ex;
             }            
         }
 
