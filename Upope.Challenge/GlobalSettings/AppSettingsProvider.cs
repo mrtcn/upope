@@ -10,5 +10,7 @@ namespace Upope.Challenge.GlobalSettings
         public static string LoyaltyBaseUrl { get; set; }
         public static string SufficientPointsUrl { get; set; }
 
+        public static string GameBaseUrl { get; set; }
+        public static string CreateGameUrl { get; set; }
     }
 }

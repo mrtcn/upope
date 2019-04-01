@@ -135,7 +135,7 @@ namespace Upope.Challenge.Services
             var challengeRequestList = Entities
                 .Include(x => x.Challenge)
                 .Include(x => x.Challenger)
-                .Where(x => x.ChallengeId == model.ChallengeId).ToList();
+                .Where(x => x.ChallengeId == model.ChallengeId && x.ChallengeOwnerId == model.UserId).Take(8).ToList();
 
             var challengeRequestAmount = challengeRequestList.Count() - 1;
 
@@ -205,8 +205,8 @@ namespace Upope.Challenge.Services
         private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
         {
             var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
-            CreateOrUpdate(challengeRequestParams);
-
+            var challengeRequest = CreateOrUpdate(challengeRequestParams);
+            
             await _hubContext.Clients.Users(model.ChallengerId)
             //await _hubContext.Clients.All
                 .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
@@ -288,14 +288,15 @@ namespace Upope.Challenge.Services
 
             var challengeRequestModel = Entities
                 .Include(x => x.Challenge)
+                .Include(x => x.ChallengOwner)
                 .Where(x => x.Id == challengeRequestId)
                 .Select(x => new ChallengeRequestModel()
                 {
                     Id = x.Id,
                     Point = x.Challenge.RewardPoint,
                     Range = rnd.Next(1, 150).ToString() + " Meter",
-                    UserName = x.Challenger.Nickname,
-                    UserImagePath = x.Challenger.PictureUrl
+                    UserName = x.ChallengOwner.Nickname,
+                    UserImagePath = x.ChallengOwner.PictureUrl
                 }).FirstOrDefault();
 
             return challengeRequestModel;

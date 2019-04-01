@@ -29,7 +29,8 @@ namespace Upope.Challenge.Data.Entities
         public String Nickname { get; set; }
         public String PictureUrl { get; set; }
         public String UserId { get; set; }
-        public List<ChallengeRequest> ChallengeRequests { get; set; }
+        public List<ChallengeRequest> OwnedChallengeRequests { get; set; }
+        public List<ChallengeRequest> ReceivedChallengeRequests { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

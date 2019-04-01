@@ -20,6 +20,7 @@ namespace Upope.Game.Data.Entities
         public string HostUserId { get; set; }
         public string GuestUserId { get; set; }
         public string WinnerId { get; set; }
+        public int Credit { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public List<GameRound> GameRounds { get; set; }

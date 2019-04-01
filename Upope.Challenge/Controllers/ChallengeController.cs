@@ -48,6 +48,38 @@ namespace Upope.Challenge.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("TriggerChallenges")]
+        public async Task<IActionResult> TriggerChallenges()
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var random = new Random();
+            var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, random.Next(1, 100));
+            var challenge = _challengeService.CreateOrUpdate(challengeParams);
+
+            var challengerIds = await _challengeRequestService
+                .CreateChallengeRequests(
+                new CreateChallengeRequestModel(
+                    accessToken,
+                    challenge.Id,
+                    userId,
+                    challenge.RewardPoint));
+
+            await _challengeRequestService
+                .RejectAcceptChallenge(
+                new RejectAcceptChallengeModel()
+                {
+                    AccessToken = accessToken,
+                    ChallengeId = challenge.Id,
+                    UserId = userId
+                });
+
+            return Ok(challengeParams);
+        }
+
+        [HttpPost]
+        [Authorize]
         [Route("CreateChallenge")]
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
@@ -96,6 +128,11 @@ namespace Upope.Challenge.Controllers
                 challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestStatus;
 
                 _challengeRequestService.CreateOrUpdate(challengeRequestParams);
+
+                if(challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
+                {
+
+                }
             }
             catch(UserNotAvailableException ex)
             {

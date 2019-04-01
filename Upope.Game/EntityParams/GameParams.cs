@@ -13,6 +13,7 @@ namespace Upope.Game.EntityParams
         public string HostUserId { get; set; }
         public string GuestUserId { get; set; }
         public string WinnerId { get; set; }
+        public int Credit { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

@@ -144,6 +144,9 @@ namespace Upope.Challenge
 
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();      
             AppSettingsProvider.SufficientPointsUrl = Configuration["Upope.Loyalty:SufficientPointsUrl"].ToString();
+
+            AppSettingsProvider.GameBaseUrl = Configuration["Upope.Game:BaseUrl"].ToString();
+            AppSettingsProvider.CreateGameUrl = Configuration["Upope.Game:CreateGameUrl"].ToString();
         }
     }
 }

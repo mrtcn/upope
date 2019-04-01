@@ -12,12 +12,17 @@ namespace Upope.Challenge.Data.Mappings
             builder.HasOne(x => x.Challenge)
                 .WithMany(x => x.ChallengeRequests)
                 .HasForeignKey(x => x.ChallengeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientSetNull);
             builder.HasOne(x => x.Challenger)
-                .WithMany(x => x.ChallengeRequests)
+                .WithMany(x => x.ReceivedChallengeRequests)
                 .HasForeignKey(x => x.ChallengerId)
                 .HasPrincipalKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            builder.HasOne(x => x.ChallengOwner)
+                .WithMany(x => x.OwnedChallengeRequests)
+                .HasForeignKey(x => x.ChallengeOwnerId)
+                .HasPrincipalKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }
