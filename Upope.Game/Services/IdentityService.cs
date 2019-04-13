@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Upope.Game.GlobalSettings;
 using Upope.Game.Services.Interfaces;
+using Upope.Game.ViewModels;
 using Upope.ServiceBase.Handler;
 
 namespace Upope.Game.Services
@@ -27,6 +28,16 @@ namespace Upope.Game.Services
             var userId = await _httpHandler.AuthPostAsync<string>(token, baseUrl, api);
 
             return userId;
+        }
+
+        public async Task<UserProfileModel> GetUserProfile(string accessToken, string id)
+        {
+            var baseUrl = AppSettingsProvider.IdentityBaseUrl;
+            var apiUrl = AppSettingsProvider.GetUserProfileUrl;
+
+            var userProfile = await _httpHandler.AuthPostAsync<UserProfileModel>(accessToken, baseUrl, apiUrl);
+
+            return userProfile;
         }
     }
 }

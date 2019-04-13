@@ -17,6 +17,8 @@ using Upope.Challenge.Hubs;
 using Upope.Challenge.Handlers;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using Upope.Game.Services.Interfaces;
+using Upope.Challenge.Services.Sync;
 
 namespace Upope.Challenge
 {
@@ -99,6 +101,7 @@ namespace Upope.Challenge
             services.AddTransient<IChallengeRequestService, ChallengeRequestService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IGameSyncService, GameSyncService>();
 
             services.AddSignalR(hubOptions => {
             });

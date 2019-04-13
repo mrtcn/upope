@@ -1,6 +1,7 @@
-﻿namespace Upope.Game.ViewModels
+﻿
+namespace Upope.Challenge.ViewModels
 {
-    public class CreateOrUpdateViewModel
+    public class CreateOrUpdateGameViewModel
     {
         public int Id { get; set; }
         public string HostUserId { get; set; }

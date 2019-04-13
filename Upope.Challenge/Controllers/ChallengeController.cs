@@ -8,6 +8,7 @@ using Upope.Challenge.EntityParams;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
 using Upope.Challenge.ViewModels;
+using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase.Extensions;
 
 namespace Upope.Challenge.Controllers
@@ -19,15 +20,18 @@ namespace Upope.Challenge.Controllers
         private readonly IChallengeService _challengeService;
         private readonly IMapper _mapper;
         private readonly IChallengeRequestService _challengeRequestService;
+        private readonly IGameSyncService _gameSyncService;
         private readonly IIdentityService _identityService;
 
         public ChallengeController(
             IChallengeService challengeService,
+            IGameSyncService gameSyncService,
             IIdentityService identityService,
             IMapper mapper,
             IChallengeRequestService challengeRequestService)
         {
             _challengeService = challengeService;
+            _gameSyncService = gameSyncService;
             _identityService = identityService;
             _mapper = mapper;
             _challengeRequestService = challengeRequestService;
@@ -131,7 +135,14 @@ namespace Upope.Challenge.Controllers
 
                 if(challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
                 {
+                    var createOrUpdateGameViewModel = new CreateOrUpdateGameViewModel() {
+                        Id = 0,
+                        Credit = challengeRequest.Challenge.RewardPoint,
+                        GuestUserId = challengeRequest.ChallengerId,
+                        HostUserId = challengeRequest.ChallengeOwnerId
+                    };
 
+                    await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
                 }
             }
             catch(UserNotAvailableException ex)

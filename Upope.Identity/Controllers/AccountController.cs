@@ -196,6 +196,18 @@ namespace Upope.Identity.Controllers
         }
 
         [HttpPost]
+        [Route("getUserProfileById")]
+        [Authorize]
+        public IActionResult GetUserProfileById(IdModel model)
+        {
+            var user = userManager.Users.FirstOrDefault(x => x.Id == model.Id);
+
+            var profileViewModel = _mapper.Map<ProfileViewModel>(user);
+
+            return Ok(profileViewModel);
+        }
+
+        [HttpPost]
         [Route("UpdateLocation")]
         [Authorize]
         public async Task<IActionResult> UpdateLocation(LocationViewModel model)

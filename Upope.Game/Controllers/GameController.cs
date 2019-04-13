@@ -18,15 +18,18 @@ namespace Upope.Game.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameService _gameService;
+        private readonly IGameRoundService _gameRoundService;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
 
         public GameController(
             IGameService gameService,
+            IGameRoundService gameRoundService,
             IIdentityService identityService,
             IMapper mapper)
         {
             _gameService = gameService;
+            _gameRoundService = gameRoundService;
             _identityService = identityService;
             _mapper = mapper;
         }
@@ -46,6 +49,21 @@ namespace Upope.Game.Controllers
             var result = _mapper.Map<GameParams, CreateOrUpdateViewModel>(gameParams);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("SendChoice")]
+        public async Task<IActionResult> SendChoice(SendChoiceViewModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var sendChoiceParams = _mapper.Map<SendChoiceViewModel, SendChoiceParams>(model);
+
+            _gameRoundService.SendChoice(sendChoiceParams);
+
+            return Ok();
         }
     }
 }

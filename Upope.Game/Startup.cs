@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Challenge.Hubs;
+using Upope.Game.GlobalSettings;
 using Upope.Game.Handlers;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
@@ -28,6 +23,7 @@ namespace Upope.Game
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BuildAppSettingsProvider();
         }
 
         public IConfiguration Configuration { get; }
@@ -132,6 +128,14 @@ namespace Upope.Game
             app.UseMvc();
 
             app.UseSignalR(routes => routes.MapHub<GameHubs>("/gamehubs"));
+        }
+
+        private void BuildAppSettingsProvider()
+        {
+            AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
+            AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
+            AppSettingsProvider.GetUserProfileUrl = Configuration["Upope.Identity:GetUserProfileUrl"].ToString();
+            AppSettingsProvider.WinRoundCount = int.Parse(Configuration["WinRoundCount"].ToString());
         }
     }
 }

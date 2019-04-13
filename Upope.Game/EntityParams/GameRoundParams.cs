@@ -9,6 +9,19 @@ namespace Upope.Game.EntityParams
 {
     public class GameRoundParams : IEntityParams, IGameRound, IOperatorFields
     {
+        public GameRoundParams(int gameId, int round)
+        {
+            Id = 0;
+            GameId = gameId;
+            Round = round;
+        }
+
+        public GameRoundParams(int gameId)
+        {
+            Id = 0;
+            GameId = gameId;
+        }
+
         public int Id { get; set; }
         public int GameId { get; set; }
         public int Round { get; set; }
