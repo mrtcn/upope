@@ -13,14 +13,14 @@ namespace Upope.ServiceBase.ServiceBase.Models
 
     public interface IDateOperationFields
     {
-        DateTime? CreatedDate { get; set; }
+        DateTime CreatedDate { get; set; }
         DateTime? LastModifiedDate { get; set; }
     }
 
     [Serializable]
     public class DateOperationFields : IDateOperationFields
     {
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }
 }

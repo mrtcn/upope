@@ -43,8 +43,12 @@ namespace Upope.Game.Controllers
             var userId = await _identityService.GetUserId(accessToken);
 
             var gameParams = _mapper.Map<CreateOrUpdateViewModel, GameParams>(model);
-
             _gameService.CreateOrUpdate(gameParams);
+
+            var gameRoundParams = new GameRoundParams(gameParams.Id);
+            _gameRoundService.CreateOrUpdate(gameRoundParams);
+
+            _gameService.SendGameCreatedMessage(new Services.Models.GameCreatedModel(gameParams.Id, gameParams.HostUserId, gameParams.GuestUserId));
 
             var result = _mapper.Map<GameParams, CreateOrUpdateViewModel>(gameParams);
 
@@ -60,8 +64,9 @@ namespace Upope.Game.Controllers
             var userId = await _identityService.GetUserId(accessToken);
 
             var sendChoiceParams = _mapper.Map<SendChoiceViewModel, SendChoiceParams>(model);
+            sendChoiceParams.UserId = userId;
 
-            _gameRoundService.SendChoice(sendChoiceParams);
+            await _gameRoundService.SendChoice(sendChoiceParams);
 
             return Ok();
         }

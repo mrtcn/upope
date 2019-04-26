@@ -25,9 +25,9 @@ namespace Upope.Challenge.Hubs
             return base.OnConnectedAsync();            
         }
 
-        public async Task SendMessage(string user, string message)
+        public async Task SendMessage(UserMessage model )
         {
-            await Clients.Caller.SendAsync("ReceiveMessage", user, message);
+            await Clients.Caller.SendAsync("ReceiveMessage", model.user, model.message);
         }
 
         public async Task SendChallenge(IReadOnlyList<string> userIds, string body)
@@ -46,5 +46,11 @@ namespace Upope.Challenge.Hubs
             //await Clients.Users(userIds).SendAsync("ReceiveMessage", body);
 
         }
+    }
+
+    public class UserMessage
+    {
+        public string user { get; set; }
+        public string message { get; set; }
     }
 }

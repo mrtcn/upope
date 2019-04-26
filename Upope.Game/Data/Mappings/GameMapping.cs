@@ -13,13 +13,11 @@ namespace Upope.Game.Data.Mappings
             builder.HasOne(x => x.HostUser)
                 .WithMany(x => x.HostGames)
                 .HasForeignKey(x => x.HostUserId)
-                .HasPrincipalKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasPrincipalKey(x => x.UserId);
             builder.HasOne(x => x.GuestUser)
                 .WithMany(x => x.GuestGames)
                 .HasForeignKey(x => x.GuestUserId)
-                .HasPrincipalKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasPrincipalKey(x => x.UserId);
         }
     }
 }

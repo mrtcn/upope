@@ -7,40 +7,25 @@ namespace Upope.ServiceBase.ServiceBase.Extensions
 {
     public static class ServiceExtensions
     {
-        public static T AssignOperatorFields<T>(this T entity, OperationType operationType,
-            OperatorType operatorType, int operatorId) where T : OperatorFields
+        public static T AssignOperatorFields<T>(this T entity, OperationType operationType) where T : IDateOperationFields
         {
             switch (operationType)
             {
                 case OperationType.Create:
-                    entity.CreatedUserType = operatorType;
                     entity.CreatedDate = DateTime.Now;
-                    entity.CreatedBy = operatorId;
                     break;
                 case OperationType.Update:
                 case OperationType.Remove:
-                    entity.LastModifiedUserType = operatorType;
                     entity.LastModifiedDate = DateTime.Now;
-                    entity.LastModifiedBy = operatorId;
                     break;
             }
 
             return entity;
         }
 
-        public static T AssignOperatorFields<T>(this T entity, OperationType operationType,
-            IHasOperator hasOperator) where T : OperatorFields
+        public static T AssignOperatorFields<T>(this T entity) where T : IDateOperationFields
         {
-            return AssignOperatorFields(entity, operationType,
-                hasOperator.OperatorType, hasOperator.OperatorId);
-        }
-
-        public static T AssignOperatorFields<T>(this T destination, IHasOperator source) where T : IHasOperator
-        {
-            destination.OperatorType = source.OperatorType;
-            destination.OperatorId = source.OperatorId;
-
-            return destination;
+            return AssignOperatorFields(entity, OperationType.Create);
         }
     }
 }

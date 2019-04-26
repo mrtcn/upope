@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
+using Upope.ServiceBase.ServiceBase.Models;
 
 namespace Upope.Game.Data.Entities
 {
-    public interface IUser : IEntity, IHasStatus, IOperatorFields
+    public interface IUser : IEntity, IHasStatus, IDateOperationFields
     {
         String FirstName { get; set; }
         String LastName { get; set; }
@@ -31,6 +32,7 @@ namespace Upope.Game.Data.Entities
         public String UserId { get; set; }
         public List<Game> HostGames { get; set; }
         public List<Game> GuestGames { get; set; }
+        public List<Bluff> Bluffs { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

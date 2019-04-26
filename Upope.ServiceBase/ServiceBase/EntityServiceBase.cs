@@ -27,24 +27,20 @@ namespace Upope.ServiceBase {
         private TEntity CreateEntity(IEntityParams entityParams) {
             var entity = _mapper.Map<TEntity>(entityParams);
 
-            if (entity is OperatorFields && entityParams is IHasOperator) {
-                var operatorFields = entity as OperatorFields;
-                var hasOperator = (IHasOperator)entityParams;
+            if (entity is IDateOperationFields) {
+                var operatorFields = entity as IDateOperationFields;
 
-                operatorFields.AssignOperatorFields(OperationType.Create,
-                    hasOperator.OperatorType, hasOperator.OperatorId);
+                operatorFields.AssignOperatorFields(OperationType.Create);
             }
 
             OnSaveChanges(entityParams, entity);
 
             if(entity is IHasStatus && entityParams is IHasStatus)
             {
-                var statusParams = entityParams as IHasStatus;
-                statusParams.Status = Status.Active;
+                var statusEntity = entity as IHasStatus;
+                statusEntity.Status = Status.Active;
             }
             
-            _mapper.Map(entityParams, entity, entityParams.GetType(), typeof(TEntity));
-
             _applicationDbContext.Add(entity);
             _applicationDbContext.SaveChanges();
 
@@ -83,11 +79,10 @@ namespace Upope.ServiceBase {
                 return RemoveResultStatus.Success;
             }
 
-            if (entity is OperatorFields) {
-                var operatorFields = entity as OperatorFields;
+            if (entity is IDateOperationFields) {
+                var operatorFields = entity as IDateOperationFields;
 
-                operatorFields.AssignOperatorFields(OperationType.Remove,
-                    removeEntityParams.OperatorType, removeEntityParams.OperatorId);
+                operatorFields.AssignOperatorFields(OperationType.Remove);
             }
 
             OnRemove(removeEntityParams, entity);
@@ -136,12 +131,10 @@ namespace Upope.ServiceBase {
 
             OnSaveChanges(entityParams, entity);
 
-            if (entity is OperatorFields && entityParams is IHasOperator) {
-                var operatorFields = entity as OperatorFields;
-                var hasOperator = (IHasOperator)entityParams;
+            if (entity is IDateOperationFields) {
+                var operatorFields = entity as IDateOperationFields;
 
-                operatorFields.AssignOperatorFields(OperationType.Update,
-                    hasOperator.OperatorType, hasOperator.OperatorId);
+                operatorFields.AssignOperatorFields(OperationType.Update);
             }
 
             _mapper.Map(entityParams, entity,

@@ -90,7 +90,7 @@ namespace Upope.Challenge.Controllers
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var userId = await _identityService.GetUserId(accessToken);
 
-            var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, model.RewardPoint);
+            var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, model.BetAmount);
             var challenge = _challengeService.CreateOrUpdate(challengeParams);
 
             var challengerIds = await _challengeRequestService
@@ -100,15 +100,6 @@ namespace Upope.Challenge.Controllers
                     challenge.Id, 
                     userId, 
                     challenge.RewardPoint));
-
-            await _challengeRequestService
-                .RejectAcceptChallenge(
-                new RejectAcceptChallengeModel()
-                {
-                    AccessToken = accessToken,
-                    ChallengeId = challenge.Id,
-                    UserId = userId
-                });
 
             return Ok(challengeParams);
         }
@@ -129,7 +120,7 @@ namespace Upope.Challenge.Controllers
                     return BadRequest(challengeRequest.ChallengerId + " - " + userId + " : " + "An error occured. Please select another game or try in a few seconds again.");
 
                 var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
-                challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestStatus;
+                challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestAnswer;
 
                 _challengeRequestService.CreateOrUpdate(challengeRequestParams);
 
@@ -153,17 +144,6 @@ namespace Upope.Challenge.Controllers
             {
                 return BadRequest(ex + "An error occured. Please select another game or try in a few seconds again.");
             }
-
-            return Ok();
-        }
-
-
-        [HttpPost]
-        [Authorize]
-        [Route("ChallengeAccepted")]
-        public async Task<IActionResult> ChallengeAccepted(ChallengeAcceptedViewModel model)
-        {
-            // Challenge is rejected by 3 people and then accepted by someone
 
             return Ok();
         }

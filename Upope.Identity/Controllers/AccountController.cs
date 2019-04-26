@@ -244,7 +244,9 @@ namespace Upope.Identity.Controllers
                         Birthday = registerModel.Birthday,
                         Latitude = registerModel.Latitude,
                         Longitude = registerModel.Longitude,
-                        RefreshToken = refreshToken
+                        RefreshToken = refreshToken,
+                        PictureUrl = registerModel.ImagePath,
+                        Nickname = registerModel.Username
                     };
 
                     user.CreationDate = DateTime.Now;

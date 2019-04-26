@@ -15,6 +15,8 @@ namespace Upope.Challenge.EntityParams
         public String Nickname { get; set; }
         public String PictureUrl { get; set; }
         public String UserId { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

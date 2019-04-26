@@ -138,12 +138,10 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
                 var map = _mapper.Map<TCulturedEntity>(entityParams);
                 map.BaseEntityId = baseEntityId;
 
-                if (map is OperatorFields && entityParams is IHasOperator) {
-                    var operatorFields = map as OperatorFields;
-                    var hasOperator = (IHasOperator)entityParams;
+                if (map is DateOperationFields) {
+                    var operatorFields = map as DateOperationFields;
 
-                    operatorFields.AssignOperatorFields(OperationType.Create,
-                        hasOperator.OperatorType, hasOperator.OperatorId);
+                    operatorFields.AssignOperatorFields(OperationType.Create);
                 }
                 map.CulturedEntityStatus = Status.Active;
                 culturedEntity = _applicationDbContext.Add<TCulturedEntity>(map).Entity;
@@ -154,12 +152,10 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
                     entityParams.GetType(), typeof(TCulturedEntity));
 
                 culturedEntity.CulturedEntityStatus = culturedEntityStatus;
-                if (culturedEntity is OperatorFields && entityParams is IHasOperator) {
-                    var operatorFields = culturedEntity as OperatorFields;
-                    var hasOperator = (IHasOperator)entityParams;
+                if (culturedEntity is DateOperationFields) {
+                    var operatorFields = culturedEntity as DateOperationFields;
 
-                    operatorFields.AssignOperatorFields(OperationType.Create,
-                        hasOperator.OperatorType, hasOperator.OperatorId);
+                    operatorFields.AssignOperatorFields(OperationType.Create);
                 }
                 culturedEntity.BaseEntityId = baseEntityId;
                 culturedEntity = _applicationDbContext.Update(culturedEntity).Entity;
@@ -192,12 +188,11 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
                 return RemoveResultStatus.Success;
             }
 
-            if (culturedEntity is OperatorFields)
+            if (culturedEntity is DateOperationFields)
             {
-                var operatorFields = culturedEntity as OperatorFields;
+                var operatorFields = culturedEntity as DateOperationFields;
 
-                operatorFields.AssignOperatorFields(OperationType.Remove,
-                    removeEntityParams.OperatorType, removeEntityParams.OperatorId);
+                operatorFields.AssignOperatorFields(OperationType.Remove);
             }
 
             var hasStatusCulturedEntity = culturedEntity as IHasStatus;
