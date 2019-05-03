@@ -22,11 +22,10 @@ namespace Upope.Game.Data.Entities
         public string GuestUserId { get; set; }
         public string WinnerId { get; set; }
         public int Credit { get; set; }
-        public List<GameRound> GameRounds { get; set; }
-        public List<Bluff> Bluffs { get; set; }
-        public User HostUser { get; set; }
-        public User GuestUser { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public List<GameRound> GameRounds { get; set; }
+        public User HostUser { get; set; }
+        public User GuestUser { get; set; }
     }
 }

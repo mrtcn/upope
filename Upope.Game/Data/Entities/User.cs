@@ -28,12 +28,12 @@ namespace Upope.Game.Data.Entities
         public String LastName { get; set; }
         [MaxLength(250)]
         public String Nickname { get; set; }
-        public String PictureUrl { get; set; }
+        public String PictureUrl { get; set; }        
+        public DateTime CreatedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
         public String UserId { get; set; }
         public List<Game> HostGames { get; set; }
         public List<Game> GuestGames { get; set; }
         public List<Bluff> Bluffs { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime? LastModifiedDate { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
+using System.Linq;
 using Upope.Challenge.Hubs;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
@@ -29,6 +30,11 @@ namespace Upope.Game.Services
         protected override void OnSaveChangedAsync(IEntityParams entityParams, GameEntity entity)
         {
             base.OnSaveChangedAsync(entityParams, entity);
+        }
+
+        public bool IsHostUser(int gameId, string userId)
+        {
+            return Entities.FirstOrDefault(x => x.Id == gameId && x.HostUserId == userId) != null;
         }
 
         public void SendGameCreatedMessage(GameCreatedModel model)

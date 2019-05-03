@@ -15,7 +15,7 @@ namespace Upope.ClientTests
             var accessToken = ReadLine().Replace("\r\n", "");
 
             var challengeViewModel = new ChallengeViewModel(accessToken);
-            await challengeViewModel.Connect();
+            await challengeViewModel.ChallengeConnect();
             Thread.Sleep(500);
             await challengeViewModel.SendChallenge();
             //challengeViewModel.SendMessage("User XXX", "Message 1");

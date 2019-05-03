@@ -68,7 +68,8 @@ namespace Upope.Challenge.Controllers
                     accessToken,
                     challenge.Id,
                     userId,
-                    challenge.RewardPoint));
+                    challenge.RewardPoint,
+                    20));
 
             await _challengeRequestService
                 .RejectAcceptChallenge(
@@ -99,7 +100,8 @@ namespace Upope.Challenge.Controllers
                     accessToken, 
                     challenge.Id, 
                     userId, 
-                    challenge.RewardPoint));
+                    challenge.RewardPoint,
+                    model.Range));
 
             return Ok(challengeParams);
         }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
 using Upope.ServiceBase.Enums;
@@ -29,10 +30,12 @@ namespace Upope.Game.Services
             var winnerId = isWinnerHost != null && isWinnerHost.GetValueOrDefault() ? hostId : guestId;
 
             var bluffAmount = _bluffService
-                .Entities.Where(x => x.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff == false && x.Status == Status.Active).Count();
+                .Entities.Include(x => x.GameRound)
+                .Where(x => x.GameRound.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff == false && x.Status == Status.Active).Count();
 
             var superBluffAmount = _bluffService
-                .Entities.Where(x => x.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff && x.Status == Status.Active).Count();
+                .Entities.Include(x => x.GameRound)
+                .Where(x => x.GameRound.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff && x.Status == Status.Active).Count();
 
             var loseAmount = _gameRoundService
                 .Entities.Where(x => x.GameId == gameId && x.WinnerId == guestId && x.Status == Status.Active).Count();

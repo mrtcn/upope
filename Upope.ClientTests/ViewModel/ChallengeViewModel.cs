@@ -7,17 +7,25 @@ namespace Upope.ClientTests.ViewModel
 {
     public class ChallengeViewModel
     {
-        HubConnection hubConnection;
+        HubConnection challengeHubConnection;
+        HubConnection gameHubConnection;
         public ChallengeViewModel(string accessToken)
         {
             // localhost for UWP/iOS or special IP for Android
-            var ip = "challenge.upope.com";
+            var challengeIp = "challenge.upope.com";
+            var gameIp = "game.upope.com";
             //var ip = "localhost:56224";
 
             try
             {
-                hubConnection = new HubConnectionBuilder()
-                    .WithUrl($"http://{ip}/challengehubs", options =>
+                challengeHubConnection = new HubConnectionBuilder()
+                    .WithUrl($"http://{challengeIp}/challengehubs", options =>
+                    {
+                        options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                    }).Build();
+
+                gameHubConnection = new HubConnectionBuilder()
+                    .WithUrl($"http://{gameIp}/gamehubs", options =>
                     {
                         options.AccessTokenProvider = () => Task.FromResult(accessToken);
                     }).Build();
@@ -33,8 +41,8 @@ namespace Upope.ClientTests.ViewModel
             try
             {
                 Thread.Sleep(5000);
-                await hubConnection.SendAsync("SendMessage", "user1", "message");
-                await hubConnection.InvokeAsync("SendMessage", "user2", "user2 message");
+                await challengeHubConnection.SendAsync("SendMessage", "user1", "message");
+                await challengeHubConnection.InvokeAsync("SendMessage", "user2", "user2 message");
             }
             catch(Exception ex)
             {
@@ -43,13 +51,13 @@ namespace Upope.ClientTests.ViewModel
             
         }
 
-        public async Task Connect()
+        public async Task ChallengeConnect()
         {
             try
             {
-                await hubConnection.StartAsync();
+                await challengeHubConnection.StartAsync();
 
-                hubConnection.On<string>("ChallengeRequestReceived", (message) =>
+                challengeHubConnection.On<string>("ChallengeRequestReceived", (message) =>
                 {
                     Console.WriteLine("ChallengeRequestReceived");
                     Console.Write(message);
@@ -58,7 +66,7 @@ namespace Upope.ClientTests.ViewModel
                     // Update the UI
                 });
 
-                hubConnection.On<string>("ChallengeRequestAccepted", (message) =>
+                challengeHubConnection.On<string>("ChallengeRequestAccepted", (message) =>
                 {
                     Console.WriteLine("ChallengeRequestAccepted");
                     Console.Write(message);
@@ -67,7 +75,7 @@ namespace Upope.ClientTests.ViewModel
                     // Update the UI
                 });
 
-                hubConnection.On<string>("ChallengeRequestRejected", (message) =>
+                challengeHubConnection.On<string>("ChallengeRequestRejected", (message) =>
                 {
                     Console.WriteLine("ChallengeRequestRejected");
                     Console.Write(message);
@@ -76,7 +84,7 @@ namespace Upope.ClientTests.ViewModel
                     // Update the UI
                 });
 
-                hubConnection.On<string>("ChallengeRequestMissed", (message) =>
+                challengeHubConnection.On<string>("ChallengeRequestMissed", (message) =>
                 {
                     Console.WriteLine("ChallengeRequestMissed");
                     Console.Write(message);
@@ -96,12 +104,62 @@ namespace Upope.ClientTests.ViewModel
         {
             try
             {
-                await hubConnection.InvokeAsync("SendMessage", user, message);
+                await challengeHubConnection.InvokeAsync("SendMessage", user, message);
             }
             catch (Exception ex)
             {
                 // send failed
             }
+        }
+
+        public async Task GameConnect()
+        {
+            await gameHubConnection.StartAsync();
+
+            gameHubConnection.On<string>("GameCreated", (message) =>
+            {
+                Console.WriteLine("GameCreated");
+                Console.Write(message);
+
+                var finalMessage = message;
+                // Update the UI
+            });
+
+            gameHubConnection.On<string>("RoundEnds", (message) =>
+            {
+                Console.WriteLine("RoundEnds");
+                Console.Write(message);
+
+                var finalMessage = message;
+                // Update the UI
+            });
+
+            gameHubConnection.On<string>("GameEnds", (message) =>
+            {
+                Console.WriteLine("GameEnds");
+                Console.Write(message);
+
+                var finalMessage = message;
+                // Update the UI
+            });
+
+            gameHubConnection.On<string>("AskBluff", (message) =>
+            {
+                Console.WriteLine("AskBluff");
+                Console.Write(message);
+
+                var finalMessage = message;
+                // Update the UI
+            });
+
+            gameHubConnection.On<string>("TextBluff", (message) =>
+            {
+                Console.WriteLine("TextBluff");
+                Console.Write(message);
+
+                var finalMessage = message;
+                // Update the UI
+            });
         }
     }
 

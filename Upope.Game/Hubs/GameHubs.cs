@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Upope.Game.EntityParams;
+using Upope.Game.Enum;
 using Upope.Game.Services.Interfaces;
 
 namespace Upope.Challenge.Hubs
@@ -21,14 +23,20 @@ namespace Upope.Challenge.Hubs
             return base.OnConnectedAsync();            
         }
 
-        public async Task SendMessage(string user, string message)
+        public async Task AskBluff(string userId)
         {
-            await Clients.Caller.SendAsync("ReceiveMessage", user, message);
+            await Clients.User(userId).SendAsync("AskBluff");
         }
 
-        public async Task SendChallenge(IReadOnlyList<string> userIds, string body)
+        public async Task TextBluff(string userId, RockPaperScissorsType choice)
         {
-            await Clients.All.SendAsync("ReceiveMessage", body);
+            await Clients.User(userId).SendAsync("TextBluff", choice);
         }
+
+        public async Task RoundEnds(List<string> userIds, RoundResult roundResult)
+        {
+            await Clients.Users(userIds).SendAsync("RoundEnds", roundResult);
+        }
+        
     }
 }

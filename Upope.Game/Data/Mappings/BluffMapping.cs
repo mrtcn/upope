@@ -18,10 +18,6 @@ namespace Upope.Game.Data.Mappings
                 .WithOne(x => x.Bluff)
                 .HasForeignKey<Bluff>(x => x.GameRoundId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne(x => x.Game)
-                .WithMany(x => x.Bluffs)
-                .HasForeignKey(x => x.GameId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

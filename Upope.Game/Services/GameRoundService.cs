@@ -12,6 +12,7 @@ using Upope.Game.Enum;
 using Upope.Game.GlobalSettings;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
+using Upope.Game.ViewModels;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Models;
@@ -23,6 +24,7 @@ namespace Upope.Game.Services
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IPointService _pointService;
         private readonly IBluffService _bluffService;
+        private readonly IGameService _gameService;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
         private readonly IHubContext<GameHubs> _hubContext;
@@ -31,6 +33,7 @@ namespace Upope.Game.Services
             ApplicationDbContext applicationDbContext,
             IPointService pointService,
             IBluffService bluffService,
+            IGameService gameService,
             IIdentityService identityService,
             IMapper mapper,
             IHubContext<GameHubs> hubContext) : base(applicationDbContext, mapper)
@@ -38,6 +41,7 @@ namespace Upope.Game.Services
             _applicationDbContext = applicationDbContext;
             _pointService = pointService;
             _bluffService = bluffService;
+            _gameService = gameService;
             _identityService = identityService;
             _mapper = mapper;
             _hubContext = hubContext;
@@ -63,7 +67,16 @@ namespace Upope.Game.Services
             }            
         }
 
-        public async Task SendChoice(SendChoiceParams sendChoiceParams)
+        public GameRoundParams GetLatestRound(int gameId, string userId)
+        {
+            //var isHost = Entities.Include(x => x.Game).FirstOrDefault(x => x.GameId == gameId && x.Game.HostUserId == userId) != null;
+            var latestGameRound = Entities.Where(x => x.GameId == gameId).OrderByDescending(x => x.Round).FirstOrDefault();
+            var gameRoundParams = _mapper.Map<GameRound, GameRoundParams>(latestGameRound);
+
+            return gameRoundParams;
+        }
+
+        public async Task<GameRoundParams> SendChoice(SendChoiceParams sendChoiceParams)
         {
             var lastRoundEntity = Entities.Include(x => x.Game)
                 .LastOrDefault(
@@ -162,7 +175,19 @@ namespace Upope.Game.Services
             else
             {
                 CreateOrUpdate(gameRoundParams);
-            }            
+            }
+
+            return gameRoundParams;
+        }
+
+        public bool IsFirstAnswer(GameRoundParams gameRoundParams)
+        {
+            if (gameRoundParams.GuestAnswer == RockPaperScissorsType.NotAnswered || gameRoundParams.HostAnswer == RockPaperScissorsType.NotAnswered)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private WinModel WinnerModel(int id, RockPaperScissorsType hostChoice, string hostUserId, RockPaperScissorsType guestChoice, string guestUserId)
@@ -205,6 +230,26 @@ namespace Upope.Game.Services
             }
 
             throw new WrongChoiceTypeException("Given Choice is not valid");
+        }
+
+        public async Task AskBluff(string userId, GameRoundParams gameRoundParams)
+        {
+            if (IsFirstAnswer(gameRoundParams))
+            {
+                var isHost = _gameService.IsHostUser(gameRoundParams.GameId, userId);
+                var game = _gameService.Get(gameRoundParams.GameId);
+                var askBluffUserId = isHost ? game.GuestUserId : game.HostUserId;
+                await _hubContext.Clients.User(askBluffUserId).SendAsync("AskBluff");
+            }
+        }
+
+        public async Task TextBluff(SendBluffViewModel model, string userId)
+        {
+            var isHostUser = _gameService.IsHostUser(model.GameId, userId);
+
+            var game = _gameService.Get(model.GameId);
+            var textBluffUserId = isHostUser ? game.GuestUserId : game.HostUserId;
+            await _hubContext.Clients.User(textBluffUserId).SendAsync("TextBluff");
         }
     }
 }

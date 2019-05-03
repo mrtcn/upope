@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Upope.Challenge.Hubs;
 using Upope.Game.EntityParams;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
@@ -19,19 +18,25 @@ namespace Upope.Game.Controllers
     {
         private readonly IGameService _gameService;
         private readonly IGameRoundService _gameRoundService;
+        private readonly IBluffService _bluffService;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
+        private readonly IHubContext<GameHubs> _hubContext;
 
         public GameController(
             IGameService gameService,
             IGameRoundService gameRoundService,
+            IBluffService bluffService,
             IIdentityService identityService,
-            IMapper mapper)
+            IMapper mapper,
+            IHubContext<GameHubs> hubContext)
         {
             _gameService = gameService;
             _gameRoundService = gameRoundService;
+            _bluffService = bluffService;
             _identityService = identityService;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -49,7 +54,7 @@ namespace Upope.Game.Controllers
             _gameRoundService.CreateOrUpdate(gameRoundParams);
 
             _gameService.SendGameCreatedMessage(new Services.Models.GameCreatedModel(gameParams.Id, gameParams.HostUserId, gameParams.GuestUserId));
-
+           
             var result = _mapper.Map<GameParams, CreateOrUpdateViewModel>(gameParams);
 
             return Ok(result);
@@ -66,7 +71,28 @@ namespace Upope.Game.Controllers
             var sendChoiceParams = _mapper.Map<SendChoiceViewModel, SendChoiceParams>(model);
             sendChoiceParams.UserId = userId;
 
-            await _gameRoundService.SendChoice(sendChoiceParams);
+            var gameRoundParams = await _gameRoundService.SendChoice(sendChoiceParams);
+            await _gameRoundService.AskBluff(userId, gameRoundParams);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("SendBluff")]
+        public async Task<IActionResult> SendBluff(SendBluffViewModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var lastGameRound = _gameRoundService.GetLatestRound(model.GameId, userId);
+            if (lastGameRound.GuestAnswer != Enum.RockPaperScissorsType.NotAnswered && lastGameRound.HostAnswer != Enum.RockPaperScissorsType.NotAnswered)
+            {
+                return BadRequest("Rakip seçimini yaptı, blöf için çok geç");
+            }
+
+            BluffParams bluffParams = _bluffService.GetBluffParams(model, userId, lastGameRound);
+            _bluffService.CreateOrUpdate(bluffParams);
+            await _gameRoundService.TextBluff(model, userId);
 
             return Ok();
         }
