@@ -9,16 +9,13 @@ namespace Upope.Game.Services
     public class PointService: IPointService
     {
         private readonly IGameService _gameService;
-        private readonly IGameRoundService _gameRoundService;
         private readonly IBluffService _bluffService;
 
         public PointService(
             IGameService gameService,
-            IGameRoundService gameRoundService,
             IBluffService bluffService)
         {
             _gameService = gameService;
-            _gameRoundService = gameRoundService;
             _bluffService = bluffService;
         }
         public GameScore CalculatePoints(int gameId, bool? isWinnerHost = null)
@@ -37,11 +34,11 @@ namespace Upope.Game.Services
                 .Entities.Include(x => x.GameRound)
                 .Where(x => x.GameRound.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff && x.Status == Status.Active).Count();
 
-            var loseAmount = _gameRoundService
-                .Entities.Where(x => x.GameId == gameId && x.WinnerId == guestId && x.Status == Status.Active).Count();
+            var loseAmount = _gameService.Entities.Include(x => x.GameRounds)
+                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId == guestId && x.Status == Status.Active).Count();
 
-            var winAmount = _gameRoundService
-                .Entities.Where(x => x.GameId == gameId && x.WinnerId == winnerId && x.Status == Status.Active).Count();
+            var winAmount = _gameService.Entities.Include(x => x.GameRounds)
+                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId == winnerId && x.Status == Status.Active).Count();
 
             var bluffPoints = bluffAmount * gamePoint * 2;
             var superBluffPoints = superBluffAmount * gamePoint;

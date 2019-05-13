@@ -212,11 +212,14 @@ namespace Upope.Identity.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateLocation(LocationViewModel model)
         {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var user = await GetUserAsync();
             user.Latitude = model.Latitude;
             user.Longitude = model.Longitude;
 
-            await userManager.UpdateAsync(user);
+            var updatedUser = await userManager.UpdateAsync(user);
+            if(updatedUser.Succeeded)
+                await SyncChallengeUserTable(user, accessToken);
 
             return Ok();
         }
@@ -363,9 +366,10 @@ namespace Upope.Identity.Controllers
 
         private async Task SyncLoyaltyTable(bool isCreate, ApplicationUser localUser, string accessToken)
         {
+            CreateOrUpdateLoyaltyViewModel createOrUpdateLoyaltyViewModel;
             if (isCreate)
             {
-                var createOrUpdateLoyaltyViewModel = new CreateOrUpdateLoyaltyViewModel()
+                createOrUpdateLoyaltyViewModel = new CreateOrUpdateLoyaltyViewModel()
                 {
                     UserId = localUser.Id,
                     Credit = 50,
@@ -373,7 +377,6 @@ namespace Upope.Identity.Controllers
                     Win = 0
                 };
                 await _loyaltySyncService.SyncLoyaltyTable(createOrUpdateLoyaltyViewModel, accessToken);
-
             }
         }
 

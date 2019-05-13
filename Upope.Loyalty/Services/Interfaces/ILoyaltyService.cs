@@ -8,5 +8,7 @@ namespace Upope.Loyalty.Services.Interfaces
     {
         LoyaltyParams GetLoyaltyByUserId(string userId);
         List<LoyaltyParams> SufficientPoints(string userId, int point);
+        void ChargeCredits(ChargeCreditsParams chargeCreditsParams);
+        void ChargeGameCredits(ChargeGameCreditsParams chargeGameCreditsParams);
     }
 }

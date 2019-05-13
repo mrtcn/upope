@@ -102,6 +102,7 @@ namespace Upope.Challenge
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IGameSyncService, GameSyncService>();
+            services.AddTransient<IGeoLocationService, GeoLocationService>();
 
             services.AddSignalR(hubOptions => {
             });

@@ -64,6 +64,17 @@ namespace Upope.Loyalty.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("ChargeCredits")]
+        public IActionResult ChargeCredits(ChargeCreditsViewModel model)
+        {
+            var chargeGameCreditsParams = _mapper.Map<ChargeGameCreditsParams>(model);
+            _loyaltyService.ChargeGameCredits(chargeGameCreditsParams);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
         [Route("CreateOrUpdate")]
         public async Task<IActionResult> CreateOrUpdate(CreateOrUpdateViewModel model)
         {

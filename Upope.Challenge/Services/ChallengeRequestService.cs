@@ -73,6 +73,8 @@ namespace Upope.Challenge.Services
                 .Where(x => x.ChallengerId == entity.ChallengerId)
                 .Select(x => x.Challenger).FirstOrDefault();
 
+            entity.Challenge = _challengeService.Get(entity.ChallengeId);
+
             var challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
             var rnd = new Random();
 
@@ -223,7 +225,7 @@ namespace Upope.Challenge.Services
 
             var challengeRequestParams = new ChallengeRequestParams();
             var filteredUserId = ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, userIds);
-            foreach (var userId in userIds)
+            foreach (var userId in filteredUserId)
             {
                 challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
@@ -238,9 +240,15 @@ namespace Upope.Challenge.Services
 
         private IReadOnlyList<string> ExcludeOutOfRangeUsers(int range, string actualUserId, IReadOnlyList<string> destinationUserIds)
         {
+            if (destinationUserIds == null || destinationUserIds.Count == 0)
+                return null;
+
+            if (range == 0)
+                return destinationUserIds;
+
             var userIds = destinationUserIds.ToList();
             var actualUser = _userService.GetUserByUserId(actualUserId);
-            foreach(var userId in userIds)
+            foreach(var userId in userIds.ToList())
             {
                 var destinationUser = _userService.GetUserByUserId(userId);
                 var distance = _geoLocationService.GetDistance(

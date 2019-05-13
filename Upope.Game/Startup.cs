@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ using Upope.Game.GlobalSettings;
 using Upope.Game.Handlers;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
+using Upope.ServiceBase.Handler;
 
 namespace Upope.Game
 {
@@ -89,9 +91,14 @@ namespace Upope.Game
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeGame"]);
             });
             services.AddAutoMapper();
+            services.AddHttpClient();
 
+            services.AddTransient<IHttpHandler, HttpHandler>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IGameRoundService, GameRoundService>();
+            services.AddTransient<IPointService, PointService>();
+            services.AddTransient<IBluffService, BluffService>();
+            services.AddTransient<IIdentityService, IdentityService>();
 
             services.AddSignalR(hubOptions => {
             });

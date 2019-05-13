@@ -10,6 +10,7 @@ using Upope.Challenge.Services.Models;
 using Upope.Challenge.ViewModels;
 using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.ServiceBase.Models;
 
 namespace Upope.Challenge.Controllers
 {
@@ -102,6 +103,12 @@ namespace Upope.Challenge.Controllers
                     userId, 
                     challenge.RewardPoint,
                     model.Range));
+            if (challengerIds == null || challengerIds.Count == 0)
+            {
+                _challengeService.Remove(new RemoveEntityParams(challenge.Id, new HasOperator(), true, true));
+                return BadRequest("Belirtilen kriterlerde bir kullanıcı bulunamadı");
+            }
+                
 
             return Ok(challengeParams);
         }
@@ -128,6 +135,8 @@ namespace Upope.Challenge.Controllers
 
                 if(challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
                 {
+                    challengeRequest.Challenge = _challengeService.Get(challengeRequest.ChallengeId);
+
                     var createOrUpdateGameViewModel = new CreateOrUpdateGameViewModel() {
                         Id = 0,
                         Credit = challengeRequest.Challenge.RewardPoint,
