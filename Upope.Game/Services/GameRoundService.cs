@@ -106,7 +106,7 @@ namespace Upope.Game.Services
                 gameRoundParams.WinnerId = winModel.UserId;
                 CreateOrUpdate(gameRoundParams);
 
-                var nextRound = lastRoundEntity != null ? lastRoundEntity.Round++ : 0;
+                var nextRound = lastRoundEntity == null ? 0 : (lastRoundEntity.Round + 1);
 
                 var winner = await _identityService.GetUserProfile(sendChoiceParams.AccessToken, sendChoiceParams.UserId);
                 var bluff = _bluffService.Entities.FirstOrDefault(x => x.GameRoundId == gameRoundParams.Id);
