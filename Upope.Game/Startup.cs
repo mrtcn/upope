@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
-using Upope.Challenge.Hubs;
 using Upope.Game.GlobalSettings;
 using Upope.Game.Handlers;
+using Upope.Game.Hubs;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase.Handler;
@@ -67,7 +66,7 @@ namespace Upope.Game
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/gamehub")))
+                            (path.StartsWithSegments("/gamehubs")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -100,7 +99,7 @@ namespace Upope.Game
             services.AddTransient<IBluffService, BluffService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
-            services.AddSignalR(hubOptions => {
+            services.AddSignalR(hubOptions => {                
             });
         }
 

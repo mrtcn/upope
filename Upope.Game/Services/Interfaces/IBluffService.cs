@@ -8,6 +8,8 @@ namespace Upope.Game.Services.Interfaces
 {
     public interface IBluffService : IEntityServiceBase<Bluff>
     {
-        BluffParams GetBluffParams(SendBluffViewModel model, string userId, GameRoundParams lastGameRound);        
+        BluffParams GetBluffParams(SendBluffViewModel model, string userId, GameRoundParams lastGameRound);
+        Task AskBluff(string userId, GameRoundParams gameRoundParams);
+        Task TextBluff(SendBluffViewModel model, string userId);
     }
 }

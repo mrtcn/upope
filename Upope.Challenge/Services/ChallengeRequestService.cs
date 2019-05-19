@@ -14,6 +14,7 @@ using Upope.Challenge.GlobalSettings;
 using Upope.Challenge.Hubs;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
+using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Handler;
@@ -27,6 +28,7 @@ namespace Upope.Challenge.Services
         private readonly IUserService _userService;
         private readonly IChallengeService _challengeService;
         private readonly IGeoLocationService _geoLocationService;
+        private readonly IGameSyncService _gameSyncService;
         private readonly IHubContext<ChallengeHubs> _hubContext;
         private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
@@ -36,6 +38,7 @@ namespace Upope.Challenge.Services
             IUserService userService,
             IChallengeService challengeService,
             IGeoLocationService geoLocationService,
+            IGameSyncService gameSyncService,
             IMapper mapper, 
             IHttpHandler httpHandler,
             IHubContext<ChallengeHubs> hubContext) : base(applicationDbContext, mapper)
@@ -44,6 +47,7 @@ namespace Upope.Challenge.Services
             _userService = userService;
             _challengeService = challengeService;
             _geoLocationService = geoLocationService;
+            _gameSyncService = gameSyncService;
             _hubContext = hubContext;
             _mapper = mapper;
             _httpHandler = httpHandler;
@@ -67,6 +71,8 @@ namespace Upope.Challenge.Services
         protected override async void OnSaveChangedAsync(IEntityParams entityParams, ChallengeRequest entity)
         {
             base.OnSaveChangedAsync(entityParams, entity);
+            var challengeRequestParams = entityParams as ChallengeRequestParams;
+            var accessToken = challengeRequestParams.AccessToken;
 
             entity.Challenger = Entities
                 .Include(x => x.Challenger)
@@ -75,7 +81,7 @@ namespace Upope.Challenge.Services
 
             entity.Challenge = _challengeService.Get(entity.ChallengeId);
 
-            var challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
+            challengeRequestParams = _mapper.Map<ChallengeRequest, ChallengeRequestParams>(entity);
             var rnd = new Random();
 
             if (challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
@@ -94,20 +100,21 @@ namespace Upope.Challenge.Services
                     FirstName = entity.Challenger.Nickname,
                     UserImagePath = entity.Challenger.PictureUrl
                 }));
+
+                var createOrUpdateGameViewModel = new CreateOrUpdateGameModel()
+                {
+                    Id = 0,
+                    Credit = entity.Challenge.RewardPoint,
+                    GuestUserId = entity.ChallengerId,
+                    HostUserId = entity.ChallengeOwnerId
+                };
+
+                await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
             }
 
             if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)
             {
                 var challengeRequestModel = GetChallengeRequest(challengeRequestParams.Id);
-                
-                //await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
-                //.SendAsync("ChallengeRequestRejected", JsonConvert.SerializeObject(new ChallengeRequestModel() {
-                //    Id = challengeRequestParams.Id,
-                //    Point = challengeRequestModel.Point,
-                //    Range = rnd.Next(1, 150).ToString() + " Meter",
-                //    UserName = entity.Challenger.Nickname,
-                //    UserImagePath = entity.Challenger.PictureUrl
-                //}));
             }
         }
 
@@ -229,11 +236,10 @@ namespace Upope.Challenge.Services
             {
                 challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
-            }
 
-            await _hubContext.Clients.Users(filteredUserId)
-            //await _hubContext.Clients.All
-                .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
+                await _hubContext.Clients.User(userId)
+                    .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
+            }
 
             return filteredUserId;
         }

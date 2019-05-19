@@ -18,11 +18,11 @@ namespace Upope.ClientTests.ViewModel
 
             try
             {
-                challengeHubConnection = new HubConnectionBuilder()
-                    .WithUrl($"http://{challengeIp}/challengehubs", options =>
-                    {
-                        options.AccessTokenProvider = () => Task.FromResult(accessToken);
-                    }).Build();
+                //challengeHubConnection = new HubConnectionBuilder()
+                //    .WithUrl($"http://{challengeIp}/challengehubs", options =>
+                //    {
+                //        options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                //    }).Build();
 
                 gameHubConnection = new HubConnectionBuilder()
                     .WithUrl($"http://{gameIp}/gamehubs", options =>
@@ -56,6 +56,15 @@ namespace Upope.ClientTests.ViewModel
             try
             {
                 await challengeHubConnection.StartAsync();
+
+                challengeHubConnection.On<string>("GameCreated", (message) =>
+                {
+                    Console.WriteLine("GameCreated throug ChallengeHubs");
+                    Console.Write(message);
+
+                    var finalMessage = message;
+                    // Update the UI
+                });
 
                 challengeHubConnection.On<string>("ChallengeRequestReceived", (message) =>
                 {
@@ -118,7 +127,7 @@ namespace Upope.ClientTests.ViewModel
 
             gameHubConnection.On<string>("GameCreated", (message) =>
             {
-                Console.WriteLine("GameCreated");
+                Console.WriteLine("GameCreated throug GameHubs");
                 Console.Write(message);
 
                 var finalMessage = message;
@@ -162,5 +171,4 @@ namespace Upope.ClientTests.ViewModel
             });
         }
     }
-
 }

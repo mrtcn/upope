@@ -17,6 +17,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190303145610_InitLoyalty.cs" />
     <Compile Remove="Migrations\20190303145610_InitLoyalty.Designer.cs" />
+    <Compile Remove="ViewModels\CreateOrUpdateGameViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

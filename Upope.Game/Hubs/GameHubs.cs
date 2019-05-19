@@ -6,7 +6,7 @@ using Upope.Game.EntityParams;
 using Upope.Game.Enum;
 using Upope.Game.Services.Interfaces;
 
-namespace Upope.Challenge.Hubs
+namespace Upope.Game.Hubs
 {
     [Authorize]
     public class GameHubs : Hub

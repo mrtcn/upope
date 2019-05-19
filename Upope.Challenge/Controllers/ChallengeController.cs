@@ -125,27 +125,28 @@ namespace Upope.Challenge.Controllers
 
                 var challengeRequest = _challengeRequestService.Get(model.ChallengeRequestId);
 
-                if(challengeRequest.ChallengerId != userId)
+                if(challengeRequest.ChallengerId != userId ||challengeRequest.ChallengeRequestStatus != Enums.ChallengeRequestStatus.Waiting)
                     return BadRequest(challengeRequest.ChallengerId + " - " + userId + " : " + "An error occured. Please select another game or try in a few seconds again.");
 
                 var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
                 challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestAnswer;
+                challengeRequestParams.AccessToken = accessToken;
 
                 _challengeRequestService.CreateOrUpdate(challengeRequestParams);
 
-                if(challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
-                {
-                    challengeRequest.Challenge = _challengeService.Get(challengeRequest.ChallengeId);
+                //if(challengeRequestParams.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Accepted)
+                //{
+                //    challengeRequest.Challenge = _challengeService.Get(challengeRequest.ChallengeId);
 
-                    var createOrUpdateGameViewModel = new CreateOrUpdateGameViewModel() {
-                        Id = 0,
-                        Credit = challengeRequest.Challenge.RewardPoint,
-                        GuestUserId = challengeRequest.ChallengerId,
-                        HostUserId = challengeRequest.ChallengeOwnerId
-                    };
+                //    var createOrUpdateGameViewModel = new CreateOrUpdateGameViewModel() {
+                //        Id = 0,
+                //        Credit = challengeRequest.Challenge.RewardPoint,
+                //        GuestUserId = challengeRequest.ChallengerId,
+                //        HostUserId = challengeRequest.ChallengeOwnerId
+                //    };
 
-                    await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
-                }
+                //    await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
+                //}
             }
             catch(UserNotAvailableException ex)
             {

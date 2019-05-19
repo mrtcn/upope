@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Upope.Challenge.Hubs;
 using Upope.Game.CustomException;
 using Upope.Game.Data.Entities;
 using Upope.Game.EntityParams;
 using Upope.Game.Enum;
 using Upope.Game.GlobalSettings;
+using Upope.Game.Hubs;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
-using Upope.Game.ViewModels;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Models;
@@ -49,28 +49,15 @@ namespace Upope.Game.Services
 
         protected override void OnSaveChanges(IEntityParams entityParams, GameRound entity)
         {
-            base.OnSaveChanges(entityParams, entity);
-
-            if(entity.Id == 0)
-            {
-                var lastRoundEntity = Entities.LastOrDefault(
-                x => x.GameId == entity.GameId
-                && x.Status == Status.Active
-                && x.GuestAnswer != RockPaperScissorsType.NotAnswered
-                && x.HostAnswer != RockPaperScissorsType.NotAnswered);
-
-                var lastRound = lastRoundEntity != null ? lastRoundEntity.Round : 0;
-
-                entity.Round = lastRound++;
-                var gameResult = entityParams as GameRoundParams;
-                gameResult.Round = lastRound++;
-            }            
+            base.OnSaveChanges(entityParams, entity);            
         }
 
-        public GameRoundParams GetLatestRound(int gameId, string userId)
+        public GameRoundParams GetLastRoundEntity(int gameId)
         {
             //var isHost = Entities.Include(x => x.Game).FirstOrDefault(x => x.GameId == gameId && x.Game.HostUserId == userId) != null;
-            var latestGameRound = Entities.Where(x => x.GameId == gameId).OrderByDescending(x => x.Round).FirstOrDefault();
+            var latestGameRound = Entities
+                .Where(x => x.GameId == gameId && x.Status == Status.Active)
+                .OrderByDescending(x => x.Round).FirstOrDefault();
             var gameRoundParams = _mapper.Map<GameRound, GameRoundParams>(latestGameRound);
 
             return gameRoundParams;
@@ -79,9 +66,8 @@ namespace Upope.Game.Services
         public async Task<GameRoundParams> SendChoice(SendChoiceParams sendChoiceParams)
         {
             var lastRoundEntity = Entities.Include(x => x.Game)
-                .LastOrDefault(
-                x => x.GameId == sendChoiceParams.GameId
-                && x.Status == Status.Active);
+                .Where(x => x.GameId == sendChoiceParams.GameId && x.Status == Status.Active)
+                .OrderByDescending(x => x.Round).FirstOrDefault();
 
             var isHost = false;
 
@@ -106,7 +92,7 @@ namespace Upope.Game.Services
                 gameRoundParams.WinnerId = winModel.UserId;
                 CreateOrUpdate(gameRoundParams);
 
-                var nextRound = lastRoundEntity != null ? lastRoundEntity.Round++ : 0;
+                var nextRound = lastRoundEntity != null ? lastRoundEntity.Round + 1 : 1;
 
                 var winner = await _identityService.GetUserProfile(sendChoiceParams.AccessToken, sendChoiceParams.UserId);
                 var bluff = _bluffService.Entities.FirstOrDefault(x => x.GameRoundId == gameRoundParams.Id);
@@ -117,10 +103,6 @@ namespace Upope.Game.Services
 
                 if (!string.IsNullOrEmpty(winModel.UserId))
                 {
-                    await _hubContext.Clients
-                    .Users(new List<string>() { lastRoundEntity.Game.HostUserId, lastRoundEntity.Game.GuestUserId })
-                    .SendAsync("RoundEnds", roundResult);
-
                     if (!winModel.GameWin)
                     {
                         var nextGameResult = new GameRoundParams(lastRoundEntity.GameId, nextRound);
@@ -128,16 +110,21 @@ namespace Upope.Game.Services
 
                         await _hubContext.Clients
                         .Users(new List<string>() { lastRoundEntity.Game.HostUserId, lastRoundEntity.Game.GuestUserId })
-                        .SendAsync("RoundEnds", roundResult);
+                        .SendAsync("RoundEnds", JsonConvert.SerializeObject(roundResult));
                     }
                     else
                     {
                         var isWinnerHost = winModel.UserId == lastRoundEntity.Game.HostUserId;
                         var gameScore = _pointService.CalculatePoints(lastRoundEntity.GameId, isWinnerHost);
 
+                        var game = _gameService.Get(lastRoundEntity.GameId);
+                        var gameParams = _mapper.Map<GameParams>(game);
+                        gameParams.WinnerId = isWinnerHost ? gameParams.HostUserId : gameParams.GuestUserId;
+                        _gameService.CreateOrUpdate(gameParams);
+
                         await _hubContext.Clients
                         .Users(new List<string>() { lastRoundEntity.Game.HostUserId, lastRoundEntity.Game.GuestUserId })
-                        .SendAsync("GameEnds", gameScore);
+                        .SendAsync("GameEnds", JsonConvert.SerializeObject(gameScore));
                     }
                 }                
             }
@@ -150,9 +137,14 @@ namespace Upope.Game.Services
                 {
                     var gameScore = _pointService.CalculatePoints(lastRoundEntity.GameId);
 
+                    var game = _gameService.Get(lastRoundEntity.GameId);
+                    var gameParams = _mapper.Map<GameParams>(game);
+                    gameParams.WinnerId = hostWin == AppSettingsProvider.WinRoundCount ? gameParams.HostUserId : gameParams.GuestUserId;
+                    _gameService.CreateOrUpdate(gameParams);
+
                     await _hubContext.Clients
                        .Users(new List<string>() { lastRoundEntity.Game.HostUserId, lastRoundEntity.Game.GuestUserId })
-                       .SendAsync("GameEnds", gameScore);
+                       .SendAsync("GameEnds", JsonConvert.SerializeObject(gameScore));
                 }
                 else
                 {
@@ -169,7 +161,7 @@ namespace Upope.Game.Services
 
                     await _hubContext.Clients
                         .Users(new List<string>() { lastRoundEntity.Game.HostUserId, lastRoundEntity.Game.GuestUserId })
-                        .SendAsync("RoundEnds", roundResult);
+                        .SendAsync("RoundEnds", JsonConvert.SerializeObject(roundResult));
                 }
             }
             else
@@ -180,76 +172,55 @@ namespace Upope.Game.Services
             return gameRoundParams;
         }
 
-        public bool IsFirstAnswer(GameRoundParams gameRoundParams)
-        {
-            if (gameRoundParams.GuestAnswer == RockPaperScissorsType.NotAnswered || gameRoundParams.HostAnswer == RockPaperScissorsType.NotAnswered)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private WinModel WinnerModel(int id, RockPaperScissorsType hostChoice, string hostUserId, RockPaperScissorsType guestChoice, string guestUserId)
         {
             var hostWin = Entities.Where(x => x.GameId == id && x.WinnerId == hostUserId).Count();
             var guestWin = Entities.Where(x => x.GameId == id && x.WinnerId == guestUserId).Count();
             var userId = string.Empty;
+            var winRoundCount = AppSettingsProvider.WinRoundCount;
 
             if (hostChoice == guestChoice)
                 return new WinModel(userId, false, false, ChoiceResultType.Draw);
 
             if (hostChoice == RockPaperScissorsType.Paper && guestChoice == RockPaperScissorsType.Scissors){
-                return new WinModel(guestUserId, true, (guestWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.ScissorCutsPaper);
+                guestWin = guestWin + 1;
+                return new WinModel(guestUserId, true, (guestWin == winRoundCount), ChoiceResultType.ScissorCutsPaper);
             } else if (hostChoice == RockPaperScissorsType.Rock && guestChoice == RockPaperScissorsType.Paper)
             {
-                return new WinModel(guestUserId, true, (guestWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.PaperCoversRock);
+                guestWin = guestWin + 1;
+                return new WinModel(guestUserId, true, (guestWin == winRoundCount), ChoiceResultType.PaperCoversRock);
             } else if (hostChoice == RockPaperScissorsType.Scissors && guestChoice == RockPaperScissorsType.Rock)
             {
-                return new WinModel(guestUserId, true, (guestWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.RockBreaksScissor);
+                guestWin = guestWin + 1;
+                return new WinModel(guestUserId, true, (guestWin == winRoundCount), ChoiceResultType.RockBreaksScissor);
             } else if(hostChoice == RockPaperScissorsType.NotAnswered)
             {
-                return new WinModel(guestUserId, true, (guestWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.NotAnswered);
+                guestWin = guestWin + 1;
+                return new WinModel(guestUserId, true, (guestWin == winRoundCount), ChoiceResultType.NotAnswered);
             }
 
             if (guestChoice == RockPaperScissorsType.Paper && hostChoice == RockPaperScissorsType.Scissors)
             {
-                return new WinModel(hostUserId, true, (hostWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.ScissorCutsPaper);
+                hostWin = hostWin + 1;
+                return new WinModel(hostUserId, true, (hostWin == winRoundCount), ChoiceResultType.ScissorCutsPaper);
             }
             else if (guestChoice == RockPaperScissorsType.Rock && hostChoice == RockPaperScissorsType.Paper)
             {
-                return new WinModel(hostUserId, true, (hostWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.PaperCoversRock);
+                hostWin = hostWin + 1;
+                return new WinModel(hostUserId, true, (hostWin == winRoundCount), ChoiceResultType.PaperCoversRock);
             }
             else if (guestChoice == RockPaperScissorsType.Scissors && hostChoice == RockPaperScissorsType.Rock)
             {
-                return new WinModel(hostUserId, true, (hostWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.RockBreaksScissor);
+                hostWin = hostWin + 1;
+                return new WinModel(hostUserId, true, (hostWin == winRoundCount), ChoiceResultType.RockBreaksScissor);
             }
             else if (guestChoice == RockPaperScissorsType.NotAnswered)
             {
-                return new WinModel(hostUserId, true, (hostWin == AppSettingsProvider.WinRoundCount), ChoiceResultType.NotAnswered);
+                hostWin = hostWin + 1;
+                return new WinModel(hostUserId, true, (hostWin == winRoundCount), ChoiceResultType.NotAnswered);
             }
 
             throw new WrongChoiceTypeException("Given Choice is not valid");
-        }
-
-        public async Task AskBluff(string userId, GameRoundParams gameRoundParams)
-        {
-            if (IsFirstAnswer(gameRoundParams))
-            {
-                var isHost = _gameService.IsHostUser(gameRoundParams.GameId, userId);
-                var game = _gameService.Get(gameRoundParams.GameId);
-                var askBluffUserId = isHost ? game.GuestUserId : game.HostUserId;
-                await _hubContext.Clients.User(askBluffUserId).SendAsync("AskBluff");
-            }
-        }
-
-        public async Task TextBluff(SendBluffViewModel model, string userId)
-        {
-            var isHostUser = _gameService.IsHostUser(model.GameId, userId);
-
-            var game = _gameService.Get(model.GameId);
-            var textBluffUserId = isHostUser ? game.GuestUserId : game.HostUserId;
-            await _hubContext.Clients.User(textBluffUserId).SendAsync("TextBluff");
         }
     }
 }

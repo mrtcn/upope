@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Upope.Challenge.EntityParams;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.ViewModels;
 

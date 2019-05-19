@@ -37,5 +37,7 @@ namespace Upope.Challenge.EntityParams
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public ChallengeRequestStatus ChallengeRequestStatus { get; set; }
+
+        public string AccessToken { get; set; }
     }    
 }

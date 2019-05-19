@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using Upope.Challenge.Hubs;
+using Upope.Game.Hubs;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
 using Upope.ServiceBase;
@@ -40,7 +41,7 @@ namespace Upope.Game.Services
         public void SendGameCreatedMessage(GameCreatedModel model)
         {
             _hubContext.Clients.Users(new List<string>() { model.HostUserId, model.GuestUserId })
-            .SendAsync("GameCreated", model);
+            .SendAsync("GameCreated", JsonConvert.SerializeObject(model));
         }
     }
 }
