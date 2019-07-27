@@ -16,7 +16,6 @@ using Upope.ServiceBase.Handler;
 using Upope.Challenge.Hubs;
 using Upope.Challenge.Handlers;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
 using Upope.Game.Services.Interfaces;
 using Upope.Challenge.Services.Sync;
 

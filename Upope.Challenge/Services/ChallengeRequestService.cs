@@ -24,7 +24,6 @@ namespace Upope.Challenge.Services
 {
     public class ChallengeRequestService : EntityServiceBase<ChallengeRequest>, IChallengeRequestService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserService _userService;
         private readonly IChallengeService _challengeService;
         private readonly IGeoLocationService _geoLocationService;
@@ -43,7 +42,6 @@ namespace Upope.Challenge.Services
             IHttpHandler httpHandler,
             IHubContext<ChallengeHubs> hubContext) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
             _userService = userService;
             _challengeService = challengeService;
             _geoLocationService = geoLocationService;
