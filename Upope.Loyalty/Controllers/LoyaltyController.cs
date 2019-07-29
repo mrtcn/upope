@@ -34,7 +34,7 @@ namespace Upope.Loyalty.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
         [Route("GetPoint")]
         public IActionResult GetPoint()
@@ -48,21 +48,21 @@ namespace Upope.Loyalty.Controllers
             return Ok(pointViewModel);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
-        [Route("SufficientPoints")]
-        public async Task<IActionResult> SufficientPoints(GetSufficientPointViewModel model)
+        [Route("SufficientPoints/{points}")]
+        public async Task<IActionResult> SufficientPoints(int points)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var userId = await _identityService.GetUserId(accessToken);
 
-            var sufficientPoints = _loyaltyService.SufficientPoints(userId, model.Points);
+            var sufficientPoints = _loyaltyService.SufficientPoints(userId, points);
             var userIds = sufficientPoints.Select(x => x.UserId).ToList();
 
             return Ok(userIds);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         [Route("ChargeCredits")]
         public IActionResult ChargeCredits(ChargeCreditsViewModel model)

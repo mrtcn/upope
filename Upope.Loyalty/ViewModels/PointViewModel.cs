@@ -17,9 +17,4 @@ namespace Upope.Loyalty.ViewModels
     {
         public int Points { get; set; }
     }
-
-    public class GetSufficientPointViewModel
-    {
-        public int Points { get; set; }
-    }
 }

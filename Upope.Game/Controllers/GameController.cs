@@ -3,9 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Upope.Game.EntityParams;
-using Upope.Game.Hubs;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
 using Upope.ServiceBase.Extensions;
@@ -21,22 +19,19 @@ namespace Upope.Game.Controllers
         private readonly IBluffService _bluffService;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
-        private readonly IHubContext<GameHubs> _hubContext;
 
         public GameController(
             IGameService gameService,
             IGameRoundService gameRoundService,
             IBluffService bluffService,
             IIdentityService identityService,
-            IMapper mapper,
-            IHubContext<GameHubs> hubContext)
+            IMapper mapper)
         {
             _gameService = gameService;
             _gameRoundService = gameRoundService;
             _bluffService = bluffService;
             _identityService = identityService;
             _mapper = mapper;
-            _hubContext = hubContext;
         }
 
         [HttpPost]

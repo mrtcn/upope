@@ -35,8 +35,9 @@ namespace Upope
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((host, config) => {
+            .ConfigureAppConfiguration((hostingContext, config) => {
                 config.AddJsonFile("ocelot.json");
+                config.AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json");
             })
             .UseStartup<Startup>()
             .ConfigureLogging(logging =>

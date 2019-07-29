@@ -2,7 +2,6 @@
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
@@ -32,30 +30,21 @@ namespace Upope.Identity.Controllers
     [AllowAnonymous]
     public class AccountController : ControllerBase
     {
-        readonly UserManager<ApplicationUser> userManager;
-        readonly SignInManager<ApplicationUser> signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly ApplicationUserDbContext _dbContext;
         private readonly IMapper _mapper;
-        readonly IRandomPasswordHelper _randomPasswordHelper;
-        readonly IExternalAuthService<FacebookResponse> _facebookService;
-        readonly IExternalAuthService<GoogleResponse> _googleService;
-        readonly IConfiguration configuration;
-        readonly ILogger<AccountController> logger;
+        private readonly IRandomPasswordHelper _randomPasswordHelper;
+        private readonly IExternalAuthService<FacebookResponse> _facebookService;
+        private readonly IExternalAuthService<GoogleResponse> _googleService;
+        private readonly ILogger<AccountController> logger;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
-        readonly DateTime? TokenLifetime;
-        readonly string TokenAudience;
-        readonly string TokenIssuer;
-        readonly string TokenKey;
-        readonly string AppId;
-        readonly string AppSecret;
-
-        static HttpClient client = new HttpClient();
 
         public AccountController(
-           UserManager<ApplicationUser> userManager,
+           UserManager<ApplicationUser> _userManager,
            SignInManager<ApplicationUser> signInManager,
            ITokenService tokenService,
            ApplicationUserDbContext dbContext,
@@ -63,37 +52,28 @@ namespace Upope.Identity.Controllers
            IRandomPasswordHelper randomPasswordHelper,
            IExternalAuthService<FacebookResponse> facebookService,
            IExternalAuthService<GoogleResponse> googleService,
-           IConfiguration configuration,
            ILogger<AccountController> logger,
            IHostingEnvironment hostingEnvironment,
            IChallengeUserSyncService challengeUserSyncService,
            ILoyaltySyncService loyaltySyncService)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            _userManager = _userManager;
+            _signInManager = signInManager;
             _tokenService = tokenService;
             _dbContext = dbContext;
             _mapper = mapper;
             _randomPasswordHelper = randomPasswordHelper;
             _facebookService = facebookService;
             _googleService = googleService;
-            this.configuration = configuration;
             this.logger = logger;
             _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
-            TokenLifetime = DateTime.UtcNow.AddSeconds(this.configuration.GetValue<int>("Tokens:Lifetime"));
-            TokenAudience = configuration.GetValue<String>("Tokens:Audience");
-            TokenIssuer = configuration.GetValue<String>("Tokens:Issuer");
-            TokenKey = configuration.GetValue<String>("Tokens:Key");
-            AppId = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppId");
-            AppSecret = configuration.GetValue<String>("ExternalAuthentication:Facebook:AppSecret");
         }
 
-        private Task<ApplicationUser> GetCurrentUserAsync() => userManager.GetUserAsync(HttpContext.User);
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        [HttpPost]
-        [Route("getuserid")]
+        [HttpGet("getuserid")]
         [Authorize]
         public async Task<IActionResult> GetUserId()
         {
@@ -107,11 +87,11 @@ namespace Upope.Identity.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByNameAsync(loginModel.Username);
+                var user = await _userManager.FindByNameAsync(loginModel.Username);
 
                 if(user == null)
                 {
-                    user = await userManager.FindByEmailAsync(loginModel.Username);
+                    user = await _userManager.FindByEmailAsync(loginModel.Username);
                 }
 
                 if(user == null)
@@ -119,7 +99,7 @@ namespace Upope.Identity.Controllers
                     return BadRequest();
                 }
 
-                var loginResult = await signInManager.PasswordSignInAsync(user.UserName, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
+                var loginResult = await _signInManager.PasswordSignInAsync(user.UserName, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
 
                 if (!loginResult.Succeeded)
                 {
@@ -130,7 +110,7 @@ namespace Upope.Identity.Controllers
                 var refreshToken = _tokenService.GenerateRefreshToken();
 
                 user.RefreshToken = refreshToken;
-                await userManager.UpdateAsync(user);
+                await _userManager.UpdateAsync(user);
 
                 return Ok(new TokenModel(accessToken, refreshToken));
             }
@@ -139,14 +119,13 @@ namespace Upope.Identity.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("refreshtoken")]
+        [HttpPut("refreshtoken")]
         public async Task<IActionResult> RefreshToken(TokenModel model)
         {
             var principal = _tokenService.GetPrincipalFromExpiredToken(model.AccessToken);
             var username = principal.Identity.Name; //this is mapped to the Name claim by default
 
-            var user = await userManager.FindByNameAsync(
+            var user = await _userManager.FindByNameAsync(
                 username ??
                 User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
                 );
@@ -158,18 +137,18 @@ namespace Upope.Identity.Controllers
 
             user.RefreshToken = newRefreshToken;
 
-            await userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
 
             return Ok(new TokenModel(newJwtToken, newRefreshToken));
 
         }
 
-        [HttpPost, Authorize]
+        [HttpPut("revoke"), Authorize]
         public async Task<IActionResult> Revoke()
         {
             var username = User.Identity.Name;
 
-            var user = await userManager.FindByNameAsync(
+            var user = await _userManager.FindByNameAsync(
                username ??
                User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault()
                );
@@ -178,12 +157,12 @@ namespace Upope.Identity.Controllers
 
             user.RefreshToken = null;
 
-            await userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
 
             return NoContent();
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("profile")]
         [Authorize]
         public async Task<IActionResult> Profile()
@@ -195,29 +174,28 @@ namespace Upope.Identity.Controllers
             return Ok(profileViewModel);
         }
 
-        [HttpPost]
-        [Route("getUserProfileById")]
+        [HttpGet]
+        [Route("userProfile/{id}")]
         [Authorize]
-        public IActionResult GetUserProfileById(IdModel model)
+        public IActionResult GetUserProfileById(string id)
         {
-            var user = userManager.Users.FirstOrDefault(x => x.Id == model.Id);
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == id);
 
             var profileViewModel = _mapper.Map<ProfileViewModel>(user);
 
             return Ok(profileViewModel);
         }
 
-        [HttpPost]
-        [Route("UpdateLocation")]
+        [HttpPut("UpdateLocation")]
         [Authorize]
-        public async Task<IActionResult> UpdateLocation(LocationViewModel model)
+        public async Task<IActionResult> UpdateLocation([FromBody] LocationViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var user = await GetUserAsync();
             user.Latitude = model.Latitude;
             user.Longitude = model.Longitude;
 
-            var updatedUser = await userManager.UpdateAsync(user);
+            var updatedUser = await _userManager.UpdateAsync(user);
             if(updatedUser.Succeeded)
                 await SyncChallengeUserTable(user, accessToken);
 
@@ -253,10 +231,10 @@ namespace Upope.Identity.Controllers
                     };
 
                     user.CreationDate = DateTime.Now;
-                    var identityResult = await userManager.CreateAsync(user, registerModel.Password);
+                    var identityResult = await _userManager.CreateAsync(user, registerModel.Password);
                     if (identityResult.Succeeded)
                     {
-                        await signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
 
                         var accessToken = _tokenService.GenerateAccessToken(user);
                         // Syncing the Challenge DB User table
@@ -322,7 +300,7 @@ namespace Upope.Identity.Controllers
                         return BadRequest("Email baska bir kullaniciya ait.");
 
                     appUser.CreationDate = DateTime.Now;
-                    var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
+                    var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                     if (!result.Succeeded)
                     {
@@ -417,7 +395,7 @@ namespace Upope.Identity.Controllers
                     return BadRequest("Email baska bir kullaniciya ait.");
 
                 appUser.CreationDate = DateTime.Now;
-                var result = await userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
+                var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                 if (!result.Succeeded)
                 {
@@ -471,7 +449,7 @@ namespace Upope.Identity.Controllers
 
         private async Task<ApplicationUser> GetUserAsync()
         {
-            var user = await userManager.FindByNameAsync(
+            var user = await _userManager.FindByNameAsync(
                 User.Identity.Name ??
                 User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault());
 

@@ -56,7 +56,6 @@ namespace Upope.Challenge.Controllers
             }
             catch(Exception ex)
             {
-                var xx = 12;
                 throw ex;
             }
         }

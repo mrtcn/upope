@@ -8,21 +8,11 @@
     }
   },
 
-  //"iisSettings": {
-  //  "windowsAuthentication": false,
-  //  "anonymousAuthentication": true,
-  //  "iisExpress": {
-  //    "applicationUrl": "http://identity.upope.com",
-  //    "sslPort": 443
-  //  }
-  //},
-
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -30,11 +20,18 @@
     "Upope.Identity": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44443;http://localhost:55080"
+      "applicationUrl": "https://localhost:6001;http://localhost:6000"
+    },
+    "Prod Upope.Identity": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "https://identity.upope.com;http://identity.upope.com"
     },
     "Docker": {
       "commandName": "Docker",
