@@ -11,27 +11,32 @@ namespace Upope.Loyalty.Services
 {    
     public class LoyaltyService : EntityServiceBase<Data.Entities.Loyalty>, ILoyaltyService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
+        private readonly IIdentityService _identityService;
 
         public LoyaltyService(
-            ApplicationDbContext applicationDbContext, 
+            ApplicationDbContext applicationDbContext,
+            IIdentityService identityService,
             IMapper mapper) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
             _mapper = mapper;
+            _identityService = identityService;
         }
 
-        public LoyaltyParams GetLoyaltyByUserId(string userId)
+        public async Task<LoyaltyParams> GetLoyaltyByUserId(string accessToken)
         {
+            var userId = await _identityService.GetUserId(accessToken);
+
             var loyalty = Entities.FirstOrDefault(x => x.UserId == userId && x.Status == Status.Active);
             var loyaltyParams = _mapper.Map<LoyaltyParams>(loyalty);
 
             return loyaltyParams;
         }
 
-        public List<LoyaltyParams> SufficientPoints(string userId, int point)
+        public async Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point)
         {
+            var userId = await _identityService.GetUserId(accessToken);
+
             var sufficientPoints = Entities
                 .Where(x => x.Credit >= point 
                     && x.Status == Status.Active

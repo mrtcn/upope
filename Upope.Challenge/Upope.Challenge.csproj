@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190303145610_InitLoyalty.cs" />
-    <Compile Remove="Migrations\20190303145610_InitLoyalty.Designer.cs" />
     <Compile Remove="ViewModels\CreateOrUpdateGameViewModel.cs" />
   </ItemGroup>
 

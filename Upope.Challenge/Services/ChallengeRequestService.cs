@@ -212,7 +212,7 @@ namespace Upope.Challenge.Services
         private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
         {
             var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
-            var challengeRequest = CreateOrUpdate(challengeRequestParams);
+            CreateOrUpdate(challengeRequestParams);
             
             await _hubContext.Clients.Users(model.ChallengerId)
                 .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
@@ -220,19 +220,16 @@ namespace Upope.Challenge.Services
 
         public async Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model)
         {
-            var points = JsonConvert.SerializeObject(new PointsModel(model.Points));
             var userIds = await GetChallengerIds(
-                new HttpCallModel(
+                new GetChallengerIdsModel(
                     model.AccessToken, 
                     AppSettingsProvider.LoyaltyBaseUrl, 
-                    AppSettingsProvider.SufficientPointsUrl, 
-                    points));
+                    AppSettingsProvider.SufficientPointsUrl + "/" + model.Points));
 
-            var challengeRequestParams = new ChallengeRequestParams();
             var filteredUserId = ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, userIds);
             foreach (var userId in filteredUserId)
             {
-                challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
+                var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
 
                 await _hubContext.Clients.User(userId)
@@ -281,7 +278,7 @@ namespace Upope.Challenge.Services
                 .ToList();
         }
 
-        private async Task<IReadOnlyList<string>> GetChallengerIds(HttpCallModel model)
+        private async Task<IReadOnlyList<string>> GetChallengerIds(GetChallengerIdsModel model)
         {
             if (string.IsNullOrEmpty(model.BaseUrl))
                 model.BaseUrl = AppSettingsProvider.LoyaltyBaseUrl;
@@ -289,7 +286,7 @@ namespace Upope.Challenge.Services
             if (string.IsNullOrEmpty(model.Api))
                 model.Api = AppSettingsProvider.SufficientPointsUrl;
 
-            var userIds = await _httpHandler.AuthPostAsync<IReadOnlyList<string>>(model.AccessToken, model.BaseUrl, model.Api, model.MessageBody);
+            var userIds = await _httpHandler.AuthGetAsync<IReadOnlyList<string>>(model.AccessToken, model.BaseUrl, model.Api);
 
             if(userIds.Any())
                 userIds.Except(NotAvailableUserIds(userIds.ToList()));

@@ -37,3 +37,87 @@
 2019-07-28 16:34:23.7117 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
    at NLog.Config.Factory`2.CreateInstance(String name)
    at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 21:50:10.4766 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 21:50:14.3787 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:09:43.2889 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:09:47.2229 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:10:58.6317 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:11:02.7835 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:13:55.9054 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:14:00.1913 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:27:54.5906 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:27:58.8976 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:29:08.8325 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:29:13.3297 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:49:24.6470 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 22:49:28.4753 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:43:07.0519 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:43:10.9642 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:48:08.8348 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:48:12.5464 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:51:54.9954 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-29 23:51:59.1837 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:07:16.0782 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:07:21.5414 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:19:39.2788 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:19:43.0640 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:21:45.1368 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:21:49.5258 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:35:14.4994 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)
+2019-07-30 00:35:18.5575 Error Error parsing layout configsetting will be ignored. Exception: System.ArgumentException: LayoutRenderer cannot be found: 'configsetting'
+   at NLog.Config.Factory`2.CreateInstance(String name)
+   at NLog.Layouts.LayoutParser.GetLayoutRenderer(ConfigurationItemFactory configurationItemFactory, String name)

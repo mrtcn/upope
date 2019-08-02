@@ -44,7 +44,7 @@ namespace Upope.Identity.Controllers
         private readonly ILoyaltySyncService _loyaltySyncService;
 
         public AccountController(
-           UserManager<ApplicationUser> _userManager,
+           UserManager<ApplicationUser> userManager,
            SignInManager<ApplicationUser> signInManager,
            ITokenService tokenService,
            ApplicationUserDbContext dbContext,
@@ -57,7 +57,7 @@ namespace Upope.Identity.Controllers
            IChallengeUserSyncService challengeUserSyncService,
            ILoyaltySyncService loyaltySyncService)
         {
-            _userManager = _userManager;
+            _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _dbContext = dbContext;
@@ -280,28 +280,27 @@ namespace Upope.Identity.Controllers
                 var refreshToken = _tokenService.GenerateRefreshToken();
                 var projectPath = _hostingEnvironment.ContentRootPath;
 
+                var appUser = new ApplicationUser(facebookUser, refreshToken, projectPath);
+
                 if (isCreate)
                 {
-                    var appUser = new ApplicationUser
-                    {
-                        FirstName = facebookUser.FirstName,
-                        LastName = facebookUser.LastName,
-                        FacebookId = facebookUser.Id,
-                        Email = facebookUser.Email,
-                        Nickname = Regex.Replace(facebookUser.Name, @"[^\w]", "").ToLower(),
-                        UserName = Guid.NewGuid().ToString(),
-                        PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png),
-                        Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture),
-                        Gender = facebookUser.Gender.TryConvertToEnum<Gender>().GetValueOrDefault(),
-                        RefreshToken = refreshToken
-                    };
-
                     if (!IsEmailUnique(appUser.Email))
                         return BadRequest("Email baska bir kullaniciya ait.");
 
                     appUser.CreationDate = DateTime.Now;
                     var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
+                    if (!result.Succeeded)
+                    {
+                        return new BadRequestObjectResult(result.Errors.FirstOrDefault());
+                    }
+                }
+                else
+                {
+                    user.RefreshToken = refreshToken;
+                    user.PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png);
+
+                    var result = await _userManager.UpdateAsync(user);
                     if (!result.Succeeded)
                     {
                         return new BadRequestObjectResult(result.Errors.FirstOrDefault());

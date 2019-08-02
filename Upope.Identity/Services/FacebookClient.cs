@@ -25,7 +25,7 @@ namespace Upope.Identity.Services
 
         public async Task<T> GetAsync<T>(string accessToken, string endpoint, string args = null)
         {
-            var response = await _httpClient.GetAsync($"{endpoint}?access_token={accessToken}&{args}");
+            var response = await _httpClient.GetAsync($"{endpoint}?access_token={accessToken}&{args}&locale=en_US");
             if (!response.IsSuccessStatusCode)
                 return default(T);
 

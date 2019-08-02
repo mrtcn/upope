@@ -8,15 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190226214356_LoyaltyInit.cs" />
-    <Compile Remove="Migrations\20190226214356_LoyaltyInit.Designer.cs" />
-    <Compile Remove="Migrations\20190421202213_OpFields.cs" />
-    <Compile Remove="Migrations\20190421202213_OpFields.Designer.cs" />
-    <Compile Remove="Migrations\20190421205324_OpFields2.cs" />
-    <Compile Remove="Migrations\20190421205324_OpFields2.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />

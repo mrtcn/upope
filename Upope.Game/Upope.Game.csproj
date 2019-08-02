@@ -9,24 +9,6 @@
 
   <ItemGroup>
     <Compile Remove="EntityParams\ChoiceResultType.cs" />
-    <Compile Remove="Migrations\20190325064751_InitGame.cs" />
-    <Compile Remove="Migrations\20190325064751_InitGame.Designer.cs" />
-    <Compile Remove="Migrations\20190418171915_Game2.cs" />
-    <Compile Remove="Migrations\20190418171915_Game2.Designer.cs" />
-    <Compile Remove="Migrations\20190418172033_Game.cs" />
-    <Compile Remove="Migrations\20190418172033_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190418172211_Game.cs" />
-    <Compile Remove="Migrations\20190418172211_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190418172338_Game.cs" />
-    <Compile Remove="Migrations\20190418172338_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190418172442_Game.cs" />
-    <Compile Remove="Migrations\20190418172442_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190418172804_Game.cs" />
-    <Compile Remove="Migrations\20190418172804_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190418172916_Game.cs" />
-    <Compile Remove="Migrations\20190418172916_Game.Designer.cs" />
-    <Compile Remove="Migrations\20190426163856_InitGame.cs" />
-    <Compile Remove="Migrations\20190426163856_InitGame.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

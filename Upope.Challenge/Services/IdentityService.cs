@@ -24,7 +24,7 @@ namespace Upope.Challenge.Services
             if (string.IsNullOrEmpty(api))
                 api = AppSettingsProvider.GetUserId;
 
-            var userId = await _httpHandler.AuthPostAsync<string>(token, baseUrl, api);
+            var userId = await _httpHandler.AuthGetAsync<string>(token, baseUrl, api);
 
             return userId;
         }

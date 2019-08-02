@@ -25,7 +25,7 @@ namespace Upope.Game.Services
             if (string.IsNullOrEmpty(api))
                 api = AppSettingsProvider.GetUserId;
 
-            var userId = await _httpHandler.AuthPostAsync<string>(token, baseUrl, api);
+            var userId = await _httpHandler.AuthGetAsync<string>(token, baseUrl, api);
 
             return userId;
         }
@@ -35,7 +35,7 @@ namespace Upope.Game.Services
             var baseUrl = AppSettingsProvider.IdentityBaseUrl;
             var apiUrl = AppSettingsProvider.GetUserProfileUrl;
 
-            var userProfile = await _httpHandler.AuthPostAsync<UserProfileModel>(accessToken, baseUrl, apiUrl);
+            var userProfile = await _httpHandler.AuthGetAsync<UserProfileModel>(accessToken, baseUrl, apiUrl);
 
             return userProfile;
         }

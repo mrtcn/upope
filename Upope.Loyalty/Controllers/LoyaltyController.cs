@@ -19,29 +19,26 @@ namespace Upope.Loyalty.Controllers
     {
         private readonly ILoyaltyService _loyaltyService;
         private readonly IIdentityService _identityService;
-        private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
         public LoyaltyController(
             ILoyaltyService loyaltyService,
             IIdentityService identityService,
-            IMapper mapper, 
-            IHttpHandler httpHandler)
+            IMapper mapper)
         {
             _loyaltyService = loyaltyService;
             _identityService = identityService;
-            _httpHandler = httpHandler;
             _mapper = mapper;
         }
 
         [HttpGet]
         [Authorize]
         [Route("GetPoint")]
-        public IActionResult GetPoint()
+        public async Task<IActionResult> GetPoint()
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             //TODO: GetLoyaltyByUserId does not accept accesstoken. Should be fixed
-            var point = _loyaltyService.GetLoyaltyByUserId(accessToken);
+            var point = await _loyaltyService.GetLoyaltyByUserId(accessToken);
 
             var pointViewModel = _mapper.Map<GetPointViewModel>(point);
 
@@ -54,9 +51,8 @@ namespace Upope.Loyalty.Controllers
         public async Task<IActionResult> SufficientPoints(int points)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _identityService.GetUserId(accessToken);
 
-            var sufficientPoints = _loyaltyService.SufficientPoints(userId, points);
+            var sufficientPoints = await _loyaltyService.SufficientPoints(accessToken, points);
             var userIds = sufficientPoints.Select(x => x.UserId).ToList();
 
             return Ok(userIds);
@@ -79,11 +75,10 @@ namespace Upope.Loyalty.Controllers
         public async Task<IActionResult> CreateOrUpdate(CreateOrUpdateViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _identityService.GetUserId(accessToken);
 
             var loyaltyParams = _mapper.Map<CreateOrUpdateViewModel, LoyaltyParams>(model);
 
-            var loyalty = _loyaltyService.GetLoyaltyByUserId(userId);
+            var loyalty = await _loyaltyService.GetLoyaltyByUserId(accessToken);
 
             if (loyalty != null)
                 loyaltyParams.Id = loyalty.Id;
