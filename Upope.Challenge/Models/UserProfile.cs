@@ -1,10 +1,11 @@
 ﻿using System;
 using Upope.ServiceBase.Enums;
 
-namespace Upope.Game.ViewModels
+namespace Upope.Challenge.Models
 {
-    public class UserProfileModel
+    public class UserProfile
     {
+        public String Id { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Gender Gender { get; set; }

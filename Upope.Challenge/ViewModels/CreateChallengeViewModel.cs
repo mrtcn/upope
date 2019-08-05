@@ -1,4 +1,4 @@
-﻿using Upope.Challenge.Enum;
+﻿using Upope.ServiceBase.Enums;
 
 namespace Upope.Challenge.ViewModels
 {

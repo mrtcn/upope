@@ -1,4 +1,4 @@
-﻿namespace Upope.Identity.Enum
+﻿namespace Upope.ServiceBase.Enums
 {
     public enum Gender
     {

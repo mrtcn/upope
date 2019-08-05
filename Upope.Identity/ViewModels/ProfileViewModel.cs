@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Upope.Identity.Enum;
+using Upope.ServiceBase.Enums;
 
 namespace Upope.Identity.ViewModels
 {
     public class ProfileViewModel
     {
+        public String Id { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Gender Gender { get; set; }

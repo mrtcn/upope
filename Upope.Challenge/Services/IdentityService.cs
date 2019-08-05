@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Upope.Challenge.GlobalSettings;
+using Upope.Challenge.Models;
 using Upope.Challenge.Services.Interfaces;
 using Upope.ServiceBase.Handler;
 
@@ -14,6 +15,19 @@ namespace Upope.Challenge.Services
             IHttpHandler httpHandler)
         {
             _httpHandler = httpHandler;
+        }
+
+        public async Task<UserProfile> GetUserProfile(string token, string baseUrl = null, string api = null)
+        {
+            if (string.IsNullOrEmpty(baseUrl))
+                baseUrl = AppSettingsProvider.IdentityBaseUrl;
+
+            if (string.IsNullOrEmpty(api))
+                api = AppSettingsProvider.GetUserProfile;
+
+            var userId = await _httpHandler.AuthGetAsync<UserProfile>(token, baseUrl, api);
+
+            return userId;
         }
 
         public async Task<string> GetUserId(string token, string baseUrl = null, string api = null)

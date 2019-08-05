@@ -9,14 +9,12 @@ namespace Upope.Challenge.Services
 {
     public class UserService : EntityServiceBase<User>, IUserService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
 
         public UserService(
             ApplicationDbContext applicationDbContext, 
             IMapper mapper) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
             _mapper = mapper;
         }
 

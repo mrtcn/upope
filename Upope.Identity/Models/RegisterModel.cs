@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Upope.Identity.Enum;
+using Upope.ServiceBase.Enums;
 
 namespace Upope.Identity.Models
 {

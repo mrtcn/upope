@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Upope.Challenge.CustomExceptions;
 using Upope.Challenge.EntityParams;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
 using Upope.Challenge.ViewModels;
 using Upope.Game.Services.Interfaces;
+using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Extensions;
 using Upope.ServiceBase.ServiceBase.Models;
 
@@ -21,21 +23,21 @@ namespace Upope.Challenge.Controllers
         private readonly IChallengeService _challengeService;
         private readonly IMapper _mapper;
         private readonly IChallengeRequestService _challengeRequestService;
-        private readonly IGameSyncService _gameSyncService;
         private readonly IIdentityService _identityService;
+        private readonly IStringLocalizer<ChallengeController> _localizer;
 
         public ChallengeController(
             IChallengeService challengeService,
-            IGameSyncService gameSyncService,
             IIdentityService identityService,
             IMapper mapper,
-            IChallengeRequestService challengeRequestService)
+            IChallengeRequestService challengeRequestService,
+            IStringLocalizer<ChallengeController> localizer)
         {
             _challengeService = challengeService;
-            _gameSyncService = gameSyncService;
             _identityService = identityService;
             _mapper = mapper;
             _challengeRequestService = challengeRequestService;
+            _localizer = localizer;
         }
 
         [HttpGet("ChallengeRequests")]
@@ -69,7 +71,8 @@ namespace Upope.Challenge.Controllers
                     challenge.Id,
                     userId,
                     challenge.RewardPoint,
-                    20));
+                    20,
+                    Gender.Unknown));
 
             await _challengeRequestService
                 .RejectAcceptChallenge(
@@ -89,23 +92,27 @@ namespace Upope.Challenge.Controllers
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _identityService.GetUserId(accessToken);
+            var userProfile = await _identityService.GetUserProfile(accessToken);
 
-            var challengeParams = new ChallengeParams(ServiceBase.Enums.Status.Active, userId, model.BetAmount);
+            if (userProfile.UserType == UserType.Basic && model.Range != 0 && model.Sex != Gender.Unknown)
+                return Unauthorized(_localizer.GetString("NotPremium"));
+
+            var challengeParams = new ChallengeParams(Status.Active, userProfile.Id, model.BetAmount);
             var challenge = _challengeService.CreateOrUpdate(challengeParams);
 
             var challengerIds = await _challengeRequestService
                 .CreateChallengeRequests(
                 new CreateChallengeRequestModel(
                     accessToken, 
-                    challenge.Id, 
-                    userId, 
+                    challenge.Id,
+                    userProfile.Id, 
                     challenge.RewardPoint,
-                    model.Range));
+                    model.Range,
+                    model.Sex));
             if (challengerIds == null || challengerIds.Count == 0)
             {
                 _challengeService.Remove(new RemoveEntityParams(challenge.Id, new HasOperator(), true, true));
-                return BadRequest("Belirtilen kriterlerde bir kullanıcı bulunamadı");
+                return BadRequest(_localizer.GetString("NoUserFound"));
             }
                 
 
@@ -124,8 +131,8 @@ namespace Upope.Challenge.Controllers
 
                 var challengeRequest = _challengeRequestService.Get(challengeRequestId);
 
-                if(challengeRequest.ChallengerId != userId ||challengeRequest.ChallengeRequestStatus != Enums.ChallengeRequestStatus.Waiting)
-                    return BadRequest(challengeRequest.ChallengerId + " - " + userId + " : " + "An error occured. Please select another game or try in a few seconds again.");
+                if(challengeRequest.ChallengerId != userId || challengeRequest.ChallengeRequestStatus != Enums.ChallengeRequestStatus.Waiting)
+                    return BadRequest(_localizer.GetString("GameAlreadyStarted"));
 
                 var challengeRequestParams = _mapper.Map<ChallengeRequestParams>(challengeRequest);
                 challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestAnswer;
@@ -135,11 +142,11 @@ namespace Upope.Challenge.Controllers
             }
             catch(UserNotAvailableException ex)
             {
-                return BadRequest("User is in another game. Please select another game");
+                return BadRequest(_localizer.GetString("GameAlreadyStarted"));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex + "An error occured. Please select another game or try in a few seconds again.");
+                return BadRequest(_localizer.GetString("UpdateChallengeException"));
             }
 
             return Ok();

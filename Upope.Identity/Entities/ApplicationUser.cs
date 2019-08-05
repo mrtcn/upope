@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Upope.Identity.Enum;
 using Upope.Identity.Helpers;
 using Upope.Identity.Models.FacebookResponse;
+using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Extensions;
 
 namespace Upope.Identity.Entities

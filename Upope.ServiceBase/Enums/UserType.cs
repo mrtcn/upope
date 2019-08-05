@@ -1,4 +1,4 @@
-﻿namespace Upope.Game.Enum
+﻿namespace Upope.ServiceBase.Enums
 {
     public enum UserType
     {

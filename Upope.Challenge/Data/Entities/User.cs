@@ -14,6 +14,7 @@ namespace Upope.Challenge.Data.Entities
         String Nickname { get; set; }
         String PictureUrl { get; set; }
         String UserId { get; set; }
+        Gender Gender { get; set; }
         double Latitude { get; set; }
         double Longitude { get; set; }
     }
@@ -32,6 +33,7 @@ namespace Upope.Challenge.Data.Entities
         public String Nickname { get; set; }
         public String PictureUrl { get; set; }
         public String UserId { get; set; }
+        public Gender Gender { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public DateTime CreatedDate { get; set; }

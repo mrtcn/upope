@@ -18,11 +18,23 @@ using Upope.Challenge.Handlers;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Game.Services.Interfaces;
 using Upope.Challenge.Services.Sync;
+using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using System.Linq;
 
 namespace Upope.Challenge
 {
     public class Startup
     {
+        private List<CultureInfo> supportedCultures { get {
+                return new List<CultureInfo>
+                {
+                    new CultureInfo("tr-TR"),
+                    new CultureInfo("en-US"),
+                };
+            }
+        }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -80,6 +92,25 @@ namespace Upope.Challenge
             });
             #endregion
 
+
+            #region Localization
+            services.AddLocalization(l =>
+            {
+                l.ResourcesPath = "Resources";
+            });
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
+                {
+                    //...
+                    var userLangs = context.Request.Headers["Accept-Language"].ToString();
+                    var firstLang = userLangs.Split(',').FirstOrDefault();
+                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().DisplayName : firstLang;
+                    return Task.FromResult(new ProviderCultureResult(defaultLang, defaultLang));
+                }));
+            });
+            #endregion
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
@@ -123,6 +154,20 @@ namespace Upope.Challenge
             //app.UseHttpsRedirection();
             app.UseAuthentication();
 
+            //Localization
+            IList<CultureInfo> supportedCultures = new List<CultureInfo>
+            {
+                new CultureInfo("tr-TR"),
+                new CultureInfo("en-US"),
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().DisplayName),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -143,6 +188,7 @@ namespace Upope.Challenge
         {
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
+            AppSettingsProvider.GetUserProfile = Configuration["Upope.Identity:GetUserProfile"].ToString();
 
 
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();      

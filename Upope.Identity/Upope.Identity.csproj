@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -15,6 +15,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190311120509_IdentityInit.cs" />
+    <Compile Remove="Migrations\20190311120509_IdentityInit.Designer.cs" />
+    <Compile Remove="Migrations\20190311120623_IdentityRefreshToken.cs" />
+    <Compile Remove="Migrations\20190311120623_IdentityRefreshToken.Designer.cs" />
+    <Compile Remove="Migrations\20190728145126_Upope.Identity.Local.Init.cs" />
+    <Compile Remove="Migrations\20190728145126_Upope.Identity.Local.Init.Designer.cs" />
+    <Compile Remove="Migrations\20190803112855_Fixes.cs" />
+    <Compile Remove="Migrations\20190803112855_Fixes.Designer.cs" />
+    <Compile Remove="Migrations\20190803113402_Fixes2.cs" />
+    <Compile Remove="Migrations\20190803113402_Fixes2.Designer.cs" />
+    <Compile Remove="Migrations\20190803113711_Fixes3.cs" />
+    <Compile Remove="Migrations\20190803113711_Fixes3.Designer.cs" />
+    <Compile Remove="Migrations\20190803114009_Fixes4.cs" />
+    <Compile Remove="Migrations\20190803114009_Fixes4.Designer.cs" />
+    <Compile Remove="Migrations\20190803114150_Fixes5.cs" />
+    <Compile Remove="Migrations\20190803114150_Fixes5.Designer.cs" />
+    <Compile Remove="Migrations\20190803114522_Init.cs" />
+    <Compile Remove="Migrations\20190803114522_Init.Designer.cs" />
     <Compile Remove="Models\FacebookAppAccessToken.cs" />
     <Compile Remove="Models\FacebookUserAccessTokenValidation.cs" />
     <Compile Remove="Models\FacebookUserData.cs" />

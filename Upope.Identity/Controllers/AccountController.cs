@@ -221,6 +221,7 @@ namespace Upope.Identity.Controllers
                         FirstName = registerModel.FirstName,
                         LastName = registerModel.LastName,
                         Email = registerModel.Email,
+                        Gender = registerModel.Gender,
                         UserType = registerModel.UserType,
                         Birthday = registerModel.Birthday,
                         Latitude = registerModel.Latitude,
@@ -265,7 +266,7 @@ namespace Upope.Identity.Controllers
         public async Task<IActionResult> Facebook([FromBody]FacebookAuthViewModel model)
         {
             try
-            {
+            { 
                 var facebookUser = await _facebookService.GetAccountAsync(model.AccessToken);
 
                 if (string.IsNullOrEmpty(facebookUser.Id))

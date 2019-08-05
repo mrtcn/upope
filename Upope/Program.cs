@@ -22,7 +22,7 @@ namespace Upope
             catch (Exception ex)
             {
                 //NLog: catch setup errors
-                logger.Error(ex, "Stopped program because of exception");
+                logger.Error(ex, $"Stopped program because of exception = {ex}");
                 throw;
             }
             finally

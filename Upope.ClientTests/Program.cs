@@ -12,11 +12,11 @@ namespace Upope.ClientTests
         static async Task Main(string[] args)
         {
             Console.WriteLine("Enter your AccessToken!");
-            var accessToken = ReadLine().Replace("\r\n", "");
+            var accessToken = ReadLine().Replace("\r\n", "").Trim();
 
             var challengeViewModel = new ChallengeViewModel(accessToken);
-            //await challengeViewModel.ChallengeConnect();
-            await challengeViewModel.GameConnect();
+            await challengeViewModel.ChallengeConnect();
+            //await challengeViewModel.GameConnect();
             Thread.Sleep(500);
             //await challengeViewModel.SendChallenge();
             //challengeViewModel.SendMessage("User XXX", "Message 1");
@@ -36,8 +36,10 @@ namespace Upope.ClientTests
             Stream inputStream = Console.OpenStandardInput(readlineBufferSize);
             byte[] bytes = new byte[readlineBufferSize];
             int outputLength = inputStream.Read(bytes, 0, readlineBufferSize);
-            //Console.WriteLine(outputLength);
+            
             char[] chars = Encoding.UTF7.GetChars(bytes, 0, outputLength);
+
+            Console.WriteLine(new string(chars));
             return new string(chars);
         }
     }

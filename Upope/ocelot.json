@@ -5,8 +5,8 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5000
+          "Host": "upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/ws/{catchAll}",
@@ -17,8 +17,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 6000
+          "Host": "identity.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/account/anon/{action}",
@@ -29,8 +29,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 6000
+          "Host": "identity.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/account/{action}",
@@ -45,8 +45,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7000
+          "Host": "challenge.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/challenge/anonymous/{everything}",
@@ -57,8 +57,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7000
+          "Host": "challenge.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/challenge/{everything}",
@@ -73,8 +73,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 9000
+          "Host": "loyalty.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/loyalty/anon/{everything}",
@@ -89,8 +89,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 9000
+          "Host": "loyalty.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/loyalty/{everything}",
@@ -105,8 +105,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 8000
+          "Host": "game.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/game/{everything}",
@@ -121,8 +121,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 8000
+          "Host": "game.upope.com",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/game/anon/{everything}",

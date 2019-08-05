@@ -209,15 +209,6 @@ namespace Upope.Challenge.Services
 
         }
 
-        private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
-        {
-            var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
-            CreateOrUpdate(challengeRequestParams);
-            
-            await _hubContext.Clients.Users(model.ChallengerId)
-                .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
-        }
-
         public async Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model)
         {
             var userIds = await GetChallengerIds(
@@ -227,6 +218,8 @@ namespace Upope.Challenge.Services
                     AppSettingsProvider.SufficientPointsUrl + "/" + model.Points));
 
             var filteredUserId = ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, userIds);
+            filteredUserId = ApplyGenderFilter(model.Gender, model.ChallengeOwnerId, filteredUserId);
+
             foreach (var userId in filteredUserId)
             {
                 var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
@@ -239,6 +232,38 @@ namespace Upope.Challenge.Services
             return filteredUserId;
         }
 
+        private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
+        {
+            var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, model.ChallengerId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
+            CreateOrUpdate(challengeRequestParams);
+
+            await _hubContext.Clients.Users(model.ChallengerId)
+                .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
+        }
+
+        //TODO: (Murat) Performance issue to solve
+        private IReadOnlyList<string> ApplyGenderFilter(Gender gender, string actualUserId, IReadOnlyList<string> destinationUserIds)
+        {
+            if (destinationUserIds == null || destinationUserIds.Count == 0)
+                return null;
+
+            if (gender == Gender.Unknown)
+                return destinationUserIds;
+
+            var userIds = destinationUserIds.ToList();
+
+            foreach (var userId in userIds.ToList())
+            {
+                var destinationUser = _userService.GetUserByUserId(userId);
+
+                if (destinationUser.Gender != gender)
+                    userIds.Remove(userId);
+            }
+
+            return userIds;
+        }
+
+        //TODO: (Murat) Performance issue to solve
         private IReadOnlyList<string> ExcludeOutOfRangeUsers(int range, string actualUserId, IReadOnlyList<string> destinationUserIds)
         {
             if (destinationUserIds == null || destinationUserIds.Count == 0)
