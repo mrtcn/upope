@@ -92,7 +92,6 @@ namespace Upope.Challenge
             });
             #endregion
 
-
             #region Localization
             services.AddLocalization(l =>
             {
@@ -103,10 +102,9 @@ namespace Upope.Challenge
             {
                 options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
                 {
-                    //...
                     var userLangs = context.Request.Headers["Accept-Language"].ToString();
                     var firstLang = userLangs.Split(',').FirstOrDefault();
-                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().DisplayName : firstLang;
+                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().TwoLetterISOLanguageName : firstLang;
                     return Task.FromResult(new ProviderCultureResult(defaultLang, defaultLang));
                 }));
             });
@@ -163,7 +161,7 @@ namespace Upope.Challenge
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().DisplayName),
+                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().ToString()),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });

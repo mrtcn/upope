@@ -11,7 +11,6 @@ namespace Upope.Challenge.Services
         private readonly IHttpHandler _httpHandler;
 
         public IdentityService(
-            ApplicationDbContext applicationDbContext,
             IHttpHandler httpHandler)
         {
             _httpHandler = httpHandler;

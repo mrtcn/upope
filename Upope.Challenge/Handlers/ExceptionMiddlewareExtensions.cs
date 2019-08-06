@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using NLog.Web;
+using System;
 using System.Net;
 
 namespace Upope.Challenge.Handlers
 {
     public static class ExceptionMiddlewareExtensions
     {
-        public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+
+        public static void ConfigureExceptionHandler(this IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-
             app.UseExceptionHandler(appError =>
             {
                 appError.Run(async context =>
