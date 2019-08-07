@@ -140,11 +140,11 @@ namespace Upope.Challenge.Controllers
 
                 _challengeRequestService.CreateOrUpdate(challengeRequestParams);
             }
-            catch(UserNotAvailableException ex)
+            catch(UserNotAvailableException)
             {
                 return BadRequest(_localizer.GetString("GameAlreadyStarted"));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(_localizer.GetString("UpdateChallengeException"));
             }

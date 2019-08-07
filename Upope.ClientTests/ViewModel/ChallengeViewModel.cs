@@ -103,7 +103,7 @@ namespace Upope.ClientTests.ViewModel
                 });
                 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Something has gone wrong
             }
