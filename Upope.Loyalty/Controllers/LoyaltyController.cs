@@ -4,12 +4,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Upope.Identity.ViewModels;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.Loyalty.ViewModels;
 using Upope.ServiceBase.Extensions;
-using Upope.ServiceBase.Handler;
 
 namespace Upope.Loyalty.Controllers
 {
@@ -18,17 +18,17 @@ namespace Upope.Loyalty.Controllers
     public class LoyaltyController : ControllerBase
     {
         private readonly ILoyaltyService _loyaltyService;
-        private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
+        private readonly IStringLocalizer<LoyaltyController> _localizer;
 
         public LoyaltyController(
             ILoyaltyService loyaltyService,
-            IIdentityService identityService,
+            IStringLocalizer<LoyaltyController> localizer,
             IMapper mapper)
         {
             _loyaltyService = loyaltyService;
-            _identityService = identityService;
             _mapper = mapper;
+            _localizer = localizer;
         }
 
         [HttpGet]

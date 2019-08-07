@@ -117,17 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GameAlreadyStarted" xml:space="preserve">
-    <value>You answered late. Either evaluate the other requests or create a new game.</value>
+  <data name="EmailIsInUse" xml:space="preserve">
+    <value>Email is used by another user.</value>
   </data>
-  <data name="NotPremium" xml:space="preserve">
-    <value>Account is not premium. You cannot give any gender or range criteria!</value>
+  <data name="InvalidTokenFacebook" xml:space="preserve">
+    <value>Facebook login failed.</value>
   </data>
-  <data name="NoUserFound" xml:space="preserve">
-    <value>No user found with the given search criteria.</value>
+  <data name="InvalidTokenGoogle" xml:space="preserve">
+    <value>Google login failed.</value>
   </data>
-  <data name="UpdateChallengeException" xml:space="preserve">
-    <value>An error occured. Please select another game or try in a few seconds again.</value>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>An error occured during login.</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>An unknown error occured.</value>
+  </data>
+  <data name="UsernameOrPasswordWrong" xml:space="preserve">
+    <value>Username or password is wrong.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User is not found.</value>
   </data>
   <data name="GlobalException" xml:space="preserve">
     <value>An unknown error occured. We apologize for any inconvenience.</value>

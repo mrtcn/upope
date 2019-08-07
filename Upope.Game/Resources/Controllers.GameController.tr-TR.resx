@@ -117,19 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GameAlreadyStarted" xml:space="preserve">
-    <value>You answered late. Either evaluate the other requests or create a new game.</value>
-  </data>
-  <data name="NotPremium" xml:space="preserve">
-    <value>Account is not premium. You cannot give any gender or range criteria!</value>
-  </data>
-  <data name="NoUserFound" xml:space="preserve">
-    <value>No user found with the given search criteria.</value>
-  </data>
-  <data name="UpdateChallengeException" xml:space="preserve">
-    <value>An error occured. Please select another game or try in a few seconds again.</value>
+  <data name="ExpiredBluff" xml:space="preserve">
+    <value>Rakip seçimini yaptı, blöf için çok geç</value>
   </data>
   <data name="GlobalException" xml:space="preserve">
-    <value>An unknown error occured. We apologize for any inconvenience.</value>
+    <value>Bilinmeyen bir hata oluştu. Bu aksaklıktan ötürü özür dileriz.</value>
   </data>
 </root>

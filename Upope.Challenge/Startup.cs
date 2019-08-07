@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Upope.Challenge.GlobalSettings;
 using Upope.ServiceBase.Handler;
 using Upope.Challenge.Hubs;
-using Upope.Challenge.Handlers;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Game.Services.Interfaces;
 using Upope.Challenge.Services.Sync;
@@ -22,6 +21,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using System.Linq;
+using Upope.Challenge.Filters;
 
 namespace Upope.Challenge
 {
@@ -92,7 +92,6 @@ namespace Upope.Challenge
             });
             #endregion
 
-
             #region Localization
             services.AddLocalization(l =>
             {
@@ -103,15 +102,16 @@ namespace Upope.Challenge
             {
                 options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
                 {
-                    //...
                     var userLangs = context.Request.Headers["Accept-Language"].ToString();
                     var firstLang = userLangs.Split(',').FirstOrDefault();
-                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().DisplayName : firstLang;
+                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().TwoLetterISOLanguageName : firstLang;
                     return Task.FromResult(new ProviderCultureResult(defaultLang, defaultLang));
                 }));
             });
             #endregion
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
             });
@@ -150,7 +150,6 @@ namespace Upope.Challenge
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
 
@@ -163,7 +162,7 @@ namespace Upope.Challenge
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().DisplayName),
+                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().ToString()),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });

@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Upope.Game.EntityParams;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
@@ -18,6 +19,7 @@ namespace Upope.Game.Controllers
         private readonly IGameRoundService _gameRoundService;
         private readonly IBluffService _bluffService;
         private readonly IIdentityService _identityService;
+        private readonly IStringLocalizer<GameController> _localizer;
         private readonly IMapper _mapper;
 
         public GameController(
@@ -25,13 +27,15 @@ namespace Upope.Game.Controllers
             IGameRoundService gameRoundService,
             IBluffService bluffService,
             IIdentityService identityService,
+            IStringLocalizer<GameController> localizer,
             IMapper mapper)
         {
             _gameService = gameService;
             _gameRoundService = gameRoundService;
             _bluffService = bluffService;
             _identityService = identityService;
-            _mapper = mapper;
+            _localizer = localizer;
+            _mapper = mapper;            
         }
 
         [HttpPost]
@@ -84,7 +88,7 @@ namespace Upope.Game.Controllers
             var lastGameRound = _gameRoundService.GetLastRoundEntity(model.GameId);
             if (lastGameRound.GuestAnswer != Enum.RockPaperScissorsType.NotAnswered && lastGameRound.HostAnswer != Enum.RockPaperScissorsType.NotAnswered)
             {
-                return BadRequest("Rakip seçimini yaptı, blöf için çok geç");
+                return BadRequest(_localizer.GetString("ExpiredBluff").Value);
             }
 
             BluffParams bluffParams = _bluffService.GetBluffParams(model, userId, lastGameRound);

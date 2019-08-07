@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
@@ -42,6 +43,7 @@ namespace Upope.Identity.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
+        private readonly IStringLocalizer<AccountController> _localizer;
 
         public AccountController(
            UserManager<ApplicationUser> userManager,
@@ -55,7 +57,8 @@ namespace Upope.Identity.Controllers
            ILogger<AccountController> logger,
            IHostingEnvironment hostingEnvironment,
            IChallengeUserSyncService challengeUserSyncService,
-           ILoyaltySyncService loyaltySyncService)
+           ILoyaltySyncService loyaltySyncService,
+           IStringLocalizer<AccountController> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -69,6 +72,7 @@ namespace Upope.Identity.Controllers
             _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
+            _localizer = localizer;
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
@@ -96,14 +100,14 @@ namespace Upope.Identity.Controllers
 
                 if(user == null)
                 {
-                    return BadRequest();
+                    return BadRequest(_localizer.GetString("UserNotFound"));
                 }
 
                 var loginResult = await _signInManager.PasswordSignInAsync(user.UserName, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
 
                 if (!loginResult.Succeeded)
                 {
-                    return BadRequest();
+                    return BadRequest(_localizer.GetString("UsernameOrPasswordWrong"));
                 }
 
                 var accessToken = _tokenService.GenerateAccessToken(user);
@@ -114,8 +118,7 @@ namespace Upope.Identity.Controllers
 
                 return Ok(new TokenModel(accessToken, refreshToken));
             }
-            return BadRequest(ModelState);
-
+            return BadRequest(_localizer.GetString("LoginFailed"));
         }
 
         [Authorize]
@@ -271,7 +274,7 @@ namespace Upope.Identity.Controllers
 
                 if (string.IsNullOrEmpty(facebookUser.Id))
                 {
-                    return BadRequest("Invalid facebook token.");
+                    return BadRequest(_localizer.GetString("InvalidTokenFacebook"));
                 }
 
                 // 4. ready to create the local user account (if necessary) and jwt
@@ -286,14 +289,14 @@ namespace Upope.Identity.Controllers
                 if (isCreate)
                 {
                     if (!IsEmailUnique(appUser.Email))
-                        return BadRequest("Email baska bir kullaniciya ait.");
+                        return BadRequest(_localizer.GetString("EmailIsInUse"));
 
                     appUser.CreationDate = DateTime.Now;
                     var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
 
                     if (!result.Succeeded)
                     {
-                        return new BadRequestObjectResult(result.Errors.FirstOrDefault());
+                        return BadRequest(_localizer.GetString("LoginFailed"));
                     }
                 }
                 else
@@ -304,7 +307,7 @@ namespace Upope.Identity.Controllers
                     var result = await _userManager.UpdateAsync(user);
                     if (!result.Succeeded)
                     {
-                        return new BadRequestObjectResult(result.Errors.FirstOrDefault());
+                        return BadRequest(_localizer.GetString("LoginFailed"));
                     }
                 }
 
@@ -313,7 +316,7 @@ namespace Upope.Identity.Controllers
 
                 if (localUser == null)
                 {
-                    return BadRequest("Failed to create local user account.");
+                    return BadRequest(_localizer.GetString("LoginFailed"));
                 }
 
                 var accessToken = _tokenService.GenerateAccessToken(localUser);                
@@ -328,7 +331,7 @@ namespace Upope.Identity.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(_localizer.GetString("LoginFailed"));
             }
             
         }
@@ -363,63 +366,70 @@ namespace Upope.Identity.Controllers
         [Route("anon/google")]
         public async Task<IActionResult> Google([FromBody]GoogleAuthViewModel model)
         {
-            var googleUser = await _googleService.GetAccountAsync(model.AccessToken);
-
-            if (string.IsNullOrEmpty(googleUser.Sub))
+            try
             {
-                return BadRequest("Invalid google token.");
-            }
+                var googleUser = await _googleService.GetAccountAsync(model.AccessToken);
 
-            // 4. ready to create the local user account (if necessary) and jwt
-            var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
-            var isCreate = user == null;
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            var projectPath = _hostingEnvironment.ContentRootPath;
-
-            if (user == null)
-            {
-                var appUser = new ApplicationUser
+                if (string.IsNullOrEmpty(googleUser.Sub))
                 {
-                    FirstName = googleUser.GivenName,
-                    LastName = googleUser.FamilyName,
-                    GoogleId = googleUser.Sub,
-                    Email = googleUser.Email,
-                    Nickname = Regex.Replace(googleUser.Name, @"[^\w]", "").ToLower(),
-                    UserName = Guid.NewGuid().ToString(),                    
-                    PictureUrl = SaveImageUrlToDisk.SaveImage(googleUser.Picture, projectPath, ImageFormat.Jpeg),
-                    Birthday = googleUser.Birthday != null ? DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture) : DateTime.MinValue,
-                    RefreshToken = refreshToken
-                };
-
-                if (!IsEmailUnique(appUser.Email))
-                    return BadRequest("Email baska bir kullaniciya ait.");
-
-                appUser.CreationDate = DateTime.Now;
-                var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
-
-                if (!result.Succeeded)
-                {
-                    return new BadRequestObjectResult(result.Errors.FirstOrDefault());
+                    return BadRequest(_localizer.GetString("InvalidTokenFacebook"));
                 }
+
+                // 4. ready to create the local user account (if necessary) and jwt
+                var user = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
+                var isCreate = user == null;
+                var refreshToken = _tokenService.GenerateRefreshToken();
+                var projectPath = _hostingEnvironment.ContentRootPath;
+
+                if (user == null)
+                {
+                    var appUser = new ApplicationUser
+                    {
+                        FirstName = googleUser.GivenName,
+                        LastName = googleUser.FamilyName,
+                        GoogleId = googleUser.Sub,
+                        Email = googleUser.Email,
+                        Nickname = Regex.Replace(googleUser.Name, @"[^\w]", "").ToLower(),
+                        UserName = Guid.NewGuid().ToString(),
+                        PictureUrl = SaveImageUrlToDisk.SaveImage(googleUser.Picture, projectPath, ImageFormat.Jpeg),
+                        Birthday = googleUser.Birthday != null ? DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture) : DateTime.MinValue,
+                        RefreshToken = refreshToken
+                    };
+
+                    if (!IsEmailUnique(appUser.Email))
+                        return BadRequest(_localizer.GetString("EmailIsInUse"));
+
+                    appUser.CreationDate = DateTime.Now;
+                    var result = await _userManager.CreateAsync(appUser, _randomPasswordHelper.GenerateRandomPassword());
+
+                    if (!result.Succeeded)
+                    {
+                        return BadRequest(_localizer.GetString("LoginFailed"));
+                    }
+                }
+
+                // generate the jwt for the local user...
+                var localUser = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
+
+                if (localUser == null)
+                {
+                    return BadRequest(_localizer.GetString("LoginFailed"));
+                }
+
+                var accessToken = _tokenService.GenerateAccessToken(localUser);
+
+                // Syncing the Challenge DB User table
+                await SyncChallengeUserTable(localUser, accessToken);
+
+                // Syncing the Loyalty DB Loyalty table
+                await SyncLoyaltyTable(isCreate, localUser, accessToken);
+
+                return Ok(new TokenModel(accessToken, refreshToken));
             }
-
-            // generate the jwt for the local user...
-            var localUser = GetUserByExternalId(googleUser.Sub, ExternalProviderTyper.Google);
-
-            if (localUser == null)
+            catch (Exception)
             {
-                return BadRequest("Failed to create local user account.");
+                return BadRequest(_localizer.GetString("LoginFailed"));
             }
-
-            var accessToken = _tokenService.GenerateAccessToken(localUser);
-
-            // Syncing the Challenge DB User table
-            await SyncChallengeUserTable(localUser, accessToken);
-
-            // Syncing the Loyalty DB Loyalty table
-            await SyncLoyaltyTable(isCreate, localUser, accessToken);
-
-            return Ok(new TokenModel(accessToken, refreshToken));
         }
 
         private ApplicationUser GetUserByExternalId(string externalId, ExternalProviderTyper providerType)

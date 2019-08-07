@@ -1,17 +1,21 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Upope.Game.Filters;
 using Upope.Game.GlobalSettings;
-using Upope.Game.Handlers;
 using Upope.Game.Hubs;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
@@ -21,6 +25,18 @@ namespace Upope.Game
 {
     public class Startup
     {
+        private List<CultureInfo> supportedCultures
+        {
+            get
+            {
+                return new List<CultureInfo>
+                {
+                    new CultureInfo("tr-TR"),
+                    new CultureInfo("en-US"),
+                };
+            }
+        }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -78,7 +94,27 @@ namespace Upope.Game
             });
             #endregion
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            #region Localization
+            services.AddLocalization(l =>
+            {
+                l.ResourcesPath = "Resources";
+            });
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
+                {
+                    var userLangs = context.Request.Headers["Accept-Language"].ToString();
+                    var firstLang = userLangs.Split(',').FirstOrDefault();
+                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().TwoLetterISOLanguageName : firstLang;
+                    return Task.FromResult(new ProviderCultureResult(defaultLang, defaultLang));
+                }));
+            });
+            #endregion
+
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -116,9 +152,21 @@ namespace Upope.Game
                 app.UseHsts();
             }
 
-            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
+            //Localization
+            IList<CultureInfo> supportedCultures = new List<CultureInfo>
+            {
+                new CultureInfo("tr-TR"),
+                new CultureInfo("en-US"),
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().ToString()),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
