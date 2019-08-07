@@ -129,4 +129,7 @@
   <data name="UpdateChallengeException" xml:space="preserve">
     <value>An error occured. Please select another game or try in a few seconds again.</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>An unknown error occured. We apologize for any inconvenience.</value>
+  </data>
 </root>

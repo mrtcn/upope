@@ -120,4 +120,7 @@
   <data name="ExpiredBluff" xml:space="preserve">
     <value>Rakip seçimini yaptı, blöf için çok geç</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>Bilinmeyen bir hata oluştu. Bu aksaklıktan ötürü özür dileriz.</value>
+  </data>
 </root>

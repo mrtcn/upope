@@ -120,4 +120,7 @@
   <data name="ExpiredBluff" xml:space="preserve">
     <value>Opponent has already answered. Too late for bluffing.</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>An unknown error occured. We apologize for any inconvenience.</value>
+  </data>
 </root>

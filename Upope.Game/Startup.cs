@@ -14,8 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Upope.Game.Filters;
 using Upope.Game.GlobalSettings;
-using Upope.Game.Handlers;
 using Upope.Game.Hubs;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
@@ -112,7 +112,9 @@ namespace Upope.Game
             });
             #endregion
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -150,7 +152,6 @@ namespace Upope.Game
                 app.UseHsts();
             }
 
-            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
             //Localization

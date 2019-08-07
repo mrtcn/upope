@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Upope.Challenge.GlobalSettings;
 using Upope.ServiceBase.Handler;
 using Upope.Challenge.Hubs;
-using Upope.Challenge.Handlers;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Game.Services.Interfaces;
 using Upope.Challenge.Services.Sync;
@@ -22,6 +21,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using System.Linq;
+using Upope.Challenge.Filters;
 
 namespace Upope.Challenge
 {
@@ -109,7 +109,9 @@ namespace Upope.Challenge
                 }));
             });
             #endregion
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
             });
@@ -148,7 +150,6 @@ namespace Upope.Challenge
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
 

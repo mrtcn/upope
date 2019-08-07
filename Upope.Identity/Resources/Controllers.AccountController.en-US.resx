@@ -138,4 +138,7 @@
   <data name="UserNotFound" xml:space="preserve">
     <value>User is not found.</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>An unknown error occured. We apologize for any inconvenience.</value>
+  </data>
 </root>

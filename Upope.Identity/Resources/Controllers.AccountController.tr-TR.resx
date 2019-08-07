@@ -138,4 +138,7 @@
   <data name="UserNotFound" xml:space="preserve">
     <value>Kullanıcı bulunamadı.</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>Bilinmeyen bir hata oluştu. Bu aksaklıktan ötürü özür dileriz.</value>
+  </data>
 </root>

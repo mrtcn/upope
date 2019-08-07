@@ -129,4 +129,7 @@
   <data name="UpdateChallengeException" xml:space="preserve">
     <value>Bir hata oluştu. Lütfen daha sonra tekrar deneyin veya yeni bir oyun oluşturun.</value>
   </data>
+  <data name="GlobalException" xml:space="preserve">
+    <value>Bilinmeyen bir hata oluştu. Bu aksaklıktan ötürü özür dileriz.</value>
+  </data>
 </root>

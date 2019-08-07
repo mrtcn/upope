@@ -14,8 +14,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.Loyalty.Filters;
 using Upope.Loyalty.GlobalSettings;
-using Upope.Loyalty.Handlers;
 using Upope.Loyalty.Services;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase.Handler;
@@ -110,7 +110,9 @@ namespace Upope.Loyalty
                 }));
             });
             #endregion
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -142,7 +144,7 @@ namespace Upope.Loyalty
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.ConfigureExceptionHandler();
+
             //app.UseHttpsRedirection();
             app.UseAuthentication();
             //Localization

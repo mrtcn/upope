@@ -17,8 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
+using Upope.Identity.Filters;
 using Upope.Identity.GlobalSettings;
-using Upope.Identity.Handlers;
 using Upope.Identity.Helpers;
 using Upope.Identity.Helpers.Interfaces;
 using Upope.Identity.Models.FacebookResponse;
@@ -132,7 +132,9 @@ namespace Upope.Identity
                 }));
             });
             #endregion
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => {
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
@@ -166,7 +168,7 @@ namespace Upope.Identity
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.ConfigureExceptionHandler();
+
             //app.UseHttpsRedirection();
             app.UseAuthentication();
             //Localization
