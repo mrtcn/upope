@@ -22,6 +22,8 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using System.Linq;
 using Upope.Challenge.Filters;
+using Upope.ServiceBase.Services.Interfaces;
+using Upope.ServiceBase.Services;
 
 namespace Upope.Challenge
 {

@@ -43,6 +43,7 @@ namespace Upope.Identity.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
+        private readonly IGameUserSyncService _gameUserSyncService;
         private readonly IStringLocalizer<AccountController> _localizer;
 
         public AccountController(
@@ -58,6 +59,7 @@ namespace Upope.Identity.Controllers
            IHostingEnvironment hostingEnvironment,
            IChallengeUserSyncService challengeUserSyncService,
            ILoyaltySyncService loyaltySyncService,
+           IGameUserSyncService gameUserSyncService,
            IStringLocalizer<AccountController> localizer)
         {
             _userManager = userManager;
@@ -72,6 +74,7 @@ namespace Upope.Identity.Controllers
             _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
+            _gameUserSyncService = gameUserSyncService;
             _localizer = localizer;
         }
 
@@ -247,6 +250,9 @@ namespace Upope.Identity.Controllers
                         // Syncing the Loyalty DB Loyalty table
                         await SyncLoyaltyTable(true, user, accessToken);
 
+                        // Syncing the Game DB User table
+                        await SyncGameUserTable(user, accessToken);
+
                         return Ok(new TokenModel(accessToken, refreshToken));
                     }
                     else
@@ -327,6 +333,9 @@ namespace Upope.Identity.Controllers
                 // Syncing the Loyalty DB Loyalty table
                 await SyncLoyaltyTable(isCreate, localUser, accessToken);
 
+                // Syncing the Game DB User table
+                await SyncGameUserTable(localUser, accessToken);
+
                 return Ok(new TokenModel(accessToken, refreshToken));
             }
             catch (Exception ex)
@@ -334,6 +343,15 @@ namespace Upope.Identity.Controllers
                 return BadRequest(_localizer.GetString("LoginFailed"));
             }
             
+        }
+
+        private async Task SyncGameUserTable(ApplicationUser localUser, string accessToken)
+        {
+            // Syncing the Challenge DB User table
+            var createGameUserViewModel = _mapper.Map<ApplicationUser, CreateOrUpdateGameUserViewModel>(localUser);
+            createGameUserViewModel.UserId = localUser.Id;
+
+            await _gameUserSyncService.SyncGameUserTable(createGameUserViewModel, accessToken);
         }
 
         private async Task SyncChallengeUserTable(ApplicationUser localUser, string accessToken)
@@ -423,6 +441,9 @@ namespace Upope.Identity.Controllers
 
                 // Syncing the Loyalty DB Loyalty table
                 await SyncLoyaltyTable(isCreate, localUser, accessToken);
+
+                // Syncing the Game DB User table
+                await SyncGameUserTable(localUser, accessToken);
 
                 return Ok(new TokenModel(accessToken, refreshToken));
             }

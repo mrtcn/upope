@@ -5,6 +5,6 @@ namespace Upope.Game.Services.Interfaces
 {
     public interface IGameSyncService
     {
-        Task SyncGameTable(CreateOrUpdateGameModel model, string accessToken);
+        Task<bool> SyncGameTable(CreateOrUpdateGameModel model, string accessToken);
     }
 }

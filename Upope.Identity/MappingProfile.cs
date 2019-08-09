@@ -13,6 +13,9 @@ namespace Upope.Identity
 
             CreateMap<ApplicationUser, CreateOrUpdateChallengeUserViewModel>();
             CreateMap<CreateOrUpdateChallengeUserViewModel, ApplicationUser>();
+
+            CreateMap<CreateOrUpdateGameUserViewModel, ApplicationUser>();
+            CreateMap<ApplicationUser, CreateOrUpdateGameUserViewModel>();
         }
     }
 }

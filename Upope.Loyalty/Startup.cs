@@ -19,6 +19,8 @@ using Upope.Loyalty.GlobalSettings;
 using Upope.Loyalty.Services;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase.Handler;
+using Upope.ServiceBase.Services;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Loyalty
 {
@@ -129,7 +131,6 @@ namespace Upope.Loyalty
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
-            services.AddTransient<IIdentityService, IdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

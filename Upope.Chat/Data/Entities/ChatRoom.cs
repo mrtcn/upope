@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
@@ -21,5 +22,6 @@ namespace Upope.Chat.Data.Entities
         public string ChatUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public List<Chat> Chats { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Upope.Chat.Data.Entities;
 
-namespace Upope.Loyalty.Data.Mappings
+namespace Upope.Chat.Data.Mappings
 {
     public class ChatRoomMapping : IEntityTypeConfiguration<ChatRoom>
     {

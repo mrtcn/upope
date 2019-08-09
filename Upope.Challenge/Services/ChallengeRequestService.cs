@@ -27,7 +27,6 @@ namespace Upope.Challenge.Services
         private readonly IUserService _userService;
         private readonly IChallengeService _challengeService;
         private readonly IGeoLocationService _geoLocationService;
-        private readonly IGameSyncService _gameSyncService;
         private readonly IHubContext<ChallengeHubs> _hubContext;
         private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
@@ -37,7 +36,6 @@ namespace Upope.Challenge.Services
             IUserService userService,
             IChallengeService challengeService,
             IGeoLocationService geoLocationService,
-            IGameSyncService gameSyncService,
             IMapper mapper, 
             IHttpHandler httpHandler,
             IHubContext<ChallengeHubs> hubContext) : base(applicationDbContext, mapper)
@@ -45,7 +43,6 @@ namespace Upope.Challenge.Services
             _userService = userService;
             _challengeService = challengeService;
             _geoLocationService = geoLocationService;
-            _gameSyncService = gameSyncService;
             _hubContext = hubContext;
             _mapper = mapper;
             _httpHandler = httpHandler;
@@ -99,15 +96,7 @@ namespace Upope.Challenge.Services
                     UserImagePath = entity.Challenger.PictureUrl
                 }));
 
-                var createOrUpdateGameViewModel = new CreateOrUpdateGameModel()
-                {
-                    Id = 0,
-                    Credit = entity.Challenge.RewardPoint,
-                    GuestUserId = entity.ChallengerId,
-                    HostUserId = entity.ChallengeOwnerId
-                };
 
-                await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
             }
 
             if (entity.ChallengeRequestStatus == Enums.ChallengeRequestStatus.Rejected)

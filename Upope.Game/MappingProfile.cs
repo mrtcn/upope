@@ -19,6 +19,10 @@ namespace Upope.Game
             CreateMap<GameRoundParams, GameRound>();
             CreateMap<Bluff, BluffParams>();
             CreateMap<BluffParams, Bluff>();
+            CreateMap<CreateUserViewModel, UserParams>();
+            CreateMap<UserParams, CreateUserViewModel>();
+            CreateMap<User, UserParams>();
+            CreateMap<UserParams, User>();
         }
     }
 }

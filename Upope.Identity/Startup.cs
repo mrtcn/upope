@@ -151,6 +151,8 @@ namespace Upope.Identity
             services.AddTransient<IHttpHandler, HttpHandler>();
             services.AddTransient<IChallengeUserSyncService, ChallengeUserSyncService>();
             services.AddTransient<ILoyaltySyncService, LoyaltySyncService>();
+            services.AddTransient<IGameUserSyncService, GameUserSyncService>();
+            
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             //services.AddOcelot(Configuration);
@@ -207,6 +209,9 @@ namespace Upope.Identity
 
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
             AppSettingsProvider.CreateOrUpdateLoyalty = Configuration["Upope.Loyalty:CreateOrUpdate"].ToString();
+
+            AppSettingsProvider.GameBaseUrl = Configuration["Upope.Game:BaseUrl"].ToString();
+            AppSettingsProvider.CreateOrUpdateGameUser = Configuration["Upope.Game:CreateOrUpdateGameUser"].ToString();
         }
     }
 }

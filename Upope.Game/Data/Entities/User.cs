@@ -13,6 +13,7 @@ namespace Upope.Game.Data.Entities
         String LastName { get; set; }
         String Nickname { get; set; }
         String PictureUrl { get; set; }
+        Gender Gender { get; set; }
         String UserId { get; set; }
     }
 
@@ -29,6 +30,7 @@ namespace Upope.Game.Data.Entities
         [MaxLength(250)]
         public String Nickname { get; set; }
         public String PictureUrl { get; set; }        
+        public Gender Gender { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public String UserId { get; set; }

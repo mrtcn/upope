@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -13,15 +12,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
-using Upope.Chat.Handlers;
+using Upope.Chat.Filters;
 using Upope.Chat.Hubs;
 using Upope.Chat.Services;
 using Upope.Chat.Services.Interfaces;
 using Upope.ServiceBase.Handler;
+using Upope.ServiceBase.Services;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Chat
 {
@@ -109,20 +108,22 @@ namespace Upope.Chat
                     //...
                     var userLangs = context.Request.Headers["Accept-Language"].ToString();
                     var firstLang = userLangs.Split(',').FirstOrDefault();
-                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().DisplayName : firstLang;
+                    var defaultLang = string.IsNullOrEmpty(firstLang) ? supportedCultures.FirstOrDefault().ToString() : firstLang;
                     return Task.FromResult(new ProviderCultureResult(defaultLang, defaultLang));
                 }));
             });
             #endregion
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(opt => {
-                opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChallenge"]);
+                opt.UseSqlServer(Configuration["ConnectionStrings:UpopeChat"]);
             });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Upope Challenge API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Upope Chat API", Version = "v1" });
             });
 
             services.AddAutoMapper();
@@ -131,6 +132,8 @@ namespace Upope.Chat
             services.AddTransient<IHttpHandler, HttpHandler>();
 
             services.AddTransient<IChatService, ChatService>();
+            services.AddTransient<IContactService, ContactService>();
+            services.AddTransient<IChatRoomService, ChatRoomService>();
             services.AddTransient<IIdentityService, IdentityService>();
 
             services.AddSignalR(hubOptions => {
@@ -150,7 +153,6 @@ namespace Upope.Chat
                 app.UseHsts();
             }
 
-            app.ConfigureExceptionHandler();
             //app.UseHttpsRedirection();
             app.UseAuthentication();
 
@@ -163,7 +165,7 @@ namespace Upope.Chat
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().DisplayName),
+                DefaultRequestCulture = new RequestCulture(supportedCultures.FirstOrDefault().ToString()),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Upope.Loyalty.Data.Mappings;
+using Upope.Chat.Data.Mappings;
 
 namespace Upope.Chat
 {

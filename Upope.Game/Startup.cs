@@ -20,6 +20,8 @@ using Upope.Game.Hubs;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase.Handler;
+using Upope.ServiceBase.Services;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Game
 {
@@ -134,6 +136,8 @@ namespace Upope.Game
             services.AddTransient<IPointService, PointService>();
             services.AddTransient<IBluffService, BluffService>();
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IContactService, ContactService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddSignalR(hubOptions => {                
             });

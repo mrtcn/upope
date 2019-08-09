@@ -9,9 +9,11 @@ using Upope.Challenge.EntityParams;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
 using Upope.Challenge.ViewModels;
+using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Extensions;
 using Upope.ServiceBase.ServiceBase.Models;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Challenge.Controllers
 {
@@ -23,6 +25,7 @@ namespace Upope.Challenge.Controllers
         private readonly IMapper _mapper;
         private readonly IChallengeRequestService _challengeRequestService;
         private readonly IIdentityService _identityService;
+        private readonly IGameSyncService _gameSyncService;
         private readonly IStringLocalizer<ChallengeController> _localizer;
 
         public ChallengeController(
@@ -30,12 +33,14 @@ namespace Upope.Challenge.Controllers
             IIdentityService identityService,
             IMapper mapper,
             IChallengeRequestService challengeRequestService,
+            IGameSyncService gameSyncService,
             IStringLocalizer<ChallengeController> localizer)
         {
             _challengeService = challengeService;
             _identityService = identityService;
             _mapper = mapper;
             _challengeRequestService = challengeRequestService;
+            _gameSyncService = gameSyncService;
             _localizer = localizer;
         }
 
@@ -91,7 +96,7 @@ namespace Upope.Challenge.Controllers
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userProfile = await _identityService.GetUserProfile(accessToken);
+            var userProfile = await _identityService.GetUserProfileByAccessToken(accessToken);
 
             if (userProfile.UserType == UserType.Basic && model.Range != 0 && model.Sex != Gender.Unknown)
                 return Unauthorized(_localizer.GetString("NotPremium").Value);
@@ -102,9 +107,9 @@ namespace Upope.Challenge.Controllers
             var challengerIds = await _challengeRequestService
                 .CreateChallengeRequests(
                 new CreateChallengeRequestModel(
-                    accessToken, 
+                    accessToken,
                     challenge.Id,
-                    userProfile.Id, 
+                    userProfile.Id,
                     challenge.RewardPoint,
                     model.Range,
                     model.Sex));
@@ -113,9 +118,23 @@ namespace Upope.Challenge.Controllers
                 _challengeService.Remove(new RemoveEntityParams(challenge.Id, new HasOperator(), true, true));
                 return BadRequest(_localizer.GetString("NoUserFound").Value);
             }
-                
 
             return Ok(challengeParams);
+        }
+
+        private async Task<bool> CreateGame(string accessToken, ChallengeParams challengeParams)
+        {
+            var createOrUpdateGameViewModel = new CreateOrUpdateGameModel()
+            {
+                Id = 0,
+                Credit = challengeParams.RewardPoint,
+                GuestUserId = challengeParams.ChallengerId,
+                HostUserId = challengeParams.ChallengeOwnerId
+            };
+
+            var isSuccess = await _gameSyncService.SyncGameTable(createOrUpdateGameViewModel, accessToken);
+
+            return isSuccess;
         }
 
         [HttpPut]
@@ -137,7 +156,18 @@ namespace Upope.Challenge.Controllers
                 challengeRequestParams.ChallengeRequestStatus = model.ChallengeRequestAnswer;
                 challengeRequestParams.AccessToken = accessToken;
 
-                _challengeRequestService.CreateOrUpdate(challengeRequestParams);
+                challengeRequest = _challengeRequestService.CreateOrUpdate(challengeRequestParams);
+
+                var challengeParams = _mapper.Map<ChallengeParams>(challengeRequest.Challenge);
+                challengeParams.ChallengerId = challengeRequest.ChallengerId;
+                _challengeService.CreateOrUpdate(challengeParams);
+
+                var isSuccess = await CreateGame(accessToken, challengeParams);
+
+                if (!isSuccess)
+                {
+                    return BadRequest(_localizer.GetString("UpdateChallengeException").Value);
+                }
             }
             catch(UserNotAvailableException)
             {

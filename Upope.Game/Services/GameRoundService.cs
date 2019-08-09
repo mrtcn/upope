@@ -16,6 +16,7 @@ using Upope.Game.Services.Models;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Models;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Game.Services
 {    
@@ -94,7 +95,7 @@ namespace Upope.Game.Services
 
                 var nextRound = lastRoundEntity != null ? lastRoundEntity.Round + 1 : 1;
 
-                var winner = await _identityService.GetUserProfile(sendChoiceParams.AccessToken, sendChoiceParams.UserId);
+                var winner = await _identityService.GetUserProfileByAccessToken(sendChoiceParams.AccessToken, sendChoiceParams.UserId);
                 var bluff = _bluffService.Entities.FirstOrDefault(x => x.GameRoundId == gameRoundParams.Id);
                 var isBluff = bluff == null ? false : !bluff.IsSuperBluff;
                 var isSuperBluff = bluff == null ? false : bluff.IsSuperBluff;

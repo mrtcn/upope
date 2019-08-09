@@ -8,6 +8,7 @@ using Upope.Game.EntityParams;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Game.Controllers
 {
@@ -20,6 +21,7 @@ namespace Upope.Game.Controllers
         private readonly IBluffService _bluffService;
         private readonly IIdentityService _identityService;
         private readonly IStringLocalizer<GameController> _localizer;
+        private readonly IContactService _contactService;
         private readonly IMapper _mapper;
 
         public GameController(
@@ -28,6 +30,7 @@ namespace Upope.Game.Controllers
             IBluffService bluffService,
             IIdentityService identityService,
             IStringLocalizer<GameController> localizer,
+            IContactService contactService,
             IMapper mapper)
         {
             _gameService = gameService;
@@ -35,6 +38,7 @@ namespace Upope.Game.Controllers
             _bluffService = bluffService;
             _identityService = identityService;
             _localizer = localizer;
+            _contactService = contactService;
             _mapper = mapper;            
         }
 
@@ -44,7 +48,6 @@ namespace Upope.Game.Controllers
         public async Task<IActionResult> CreateOrUpdate(CreateOrUpdateViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var userId = await _identityService.GetUserId(accessToken);
 
             var gameParams = _mapper.Map<CreateOrUpdateViewModel, GameParams>(model);
             _gameService.CreateOrUpdate(gameParams);
@@ -52,8 +55,10 @@ namespace Upope.Game.Controllers
             var gameRoundParams = new GameRoundParams(gameParams.Id);
             gameRoundParams.Round = gameRoundParams.Id == 0 ? 1 : gameRoundParams.Round;
 
-            _gameRoundService.CreateOrUpdate(gameRoundParams);
+            if (gameRoundParams.Round == 1)
+                await _contactService.SyncContactTable(accessToken, model.HostUserId, model.GuestUserId);
 
+            _gameRoundService.CreateOrUpdate(gameRoundParams);
             _gameService.SendGameCreatedMessage(new Services.Models.GameCreatedModel(gameParams.Id, gameParams.HostUserId, gameParams.GuestUserId));
            
             var result = _mapper.Map<GameParams, CreateOrUpdateViewModel>(gameParams);

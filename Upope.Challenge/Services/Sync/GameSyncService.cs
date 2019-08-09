@@ -15,7 +15,7 @@ namespace Upope.Challenge.Services.Sync
             _httpHandler = httpHandler;
         }
 
-        public async Task SyncGameTable(CreateOrUpdateGameModel model, string accessToken)
+        public async Task<bool> SyncGameTable(CreateOrUpdateGameModel model, string accessToken)
         {
             var baseUrl = AppSettingsProvider.GameBaseUrl;
 
@@ -23,6 +23,10 @@ namespace Upope.Challenge.Services.Sync
 
             var messageBody = JsonConvert.SerializeObject(model);
             var result = await _httpHandler.AuthPostAsync<CreateOrUpdateGameModel>(accessToken, baseUrl, api, messageBody);
+
+            if (result != null)
+                return true;
+            return false;
         }
     }
 }

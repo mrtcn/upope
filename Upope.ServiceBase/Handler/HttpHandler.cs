@@ -9,6 +9,7 @@ namespace Upope.ServiceBase.Handler
 {
     public interface IHttpHandler
     {
+        Task AuthPostAsync(string token, string baseUrl, string api, string messageBody = null);
         Task<T> AuthPostAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T : class;
         Task<T> AuthGetAsync<T>(string token, string baseUrl, string api) where T : class;
     }
@@ -56,6 +57,23 @@ namespace Upope.ServiceBase.Handler
                 var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
 
                 return resultObject;
+            }
+        }
+
+        public async Task AuthPostAsync(string token, string baseUrl, string api, string messageBody = null)
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUrl);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                StringContent stringContent = null;
+                if (!string.IsNullOrEmpty(messageBody))
+                {
+                    stringContent = new StringContent(messageBody, UnicodeEncoding.UTF8, "application/json");
+                }
+
+                var result = await httpClient.PostAsync(api, stringContent);
             }
         }
     }

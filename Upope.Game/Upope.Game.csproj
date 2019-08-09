@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <Compile Remove="EntityParams\ChoiceResultType.cs" />
+    <Compile Remove="Services\IdentityService.cs" />
+    <Compile Remove="Services\Interfaces\IIdentityService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +36,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -41,6 +49,7 @@
 
   <ItemGroup>
     <Folder Include="Handlers\" />
+    <Folder Include="Services\Sync\" />
   </ItemGroup>
 
 </Project>

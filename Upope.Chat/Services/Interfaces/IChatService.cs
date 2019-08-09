@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
-using Upope.Chat.Data.Entities;
-using Upope.Chat.EntityParams;
+using ChatEntity = Upope.Chat.Data.Entities.Chat;
 using Upope.ServiceBase;
+using Upope.Chat.Models;
+using System.Collections.Generic;
 
 namespace Upope.Chat.Services.Interfaces
 {
-    public interface IChatService : IEntityServiceBase<ChatRoom>
+    public interface IChatService : IEntityServiceBase<ChatEntity>
     {
-        Task<ChatRoomParams> GetChatRoom(string accessToken, string chatUserId);
-        ChatRoomParams GetChatRoomById(int Id);
+        Task<List<ChatModel>> GetChats(string accessToken, string chatUserId);
+        Task<List<ChatModel>> GetChats(string accessToken, int chatRoomId);
     }
 }

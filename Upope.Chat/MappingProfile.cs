@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Upope.Chat.Data.Entities;
 using Upope.Chat.EntityParams;
-using ChatEntity = Upope.Chat.Data.Entities.ChatRoom;
+using ChatRoomEntity = Upope.Chat.Data.Entities.ChatRoom;
 
 namespace Upope.Chat
 {
@@ -8,8 +9,11 @@ namespace Upope.Chat
     {
         public MappingProfile()
         {
-            CreateMap<ChatEntity, ChatRoomParams>();
-            CreateMap<ChatRoomParams, ChatEntity>();
+            CreateMap<ChatRoomEntity, ChatRoomParams>();
+            CreateMap<ChatRoomParams, ChatRoomEntity>();
+
+            CreateMap<Contact, ContactParams>();
+            CreateMap<ContactParams, Contact>();
         }
     }
 }

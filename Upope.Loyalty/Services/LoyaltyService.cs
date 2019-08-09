@@ -6,6 +6,7 @@ using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Loyalty.Services
 {    
