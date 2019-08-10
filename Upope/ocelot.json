@@ -131,6 +131,54 @@
         "AuthenticationProviderKey": "UpopeIdentity",
         "AllowedScopes": []
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/chat/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "chat.upope.com",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/chat/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UpopeIdentity",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/chat/ChatRooms/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "chat.upope.com",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/chat/ChatRooms/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UpopeIdentity",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/chat/anon/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "chat.upope.com",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/chat/anon/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UpopeIdentity",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

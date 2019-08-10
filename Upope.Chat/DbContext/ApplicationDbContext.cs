@@ -20,6 +20,8 @@ namespace Upope.Chat
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new ChatRoomMapping());
+            modelBuilder.ApplyConfiguration(new ChatMapping());
+            modelBuilder.ApplyConfiguration(new ContactMapping());
 
             //    modelBuilder.Entity<Point>().HasData(
             //        new Point() { Id = 1, Credit = 10, Status = Status.Active, UserId = "0159adeb-1a12-4edb-8052-c860125ee58b" },

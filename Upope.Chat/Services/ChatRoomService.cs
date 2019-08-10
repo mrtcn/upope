@@ -28,9 +28,21 @@ namespace Upope.Chat.Services
 
         protected override async void OnSaveChanges(IEntityParams entityParams, ChatRoom entity)
         {
+            
             var chatRoomParams = entityParams as ChatRoomParams;
             var userId = await _identityService.GetUserId(chatRoomParams.AccessToken);
+
+            var chatRoomExists = Entities
+                .Any(x =>
+                ((x.UserId == entity.UserId && x.ChatUserId == userId)
+                || (x.UserId == userId && x.ChatUserId == entity.UserId))
+                && x.Status == Status.Active);
+
+            if (chatRoomExists)
+                return;
+
             chatRoomParams.UserId = userId;
+            entity.UserId = userId;
 
             base.OnSaveChanges(chatRoomParams, entity);
         }
@@ -54,7 +66,7 @@ namespace Upope.Chat.Services
         {
             var userId = await _identityService.GetUserId(accessToken);
             var chatRooms = Entities
-                .Where(x => x.UserId == userId && x.Status == Status.Active)
+                .Where(x => (x.UserId == userId || x.ChatUserId == userId) && x.Status == Status.Active)
                 .Select(x => new ChatRoomParams() {
                     Id = x.Id,
                     ChatUserId = x.ChatUserId,

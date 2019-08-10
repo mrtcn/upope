@@ -26,7 +26,7 @@ namespace Upope.Chat.Hubs
 
             var chatParams = new ChatParams(accessToken, chatRoomId, chatUserId, message);
             _chatService.CreateOrUpdate(chatParams);
-            await Clients.User(userId).SendAsync("ReceiveMessage", message);
+            await Clients.User(chatUserId).SendAsync("ReceiveMessage", message);
         }
     }
 }

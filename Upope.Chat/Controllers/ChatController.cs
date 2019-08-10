@@ -54,16 +54,16 @@ namespace Upope.Chat.Controllers
         }
 
         [HttpGet("Chats/{chatRoomId}")]
-        public IActionResult GetChats(int chatRoomId)
+        public async Task<IActionResult> GetChats(int chatRoomId)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
-            var chats = _chatService.GetChats(accessToken, chatRoomId);
+            var chats = await _chatService.GetChats(accessToken, chatRoomId);
 
             return Ok(chats);
         }
 
-        [HttpGet("ChatRooms/{userId}")]
-        public async Task<IActionResult> ChatRooms(string userId)
+        [HttpGet("ChatRooms")]
+        public async Task<IActionResult> ChatRooms()
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var chatRooms = await _chatRoomService.ChatRooms(accessToken);

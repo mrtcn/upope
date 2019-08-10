@@ -39,7 +39,7 @@ namespace Upope.ClientTests
             Console.WriteLine("Enter UserId whom you would like to talk with!");
             var chatUserId = ReadLine().Replace("\r\n", "").Trim();
 
-            var createChatModel = await httpHandler.AuthPostAsync<CreateChatModel>(accessToken, chatIp, $"ChatRoom/{chatUserId}");
+            var createChatModel = await httpHandler.AuthPostAsync<CreateChatModel>(accessToken, "http://" + chatIp, $"/api/Chat/ChatRoom/{chatUserId}");
 
             await challengeViewModel.ChatConnect();
 
@@ -48,7 +48,7 @@ namespace Upope.ClientTests
                 Console.WriteLine("Enter your message!");
                 var message = ReadLine();
 
-                await challengeViewModel.SendChatMessage(userId, message, createChatModel.ChatRoomId);
+                await challengeViewModel.SendChatMessage(chatUserId, message, createChatModel.ChatRoomId);
             }
             
             //await challengeViewModel.ChallengeConnect();
