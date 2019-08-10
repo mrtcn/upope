@@ -22,7 +22,6 @@ namespace Upope.Game.Services
 {    
     public class GameRoundService : EntityServiceBase<GameRound>, IGameRoundService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IPointService _pointService;
         private readonly IBluffService _bluffService;
         private readonly IGameService _gameService;
@@ -39,7 +38,6 @@ namespace Upope.Game.Services
             IMapper mapper,
             IHubContext<GameHubs> hubContext) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
             _pointService = pointService;
             _bluffService = bluffService;
             _gameService = gameService;

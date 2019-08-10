@@ -4,6 +4,6 @@ namespace Upope.ServiceBase.Interfaces
 {
     public interface IHasCulturedEntities<TCulturedEntity>
     {
-        ICollection<TCulturedEntity> CulturedEntities { get; set; }
+        List<TCulturedEntity> CulturedEntities { get; set; }
     }
 }

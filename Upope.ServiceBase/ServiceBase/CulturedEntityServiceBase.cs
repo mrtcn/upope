@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Interfaces;
 using Upope.ServiceBase.Models;
 using Upope.ServiceBase.ServiceBase.Extensions;
 using Upope.ServiceBase.ServiceBase.Models;
 
-namespace EczacibasiHealth.Core.ServiceUtilities {
+namespace Upope.ServiceBase
+{
     public interface ICulturedEntityServiceBase<TEntity, TCulturedEntity> : IEntityServiceBase<TEntity>
-        where TEntity : class, IEntity, IHasOperator
+        where TEntity : class, IEntity
         where TCulturedEntity : class, IHasParent<TEntity>, IHasCulture, IHasCulturedEntityStatus, ICulturedEntity {
         IQueryable<TCulturedEntity> CulturedEntities { get; }
         TCulturedEntity CulturedEntityGet(int id);
@@ -24,7 +24,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
 
     public abstract class CulturedEntityServiceBase<TEntity, TCulturedEntity> :
         EntityServiceBase<TEntity>, ICulturedEntityServiceBase<TEntity, TCulturedEntity>
-        where TEntity : class, IEntity, IHasOperator, IHasCulturedEntities<TCulturedEntity>
+        where TEntity : class, IEntity, IHasCulturedEntities<TCulturedEntity>
         where TCulturedEntity : class, IHasParent<TEntity>, IHasCulture, IHasCulturedEntityStatus, ICulturedEntity, new() {
 
         private readonly DbContext _applicationDbContext;
@@ -169,7 +169,7 @@ namespace EczacibasiHealth.Core.ServiceUtilities {
             //Delete UnRelated Entities
             var unRelatedEntities = Entities.Where(x => !x.CulturedEntities.Any()).ToList();
             foreach (var unRelatedEntity in unRelatedEntities) {
-                Remove(new RemoveEntityParams(unRelatedEntity.Id, unRelatedEntity, culturedEntity.Culture, false, false));
+                Remove(new RemoveEntityParams(unRelatedEntity.Id, null, culturedEntity.Culture, false, false));
             }
         }
 
