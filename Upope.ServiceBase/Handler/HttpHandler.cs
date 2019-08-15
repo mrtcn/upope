@@ -12,6 +12,8 @@ namespace Upope.ServiceBase.Handler
         Task AuthPostAsync(string token, string baseUrl, string api, string messageBody = null);
         Task<T> AuthPostAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T : class;
         Task<T> AuthGetAsync<T>(string token, string baseUrl, string api) where T : class;
+        Task<T> AuthPutAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T : class;
+        Task AuthPutAsync(string token, string baseUrl, string api, string messageBody = null);
     }
     public class HttpHandler: IHttpHandler
     {
@@ -36,6 +38,28 @@ namespace Upope.ServiceBase.Handler
                 }
 
                 var result = await httpClient.PostAsync(api, stringContent);
+                string resultContent = await result.Content.ReadAsStringAsync();
+
+                var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
+
+                return resultObject;
+            }
+        }
+
+        public async Task<T> AuthPutAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T : class
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUrl);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                StringContent stringContent = null;
+                if (!string.IsNullOrEmpty(messageBody))
+                {
+                    stringContent = new StringContent(messageBody, UnicodeEncoding.UTF8, "application/json");
+                }
+
+                var result = await httpClient.PutAsync(api, stringContent);
                 string resultContent = await result.Content.ReadAsStringAsync();
 
                 var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
@@ -74,6 +98,23 @@ namespace Upope.ServiceBase.Handler
                 }
 
                 var result = await httpClient.PostAsync(api, stringContent);
+            }
+        }
+
+        public async Task AuthPutAsync(string token, string baseUrl, string api, string messageBody = null)
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUrl);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                StringContent stringContent = null;
+                if (!string.IsNullOrEmpty(messageBody))
+                {
+                    stringContent = new StringContent(messageBody, UnicodeEncoding.UTF8, "application/json");
+                }
+
+                var result = await httpClient.PutAsync(api, stringContent);
             }
         }
     }

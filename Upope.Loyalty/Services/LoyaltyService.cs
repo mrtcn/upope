@@ -24,10 +24,27 @@ namespace Upope.Loyalty.Services
             _identityService = identityService;
         }
 
-        public async Task<LoyaltyParams> GetLoyaltyByUserId(string accessToken)
+        public int? UserCredit(string userId)
         {
-            var userId = await _identityService.GetUserId(accessToken);
+            try
+            {
+                var loyalty = Entities.FirstOrDefault(x => x.UserId == userId && x.Status == Status.Active);
 
+                if (loyalty == null)
+                    return null;
+
+                return loyalty.Credit;
+            }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
+        public LoyaltyParams GetLoyaltyByUserId(string userId)
+        {
             var loyalty = Entities.FirstOrDefault(x => x.UserId == userId && x.Status == Status.Active);
             var loyaltyParams = _mapper.Map<LoyaltyParams>(loyalty);
 
@@ -49,17 +66,20 @@ namespace Upope.Loyalty.Services
             return loyaltyParams;
         }
 
-        public void ChargeGameCredits(ChargeGameCreditsParams chargeGameCreditsParams)
-        {
-            ChargeCredits(new ChargeCreditsParams(chargeGameCreditsParams.HostUserId, chargeGameCreditsParams.Credit));
-            ChargeCredits(new ChargeCreditsParams(chargeGameCreditsParams.GuestUserId, chargeGameCreditsParams.Credit));
-        }
-
         public void ChargeCredits(ChargeCreditsParams chargeCreditsParams)
         {
             var loyalty = GetLoyaltyByUserId(chargeCreditsParams.UserId);
             var loyaltyParams = _mapper.Map<LoyaltyParams>(loyalty);
             loyaltyParams.Credit -= chargeCreditsParams.Credit;
+
+            CreateOrUpdate(loyaltyParams);
+        }
+
+        public void AddCredits(ChargeCreditsParams chargeCreditsParams)
+        {
+            var loyalty = GetLoyaltyByUserId(chargeCreditsParams.UserId);
+            var loyaltyParams = _mapper.Map<LoyaltyParams>(loyalty);
+            loyaltyParams.Credit += chargeCreditsParams.Credit;
 
             CreateOrUpdate(loyaltyParams);
         }

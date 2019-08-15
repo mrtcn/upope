@@ -1,20 +1,19 @@
-﻿using Upope.Notification.Data.Entities;
-using NotificationEntity = Upope.Notification.Data.Entities.Notification;
+﻿using NotificationEntity = Upope.Notification.Data.Entities.Notification;
 using Upope.ServiceBase;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Upope.Notification.EntityParams;
+using System.Collections.Generic;
+using Upope.ServiceBase.Enums;
 using System.Linq;
 
 namespace Upope.Notification.Services
 {
-    public interface INotificationService : ICulturedEntityServiceBase<NotificationEntity, NotificationCulture>
+    public interface INotificationService : IEntityServiceBase<NotificationEntity>
     {
-        List<NotificationEntityParams> GetNotifications(string userId);
+        List<NotificationEntityParams> GetNotifications(string userId, int entityCountToSkip);
     }
 
-    public class NotificationService : CulturedEntityServiceBase<NotificationEntity, NotificationCulture>, INotificationService
+    public class NotificationService : EntityServiceBase<NotificationEntity>, INotificationService
     {
         private readonly IMapper _mapper;
 
@@ -22,12 +21,16 @@ namespace Upope.Notification.Services
             ApplicationDbContext applicationDbContext,
             IMapper mapper) : base(applicationDbContext, mapper)
         {
-            _mapper = mapper;
+
         }
 
-        public List<NotificationEntityParams> GetNotifications(string userId)
+        public List<NotificationEntityParams> GetNotifications(string userId, int entityCountToSkip)
         {
-            var notifications = Entities.Where(x => x.Status == ServiceBase.Enums.Status.Active && x.UserId == userId).ToList();
+            var notifications = Entities
+                .Where(x => x.Status == Status.Active && x.UserId == userId)
+                .OrderByDescending(x => x.Id)
+                .Skip(entityCountToSkip).ToList();
+
             var notificationEntityParamsList = _mapper.Map<List<NotificationEntityParams>>(notifications);
 
             return notificationEntityParamsList;

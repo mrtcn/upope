@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Upope.Notification.Data.Entities;
 using Upope.Notification.EntityParams;
+using Upope.Notification.Models;
 using Upope.Notification.ViewModels;
 using NotificationEntity = Upope.Notification.Data.Entities.Notification;
 
@@ -11,16 +12,19 @@ namespace Upope.Notification
     {
         public MappingProfile()
         {
-            CreateMap<List<NotificationEntity>, List<NotificationEntityParams>>();
+            CreateMap<NotificationModel, NotificationEntityParams>();
+
+            CreateMap<NotificationEntity, NotificationModel>();
+            CreateMap<NotificationModel, NotificationEntity>();
 
             CreateMap<NotificationEntity, NotificationEntityParams>();
             CreateMap<NotificationEntityParams, NotificationEntity>();
 
-            CreateMap<NotificationType, NotificationTypeEntityParams>();
-            CreateMap<NotificationTypeEntityParams, NotificationType>();
-
             CreateMap<NotificationEntityParams, NotificationViewModel>();
             CreateMap<NotificationViewModel, NotificationEntityParams>();
+
+            CreateMap<NotificationTemplate, NotificationTemplateEntityParams>();
+            CreateMap<NotificationTemplateEntityParams, NotificationTemplate>();
         }
     }
 }

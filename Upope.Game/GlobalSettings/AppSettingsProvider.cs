@@ -7,5 +7,11 @@ namespace Upope.Game.GlobalSettings
         public static string GetUserId { get; set; }
         public static string GetUserProfileUrl { get; set; }
         public static int WinRoundCount { get; set; }
+        public static int WinInARowModal { get; set; }
+        public static string NotificationBaseUrl { get; set; }
+        public static string SendNotification { get; set; }
+        public static string LoyaltyBaseUrl { get; set; }
+        public static string ChargeCredits { get; set; }
+        public static string AddCredits { get; set; }
     }
 }

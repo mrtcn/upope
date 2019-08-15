@@ -14,7 +14,6 @@ using Upope.Challenge.GlobalSettings;
 using Upope.Challenge.Hubs;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
-using Upope.Game.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Handler;

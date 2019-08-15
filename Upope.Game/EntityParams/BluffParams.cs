@@ -11,7 +11,6 @@ namespace Upope.Game.EntityParams
     {
         public int Id { get; set; }
         public int GameRoundId { get; set; }
-        public int GameId { get; set; }
         public string UserId { get; set; }
         public bool IsSuperBluff { get; set; }
         public RockPaperScissorsType Choice { get; set; }

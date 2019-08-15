@@ -17,8 +17,11 @@ using Swashbuckle.AspNetCore.Swagger;
 using Upope.Game.Filters;
 using Upope.Game.GlobalSettings;
 using Upope.Game.Hubs;
+using Upope.Game.Interfaces;
+using Upope.Game.Managers;
 using Upope.Game.Services;
 using Upope.Game.Services.Interfaces;
+using Upope.Game.Services.Sync;
 using Upope.ServiceBase.Handler;
 using Upope.ServiceBase.Services;
 using Upope.ServiceBase.Services.Interfaces;
@@ -132,12 +135,15 @@ namespace Upope.Game
 
             services.AddTransient<IHttpHandler, HttpHandler>();
             services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IRoundAnswerService, RoundAnswerService>();
             services.AddTransient<IGameRoundService, GameRoundService>();
+            services.AddTransient<IGameManager, GameManager>();
             services.AddTransient<IPointService, PointService>();
             services.AddTransient<IBluffService, BluffService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IContactService, ContactService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ILoyaltySyncService, LoyaltySyncService>();
 
             services.AddSignalR(hubOptions => {                
             });
@@ -194,6 +200,12 @@ namespace Upope.Game
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
             AppSettingsProvider.GetUserProfileUrl = Configuration["Upope.Identity:GetUserProfileUrl"].ToString();
             AppSettingsProvider.WinRoundCount = int.Parse(Configuration["WinRoundCount"].ToString());
+            AppSettingsProvider.WinInARowModal = int.Parse(Configuration["WinInARowModal"].ToString());
+            AppSettingsProvider.NotificationBaseUrl = Configuration["Upope.Notification:BaseUrl"].ToString();
+            AppSettingsProvider.SendNotification = Configuration["Upope.Notification:SendNotification"].ToString();
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
+            AppSettingsProvider.ChargeCredits = Configuration["Upope.Loyalty:ChargeCredits"].ToString();
+            AppSettingsProvider.AddCredits = Configuration["Upope.Loyalty:AddCredits"].ToString();
         }
     }
 }

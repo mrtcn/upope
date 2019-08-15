@@ -49,7 +49,6 @@
 
   <ItemGroup>
     <Folder Include="Handlers\" />
-    <Folder Include="Services\Sync\" />
   </ItemGroup>
 
 </Project>

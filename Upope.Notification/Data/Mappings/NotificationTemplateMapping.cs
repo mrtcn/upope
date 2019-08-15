@@ -4,9 +4,9 @@ using Upope.Notification.Data.Entities;
 
 namespace Upope.Notification.Data.Mappings
 {
-    public class NotificationTypeMapping : IEntityTypeConfiguration<NotificationType>
+    public class NotificationTemplateMapping : IEntityTypeConfiguration<NotificationTemplate>
     {
-        public void Configure(EntityTypeBuilder<NotificationType> builder)
+        public void Configure(EntityTypeBuilder<NotificationTemplate> builder)
         {
             builder.HasKey(x => x.Id);
             builder.Property(b => b.Id).ValueGeneratedOnAdd();

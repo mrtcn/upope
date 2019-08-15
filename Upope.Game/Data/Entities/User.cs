@@ -37,5 +37,6 @@ namespace Upope.Game.Data.Entities
         public List<Game> HostGames { get; set; }
         public List<Game> GuestGames { get; set; }
         public List<Bluff> Bluffs { get; set; }
+        public List<RoundAnswer> RoundAnswers { get; set; }
     }
 }

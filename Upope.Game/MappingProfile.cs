@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Collections.Generic;
 using Upope.Game.Data.Entities;
 using Upope.Game.EntityParams;
 using Upope.Game.ViewModels;
@@ -23,6 +24,9 @@ namespace Upope.Game
             CreateMap<UserParams, CreateUserViewModel>();
             CreateMap<User, UserParams>();
             CreateMap<UserParams, User>();
+
+            CreateMap<RoundAnswer, RoundAnswerParams>();
+            CreateMap<RoundAnswerParams, RoundAnswer>();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Upope.Notification
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new NotificationMapping());
-            modelBuilder.ApplyConfiguration(new NotificationTypeMapping());
+            modelBuilder.ApplyConfiguration(new NotificationTemplateMapping());
         }
     }
 }

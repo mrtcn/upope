@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Upope.Identity.ViewModels;
 using Upope.Loyalty.EntityParams;
+using Upope.Loyalty.Interfaces;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.Loyalty.ViewModels;
 using Upope.ServiceBase.Extensions;
@@ -18,15 +19,18 @@ namespace Upope.Loyalty.Controllers
     public class LoyaltyController : ControllerBase
     {
         private readonly ILoyaltyService _loyaltyService;
+        private readonly INotificationManager _notificationManager;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<LoyaltyController> _localizer;
 
         public LoyaltyController(
             ILoyaltyService loyaltyService,
+            INotificationManager notificationManager,
             IStringLocalizer<LoyaltyController> localizer,
             IMapper mapper)
         {
             _loyaltyService = loyaltyService;
+            _notificationManager = notificationManager;
             _mapper = mapper;
             _localizer = localizer;
         }
@@ -34,11 +38,11 @@ namespace Upope.Loyalty.Controllers
         [HttpGet]
         [Authorize]
         [Route("GetPoint")]
-        public async Task<IActionResult> GetPoint()
+        public IActionResult GetPoint()
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             //TODO: GetLoyaltyByUserId does not accept accesstoken. Should be fixed
-            var point = await _loyaltyService.GetLoyaltyByUserId(accessToken);
+            var point = _loyaltyService.GetLoyaltyByUserId(accessToken);
 
             var pointViewModel = _mapper.Map<GetPointViewModel>(point);
 
@@ -61,10 +65,27 @@ namespace Upope.Loyalty.Controllers
         [HttpPut]
         [Authorize]
         [Route("ChargeCredits")]
-        public IActionResult ChargeCredits(ChargeCreditsViewModel model)
+        public async Task<IActionResult> ChargeCredits(CreditsViewModel model)
         {
-            var chargeGameCreditsParams = _mapper.Map<ChargeGameCreditsParams>(model);
-            _loyaltyService.ChargeGameCredits(chargeGameCreditsParams);
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+
+            var chargeCreditsParams = _mapper.Map<ChargeCreditsParams>(model);
+            _loyaltyService.ChargeCredits(chargeCreditsParams);
+            await _notificationManager.SendNotification(accessToken, model.UserId);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Route("AddCredits")]
+        public async Task<IActionResult> AddCredits(CreditsViewModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+
+            var chargeCreditsParams = _mapper.Map<ChargeCreditsParams>(model);
+            _loyaltyService.AddCredits(chargeCreditsParams);
+            await _notificationManager.SendNotification(accessToken, model.UserId);
 
             return Ok();
         }
@@ -78,7 +99,7 @@ namespace Upope.Loyalty.Controllers
 
             var loyaltyParams = _mapper.Map<CreateOrUpdateViewModel, LoyaltyParams>(model);
 
-            var loyalty = await _loyaltyService.GetLoyaltyByUserId(accessToken);
+            var loyalty = _loyaltyService.GetLoyaltyByUserId(accessToken);
 
             if (loyalty != null)
                 loyaltyParams.Id = loyalty.Id;

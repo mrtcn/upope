@@ -20,6 +20,9 @@ namespace Upope.Challenge
 
             CreateMap<LoyaltyParams, CreateOrUpdateViewModel>();
             CreateMap<CreateOrUpdateViewModel, LoyaltyParams>();
+
+            CreateMap<CreditsViewModel, ChargeCreditsParams>();
+            CreateMap<ChargeCreditsParams, CreditsViewModel>();
         }
     }
 }

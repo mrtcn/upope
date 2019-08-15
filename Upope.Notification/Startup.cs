@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Upope.Notification.GlobalSettings;
+using Upope.Notification.Hubs;
 using Upope.Notification.Notification;
 using Upope.Notification.Services;
 using Upope.ServiceBase.Handler;
@@ -127,10 +128,13 @@ namespace Upope.Notification
             services.AddAutoMapper();
 
             services.AddTransient<INotificationService, NotificationService>();
-            services.AddTransient<INotificationTypeService, NotificationTypeService>();
+            services.AddTransient<INotificationTemplateService, NotificationTemplateService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
+
+            services.AddSignalR(hubOptions => {
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -175,7 +179,7 @@ namespace Upope.Notification
 
             app.UseMvc();
 
-            //app.UseSignalR(routes => routes.MapHub<ChallengeHub>("/challangehub"));
+            app.UseSignalR(routes => routes.MapHub<NotificationHub>("/notificationHub"));
         }
 
         private void BuildAppSettingsProvider()

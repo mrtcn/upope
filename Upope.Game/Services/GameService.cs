@@ -14,8 +14,6 @@ namespace Upope.Game.Services
 {    
     public class GameService : EntityServiceBase<GameEntity>, IGameService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
-        private readonly IMapper _mapper;
         private readonly IHubContext<GameHubs> _hubContext;
 
         public GameService(
@@ -23,8 +21,6 @@ namespace Upope.Game.Services
             IMapper mapper,
             IHubContext<GameHubs> hubContext) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
-            _mapper = mapper;
             _hubContext = hubContext;
         }
 
@@ -42,6 +38,35 @@ namespace Upope.Game.Services
         {
             _hubContext.Clients.Users(new List<string>() { model.HostUserId, model.GuestUserId })
             .SendAsync("GameCreated", JsonConvert.SerializeObject(model));
+        }
+
+        public int StreakCount(string userId)
+        {
+            var maxLostId = Entities
+                .Where(x => (x.GuestUserId == userId || x.HostUserId == userId) && x.WinnerId != userId && x.Status == ServiceBase.Enums.Status.Active)
+                .Max(x => x.Id);
+
+            var streakCount = Entities.Where(x => x.Id > maxLostId && x.WinnerId == userId && x.Status == ServiceBase.Enums.Status.Active).Count();
+
+            return streakCount;
+        }
+
+        public int LatestGameId(string userId)
+        {
+            var latestGameId = Entities
+                .Where(x => (x.GuestUserId == userId || x.HostUserId == userId) && x.Status == ServiceBase.Enums.Status.Active)
+                .Max(x => x.Id);
+
+            return latestGameId;
+        }
+
+        public int LatestWinGameId(string userId)
+        {
+            var latestWinGameId = Entities
+                .Where(x => (x.GuestUserId == userId || x.HostUserId == userId) && x.WinnerId == userId && x.Status == ServiceBase.Enums.Status.Active)
+                .Max(x => x.Id);
+
+            return latestWinGameId;
         }
     }
 }

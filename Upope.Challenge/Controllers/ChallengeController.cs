@@ -68,7 +68,7 @@ namespace Upope.Challenge.Controllers
             var challengeParams = new ChallengeParams(Status.Active, userId, random.Next(1, 100));
             var challenge = _challengeService.CreateOrUpdate(challengeParams);
 
-            var challengerIds = await _challengeRequestService
+            await _challengeRequestService
                 .CreateChallengeRequests(
                 new CreateChallengeRequestModel(
                     accessToken,
@@ -113,6 +113,7 @@ namespace Upope.Challenge.Controllers
                     challenge.RewardPoint,
                     model.Range,
                     model.Sex));
+
             if (challengerIds == null || challengerIds.Count == 0)
             {
                 _challengeService.Remove(new RemoveEntityParams(challenge.Id, new HasOperator(), true, true));
@@ -157,6 +158,9 @@ namespace Upope.Challenge.Controllers
                 challengeRequestParams.AccessToken = accessToken;
 
                 challengeRequest = _challengeRequestService.CreateOrUpdate(challengeRequestParams);
+
+                if (challengeRequest.ChallengeRequestStatus != Enums.ChallengeRequestStatus.Accepted)
+                    return Ok();
 
                 var challengeParams = _mapper.Map<ChallengeParams>(challengeRequest.Challenge);
                 challengeParams.ChallengerId = challengeRequest.ChallengerId;

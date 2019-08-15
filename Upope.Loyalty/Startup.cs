@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Upope.Loyalty.Filters;
 using Upope.Loyalty.GlobalSettings;
+using Upope.Loyalty.Interfaces;
+using Upope.Loyalty.Managers;
 using Upope.Loyalty.Services;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase.Handler;
@@ -115,7 +117,6 @@ namespace Upope.Loyalty
             services.AddMvc(options => {
                 options.Filters.Add<GlobalExceptionFilter>();
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -124,11 +125,12 @@ namespace Upope.Loyalty
 
             services.AddDbContext<ApplicationDbContext>(opt => {
                 opt.UseSqlServer(Configuration["ConnectionStrings:UpopeLoyalty"]);
-            });
+            }, ServiceLifetime.Transient, ServiceLifetime.Transient);
             services.AddAutoMapper();
 
             services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<INotificationManager, NotificationManager>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
         }
@@ -182,6 +184,10 @@ namespace Upope.Loyalty
         {
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
+            AppSettingsProvider.NotificationBaseUrl = Configuration["Upope.Notification:BaseUrl"].ToString();
+            AppSettingsProvider.SendNotification = Configuration["Upope.Notification:SendNotification"].ToString();
+            AppSettingsProvider.WatchAdCreditLimit = int.Parse(Configuration["WatchAdCreditLimit"].ToString());
+            AppSettingsProvider.WatchAdCreditLimit = int.Parse(Configuration["UpgradeToProCreditLimit"].ToString());
         }
     }
 }

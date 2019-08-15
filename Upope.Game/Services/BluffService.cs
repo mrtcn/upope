@@ -14,51 +14,46 @@ namespace Upope.Game.Services
 {    
     public class BluffService : EntityServiceBase<Bluff>, IBluffService
     {
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IGameService _gameService;
+        private readonly IRoundAnswerService _roundAnswerService;
         private readonly IHubContext<GameHubs> _hubContext;
         private readonly IMapper _mapper;
 
         public BluffService(
             ApplicationDbContext applicationDbContext,
             IGameService gameService,
+            IRoundAnswerService roundAnswerService,
             IHubContext<GameHubs> hubContext,
             IMapper mapper) : base(applicationDbContext, mapper)
         {
-            _applicationDbContext = applicationDbContext;
             _mapper = mapper;
             _hubContext = hubContext;
             _gameService = gameService;
+            _roundAnswerService = roundAnswerService;
         }
 
-        public BluffParams GetBluffParams(SendBluffViewModel model, string userId, GameRoundParams lastGameRound)
+        public BluffParams GetBluffParams(SendBluffViewModel model, string userId, RockPaperScissorsType choice)
         {
-            var isHost = _gameService.IsHostUser(model.GameId, userId);
-            var userChoice = isHost ? lastGameRound.HostAnswer : lastGameRound.GuestAnswer;
-
             var bluffParams = _mapper.Map<SendBluffViewModel, BluffParams>(model);
             bluffParams.UserId = userId;
-            bluffParams.GameRoundId = lastGameRound.Id;
-            bluffParams.IsSuperBluff = bluffParams.Choice == userChoice;
+            bluffParams.GameRoundId = model.GameRoundId; 
+
             return bluffParams;
         }
 
-        public bool IsFirstAnswer(GameRoundParams gameRoundParams)
+        public bool IsFirstAnswer(int gameRoundId)
         {
-            if (gameRoundParams.GuestAnswer == RockPaperScissorsType.NotAnswered || gameRoundParams.HostAnswer == RockPaperScissorsType.NotAnswered)
-            {
-                return true;
-            }
+            var answerCount = _roundAnswerService.RoundAnswers(gameRoundId).Count;
 
-            return false;
+            return answerCount < 2 ? true : false;
         }
 
-        public async Task AskBluff(string userId, GameRoundParams gameRoundParams)
+        public async Task AskBluff(string userId, int gameId, int gameRoundId)
         {
-            if (IsFirstAnswer(gameRoundParams))
+            if (IsFirstAnswer(gameRoundId))
             {
-                var isHost = _gameService.IsHostUser(gameRoundParams.GameId, userId);
-                var game = _gameService.Get(gameRoundParams.GameId);
+                var isHost = _gameService.IsHostUser(gameId, userId);
+                var game = _gameService.Get(gameId);
                 var askBluffUserId = isHost ? game.GuestUserId : game.HostUserId;
                 await _hubContext.Clients.User(askBluffUserId).SendAsync("AskBluff", "AskBluff");
             }
@@ -68,7 +63,6 @@ namespace Upope.Game.Services
         {
             var isHostUser = _gameService.IsHostUser(model.GameId, userId);
 
-            var game = _gameService.Get(model.GameId);
             await _hubContext.Clients.User(userId).SendAsync("TextBluff", JsonConvert.SerializeObject(new { choice = model.Choice }));
         }
     }

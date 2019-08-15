@@ -9,6 +9,13 @@ namespace Upope.Game.EntityParams
 {
     public class GameRoundParams : IEntityParams, IGameRound, IOperatorFields
     {
+        public GameRoundParams(int gameId, int gameRoundId, int round)
+        {
+            Id = gameRoundId;
+            GameId = gameId;
+            Round = round;
+        }
+
         public GameRoundParams(int gameId, int round)
         {
             Id = 0;
@@ -26,8 +33,6 @@ namespace Upope.Game.EntityParams
         public int GameId { get; set; }
         public int Round { get; set; }
         public Status Status { get; set; }
-        public RockPaperScissorsType HostAnswer { get; set; }
-        public RockPaperScissorsType GuestAnswer { get; set; }
         public string WinnerId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }

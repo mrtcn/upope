@@ -8,5 +8,8 @@ namespace Upope.Game.Services.Interfaces
     {
         void SendGameCreatedMessage(GameCreatedModel model);
         bool IsHostUser(int gameId, string userId);
+        int StreakCount(string userId);
+        int LatestGameId(string userId);
+        int LatestWinGameId(string userId);
     }
 }

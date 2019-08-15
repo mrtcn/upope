@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.WebSocketTest", "Upop
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Chat", "Upope.Chat\Upope.Chat.csproj", "{E3C0683E-EEE8-4667-ABEB-9CB99B49124D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.Notification", "Upope.Notification\Upope.Notification.csproj", "{4531EA5F-5230-4E27-AA80-1104852EE904}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Upope.Notification", "Upope.Notification\Upope.Notification.csproj", "{4531EA5F-5230-4E27-AA80-1104852EE904}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upope.ClientNotificationTests", "Upope.ClientNotificationTests\Upope.ClientNotificationTests.csproj", "{71ABEF64-E57D-4C88-A267-BA8B16DF7005}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{4531EA5F-5230-4E27-AA80-1104852EE904}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4531EA5F-5230-4E27-AA80-1104852EE904}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4531EA5F-5230-4E27-AA80-1104852EE904}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71ABEF64-E57D-4C88-A267-BA8B16DF7005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71ABEF64-E57D-4C88-A267-BA8B16DF7005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71ABEF64-E57D-4C88-A267-BA8B16DF7005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71ABEF64-E57D-4C88-A267-BA8B16DF7005}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

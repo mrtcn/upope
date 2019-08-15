@@ -18,13 +18,10 @@ namespace Upope.Game.Services
             _gameService = gameService;
             _bluffService = bluffService;
         }
-        public GameScore CalculatePoints(int gameId, bool? isWinnerHost = null)
+        public GameScore CalculatePoints(int gameId, string winnerId)
         {
             var game = _gameService.Get(gameId);
             var gamePoint = game.Credit * 2;
-            var hostId = game.HostUserId;
-            var guestId = game.GuestUserId;
-            var winnerId = isWinnerHost != null && isWinnerHost.GetValueOrDefault() ? hostId : guestId;
 
             var bluffAmount = _bluffService
                 .Entities.Include(x => x.GameRound)
@@ -35,7 +32,7 @@ namespace Upope.Game.Services
                 .Where(x => x.GameRound.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff && x.Status == Status.Active).Count();
 
             var loseAmount = _gameService.Entities.Include(x => x.GameRounds)
-                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId == guestId && x.Status == Status.Active).Count();
+                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId != winnerId && x.Status == Status.Active).Count();
 
             var winAmount = _gameService.Entities.Include(x => x.GameRounds)
                 .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId == winnerId && x.Status == Status.Active).Count();

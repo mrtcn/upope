@@ -4,6 +4,6 @@ namespace Upope.Game.Services.Interfaces
 {
     public interface IPointService
     {
-        GameScore CalculatePoints(int game, bool? isWinnerHost = null);
+        GameScore CalculatePoints(int game, string winnerId);
     }
 }
