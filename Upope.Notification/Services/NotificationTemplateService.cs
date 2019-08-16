@@ -4,6 +4,8 @@ using AutoMapper;
 using Upope.Notification.EntityParams;
 using System.Linq;
 using Upope.ServiceBase.Enums;
+using System.Globalization;
+using System.Threading;
 
 namespace Upope.Notification.Services
 {
@@ -25,12 +27,18 @@ namespace Upope.Notification.Services
 
         public NotificationTemplateEntityParams GetNotificationTemplate(NotificationType notificationType)
         {
+            CultureInfo uiCultureInfo = Thread.CurrentThread.CurrentUICulture;
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            var culture = cultureInfo.ToString();
+
             var notificationTemplate = Entities
                 .FirstOrDefault(x => x.NotificationType == notificationType && x.Status == Status.Active);
 
-            var notificationEntityParamsList = _mapper.Map<NotificationTemplateEntityParams>(notificationTemplate);
+            var notificationTemplateCulture = CulturedEntities.FirstOrDefault(x => x.BaseEntityId == notificationTemplate.Id && x.Culture == culture);
 
-            return notificationEntityParamsList;
+            var notificationTemplateEntityParams = Map<NotificationTemplateEntityParams>(notificationTemplateCulture.Id, culture);
+
+            return notificationTemplateEntityParams;
         }
     }
 }

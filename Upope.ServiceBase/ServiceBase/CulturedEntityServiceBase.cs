@@ -17,8 +17,8 @@ namespace Upope.ServiceBase
         IQueryable<TCulturedEntity> CulturedEntities { get; }
         TCulturedEntity CulturedEntityGet(int id);
         TEntityParams MapBaseEntity<TEntityParams>(TEntityParams entityParams, int baseEntityId) where TEntityParams : IEntityParams;
-        TEntityParams Map<TEntityParams>(int culturedEntityId, Culture culture, bool baseOnCulture = false) where TEntityParams : new();
-        IQueryable<TCulturedEntity> UnrelatedEntities(Culture culture, int? id = null);
+        TEntityParams Map<TEntityParams>(int culturedEntityId, string culture, bool baseOnCulture = false) where TEntityParams : new();
+        IQueryable<TCulturedEntity> UnrelatedEntities(string culture, int? id = null);
         RemoveResultStatus RemoveCulturedEntity(IRemoveEntityParams removeEntityParams);
     }
 
@@ -54,7 +54,7 @@ namespace Upope.ServiceBase
             return entityParams;
         }
 
-        public TEntityParams Map<TEntityParams>(int culturedEntityId, Culture culture, bool baseOnCulture = false) where TEntityParams : new()
+        public TEntityParams Map<TEntityParams>(int culturedEntityId, string culture, bool baseOnCulture = false) where TEntityParams : new()
         {            
             var culturedEntity = CulturedEntities
                 .FirstOrDefault(x => x.Id == culturedEntityId && x.Culture == culture);
@@ -173,7 +173,7 @@ namespace Upope.ServiceBase
             }
         }
 
-        public IQueryable<TCulturedEntity> UnrelatedEntities(Culture culture, int? baseEntityId = null) {
+        public IQueryable<TCulturedEntity> UnrelatedEntities(string culture, int? baseEntityId = null) {
             return CulturedEntities.Include(x => x.BaseEntity.CulturedEntities).Where(x =>
                 x.Culture != culture && x.CulturedEntityStatus != Status.Removed);
         }

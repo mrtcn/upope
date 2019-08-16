@@ -25,6 +25,9 @@ namespace Upope.Notification
 
             CreateMap<NotificationTemplate, NotificationTemplateEntityParams>();
             CreateMap<NotificationTemplateEntityParams, NotificationTemplate>();
+
+            CreateMap<NotificationTemplateEntityParams, NotificationTemplateCulture>();
+            CreateMap<NotificationTemplateCulture, NotificationTemplateEntityParams>();
         }
     }
 }

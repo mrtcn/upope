@@ -16,7 +16,7 @@ namespace Upope.ServiceBase.ServiceBase.Models {
             CheckRelationalEntities = checkRelationalEntities;
         }
 
-        public RemoveEntityParams(int id, IHasOperator hasOperator, Culture culture,
+        public RemoveEntityParams(int id, IHasOperator hasOperator, string culture,
             bool removePermanently = false, bool checkRelationalEntities = true) {
             Id = id;
             OperatorId = hasOperator.OperatorId;
@@ -28,7 +28,7 @@ namespace Upope.ServiceBase.ServiceBase.Models {
 
         public bool CheckRelationalEntities { get; set; }
 
-        public Culture Culture { get; set; }
+        public string Culture { get; set; }
         public int OperatorId { get; set; }
         public OperatorType OperatorType { get; set; }
         public bool RemovePermanently { get; set; }

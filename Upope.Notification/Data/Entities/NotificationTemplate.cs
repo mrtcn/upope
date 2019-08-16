@@ -37,7 +37,7 @@ namespace Upope.Notification.Data.Entities
         public string Description { get; set; }
         public Status Status { get; set; }
         public Status CulturedEntityStatus { get; set; }
-        public Culture Culture { get; set; }
+        public string Culture { get; set; }
         public NotificationTemplate BaseEntity { get; set; }
         public int BaseEntityId { get; set; }
     }
