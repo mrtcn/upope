@@ -1,20 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Upope.Game.CustomException;
 using Upope.Game.Data.Entities;
 using Upope.Game.EntityParams;
 using Upope.Game.Enum;
 using Upope.Game.GlobalSettings;
-using Upope.Game.Hubs;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
-using Upope.ServiceBase.Models;
 
 namespace Upope.Game.Services
 {    

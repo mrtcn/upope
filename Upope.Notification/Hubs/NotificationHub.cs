@@ -6,14 +6,14 @@ namespace Upope.Notification.Hubs
 {
     public interface ITypedHubClient
     {
-        Task BroadcastMessage(NotificationModel model);
+        Task ReceiveNotification(NotificationModel model);
     }
 
     public class NotificationHub : Hub<ITypedHubClient>
     {
         public void Send(string userId, NotificationModel model)
         {
-            Clients.User(userId).BroadcastMessage(model);
+            Clients.User(userId).ReceiveNotification(model);
         }
     }
 }

@@ -28,13 +28,13 @@ namespace Upope.ClientTests.ViewModel
                     }).Build();
 
                 //challengeHubConnection = new HubConnectionBuilder()
-                //    .WithUrl($"http://{challengeIp}/challengehubs", options =>
+                //    .WithUrl($"http://{challengeIp}/challengehub", options =>
                 //    {
                 //        options.AccessTokenProvider = () => Task.FromResult(accessToken);
                 //    }).Build();
 
                 //gameHubConnection = new HubConnectionBuilder()
-                //    .WithUrl($"http://{gameIp}/gamehubs", options =>
+                //    .WithUrl($"http://{gameIp}/gamehub", options =>
                 //    {
                 //        options.AccessTokenProvider = () => Task.FromResult(accessToken);
                 //    }).Build();

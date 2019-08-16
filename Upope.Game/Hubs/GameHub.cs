@@ -9,11 +9,11 @@ using Upope.Game.Services.Interfaces;
 namespace Upope.Game.Hubs
 {
     [Authorize]
-    public class GameHubs : Hub
+    public class GameHub : Hub
     {
         private readonly IGameService _gameService;
 
-        public GameHubs(IGameService gameService)
+        public GameHub(IGameService gameService)
         {
             _gameService = gameService;
         }

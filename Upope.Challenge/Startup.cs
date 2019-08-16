@@ -82,7 +82,7 @@ namespace Upope.Challenge
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/challengehubs")))
+                            (path.StartsWithSegments("/challengehub")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -182,7 +182,7 @@ namespace Upope.Challenge
 
             app.UseMvc();
 
-            app.UseSignalR(routes => routes.MapHub<ChallengeHubs>("/challengehubs"));
+            app.UseSignalR(routes => routes.MapHub<ChallengeHub>("/challengehub"));
         }
 
         private void BuildAppSettingsProvider()

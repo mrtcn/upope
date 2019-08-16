@@ -84,7 +84,7 @@ namespace Upope.Challenge.Services
 
                 await _hubContext.Clients.Users(userIds)
                 .SendAsync("ChallengeRequestMissed", challengeRequestParams.Id);
-
+                
                 await _hubContext.Clients.User(challengeRequestParams.ChallengeOwnerId)
                 .SendAsync("ChallengeRequestAccepted", JsonConvert.SerializeObject(new ChallengeRequestModel()
                 {

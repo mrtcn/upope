@@ -8,11 +8,11 @@ using Upope.Challenge.ViewModels;
 namespace Upope.Challenge.Hubs
 {
     [Authorize]
-    public class ChallengeHubs : Hub
+    public class ChallengeHub : Hub
     {
         private readonly IChallengeService _challengeService;
 
-        public ChallengeHubs(IChallengeService challengeService)
+        public ChallengeHub(IChallengeService challengeService)
         {
             _challengeService = challengeService;
         }

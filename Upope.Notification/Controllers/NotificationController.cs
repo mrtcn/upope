@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -76,7 +75,7 @@ namespace Upope.Notification.Controllers
 
             var notificationModel = _mapper.Map<NotificationModel>(notificationEntityParams);
 
-            await _hubContext.Clients.User(model.UserId).BroadcastMessage(notificationModel);
+            await _hubContext.Clients.User(model.UserId).ReceiveNotification(notificationModel);
 
             return Ok();
         }

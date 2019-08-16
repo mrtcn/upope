@@ -55,6 +55,7 @@ namespace Upope.Game.Services
                 var isHost = _gameService.IsHostUser(gameId, userId);
                 var game = _gameService.Get(gameId);
                 var askBluffUserId = isHost ? game.GuestUserId : game.HostUserId;
+
                 await _hubContext.Clients.User(askBluffUserId).SendAsync("AskBluff", "AskBluff");
             }
         }
