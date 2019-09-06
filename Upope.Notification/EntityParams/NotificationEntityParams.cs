@@ -15,6 +15,9 @@ namespace Upope.Notification.EntityParams
         public bool IsActionTaken { get; set; }
         public string UserId { get; set; }
         public int GameId { get; set; }
+        public int? CreditsToEarn { get; set; }
+        public int? UserCredits { get; set; }
+        public int? WinStreakCount { get; set; }
         public Status Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }

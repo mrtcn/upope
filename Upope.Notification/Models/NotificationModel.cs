@@ -12,6 +12,9 @@ namespace Upope.Notification.Models
         public DateTime CreatedDate { get; set; }
         public string Label { get; set; }
         public string Description { get; set; }
+        public int? CreditsToEarn { get; set; }
+        public int? UserCredits { get; set; }
+        public int? WinStreakCount { get; set; }
         public bool IsActionTaken { get; set; }
         public NotificationType NotificationType { get; set; }
     }

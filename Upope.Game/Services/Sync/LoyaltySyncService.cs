@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Upope.Game.GlobalSettings;
+using Upope.Game.Models;
 using Upope.Game.Services.Interfaces;
-using Upope.Game.ViewModels;
 using Upope.ServiceBase.Handler;
 
 namespace Upope.Game.Services.Sync
@@ -18,8 +14,32 @@ namespace Upope.Game.Services.Sync
         {
             _httpHandler = httpHandler;
         }
+        public async Task ResetWin(string userId, string accessToken)
+        {
+            var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
+            var api = AppSettingsProvider.ResetWins.Replace("{userId}", userId);
 
-        public async Task AddCredit(CreditsViewModel model, string accessToken)
+            await _httpHandler.AuthPutAsync(accessToken, baseUrl, api);
+        }
+
+        public async Task AddWin(string userId, string accessToken)
+        {
+            var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
+            var api = AppSettingsProvider.AddWin.Replace("{userId}", userId);
+
+            await _httpHandler.AuthPutAsync(accessToken, baseUrl, api);
+        }
+
+        public async Task AddScores(ScoreModel model, string accessToken)
+        {
+            var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
+            var api = AppSettingsProvider.AddScores;
+
+            var messageBody = JsonConvert.SerializeObject(model);
+            await _httpHandler.AuthPutAsync(accessToken, baseUrl, api, messageBody);
+        }
+
+        public async Task AddCredit(CreditsModel model, string accessToken)
         {
             var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
             var api = AppSettingsProvider.AddCredits;
@@ -28,7 +48,7 @@ namespace Upope.Game.Services.Sync
             await _httpHandler.AuthPutAsync(accessToken, baseUrl, api, messageBody);
         }
 
-        public async Task ChargeCredit(CreditsViewModel model, string accessToken)
+        public async Task ChargeCredit(CreditsModel model, string accessToken)
         {
             var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
             var api = AppSettingsProvider.ChargeCredits;

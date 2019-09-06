@@ -13,6 +13,9 @@ namespace Upope.Notification.Data.Entities
         string ImagePath { get; set; }
         string UserId { get; set; }
         int GameId { get; set; }
+        int? CreditsToEarn { get; set; }
+        int? UserCredits { get; set; }
+        int? WinStreakCount { get; set; }
         bool IsActionTaken { get; set; }
     }
 
@@ -26,6 +29,9 @@ namespace Upope.Notification.Data.Entities
         public string ImagePath { get; set; }
         public string UserId { get; set; }
         public int GameId { get; set; }
+        public int? CreditsToEarn { get; set; }
+        public int? UserCredits { get; set; }
+        public int? WinStreakCount { get; set; }
         public bool IsActionTaken { get; set; }
         public Status Status { get; set; }
     }

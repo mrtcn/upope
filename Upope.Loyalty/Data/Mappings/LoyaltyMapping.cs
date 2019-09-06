@@ -1,14 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Upope.Loyalty.Data.Entities;
+using LoyaltyEntity = Upope.Loyalty.Data.Entities.Loyalty;
 
 namespace Upope.Loyalty.Data.Mappings
 {
-    public class LoyaltyMapping: IEntityTypeConfiguration<Entities.Loyalty>
+    public class LoyaltyMapping: IEntityTypeConfiguration<LoyaltyEntity>
     {
-        public void Configure(EntityTypeBuilder<Entities.Loyalty> builder)
+        public void Configure(EntityTypeBuilder<LoyaltyEntity> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(b => b.Id).ValueGeneratedOnAdd();
+            builder.Property(b => b.Id).ValueGeneratedOnAdd();            
         }
     }
 }

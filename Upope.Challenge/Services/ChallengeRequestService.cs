@@ -18,6 +18,7 @@ using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Handler;
 using Upope.ServiceBase.Models;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Challenge.Services
 {
@@ -26,7 +27,7 @@ namespace Upope.Challenge.Services
         private readonly IUserService _userService;
         private readonly IChallengeService _challengeService;
         private readonly IGeoLocationService _geoLocationService;
-        private readonly IHubContext<ChallengeHubs> _hubContext;
+        private readonly IHubContext<ChallengeHub> _hubContext;
         private readonly IHttpHandler _httpHandler;
         private readonly IMapper _mapper;
 
@@ -37,7 +38,7 @@ namespace Upope.Challenge.Services
             IGeoLocationService geoLocationService,
             IMapper mapper, 
             IHttpHandler httpHandler,
-            IHubContext<ChallengeHubs> hubContext) : base(applicationDbContext, mapper)
+            IHubContext<ChallengeHub> hubContext) : base(applicationDbContext, mapper)
         {
             _userService = userService;
             _challengeService = challengeService;
@@ -266,8 +267,8 @@ namespace Upope.Challenge.Services
             {
                 var destinationUser = _userService.GetUserByUserId(userId);
                 var distance = _geoLocationService.GetDistance(
-                    new GeoCoordinatePortable.GeoCoordinate(actualUser.Latitude, actualUser.Longitude),
-                    new GeoCoordinatePortable.GeoCoordinate(destinationUser.Latitude, destinationUser.Longitude));
+                    new CoordinateModel(actualUser.Latitude, actualUser.Longitude),
+                    new CoordinateModel(destinationUser.Latitude, destinationUser.Longitude));
 
                 if (distance > range)
                     userIds.Remove(userId);
@@ -335,11 +336,15 @@ namespace Upope.Challenge.Services
                 .Include(x => x.Challenge)
                 .Include(x => x.ChallengOwner)
                 .Where(x => x.Id == challengeRequestId)
+                .ToList()
                 .Select(x => new ChallengeRequestModel()
                 {
                     ChallengeRequestId = x.Id,
                     Point = x.Challenge.RewardPoint,
-                    Range = rnd.Next(1, 150).ToString() + " Meter",
+                    //TODO: Range units should be localized
+                    Range = _geoLocationService.GetDistance(
+                        new CoordinateModel(x.Challenger.Latitude, x.Challenger.Longitude), 
+                        new CoordinateModel(x.ChallengOwner.Latitude, x.ChallengOwner.Longitude)).ToString() + " Meter",
                     UserId = x.ChallengeOwnerId,
                     FirstName = x.ChallengOwner.Nickname,
                     UserImagePath = x.ChallengOwner.PictureUrl

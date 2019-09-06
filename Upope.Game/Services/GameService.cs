@@ -4,29 +4,50 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Upope.Game.Hubs;
+using Upope.Game.Models;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.Services.Models;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Models;
+using Upope.ServiceBase.Services.Interfaces;
 using GameEntity = Upope.Game.Data.Entities.Game;
 
 namespace Upope.Game.Services
 {    
     public class GameService : EntityServiceBase<GameEntity>, IGameService
     {
-        private readonly IHubContext<GameHubs> _hubContext;
+        private readonly IHubContext<GameHub> _hubContext;
+        private readonly IUserService _userService;
+        private readonly IGeoLocationService _geoLocationService;
 
         public GameService(
             ApplicationDbContext applicationDbContext, 
             IMapper mapper,
-            IHubContext<GameHubs> hubContext) : base(applicationDbContext, mapper)
+            IHubContext<GameHub> hubContext,
+            IUserService userService,
+            IGeoLocationService geoLocationService) : base(applicationDbContext, mapper)
         {
             _hubContext = hubContext;
+            _userService = userService;
+            _geoLocationService = geoLocationService;
         }
 
         protected override void OnSaveChangedAsync(IEntityParams entityParams, GameEntity entity)
         {
             base.OnSaveChangedAsync(entityParams, entity);
+        }
+
+        public RematchUserInfo RematchUserInfo(string userId, string requestingUserId, int credit, int maxCredit)
+        {
+            var user = _userService.GetUserByUserId(userId);
+            var requestingUser = _userService.GetUserByUserId(requestingUserId);
+            return new RematchUserInfo {
+                Username = requestingUser.Nickname,
+                ImagePath = requestingUser.PictureUrl,
+                Distance = _geoLocationService.GetDistance(new CoordinateModel(user.Latitude, user.Longitude), new CoordinateModel(requestingUser.Latitude, requestingUser.Longitude)),
+                Credit = credit,
+                MaxCredit = maxCredit
+            };
         }
 
         public bool IsHostUser(int gameId, string userId)

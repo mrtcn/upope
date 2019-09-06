@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Upope.Loyalty.Data.Entities;
 using Upope.Loyalty.Data.Mappings;
 
 namespace Upope.Loyalty
@@ -19,6 +20,7 @@ namespace Upope.Loyalty
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration<User>(new UserMapping());
             modelBuilder.ApplyConfiguration(new LoyaltyMapping());
         }
     }

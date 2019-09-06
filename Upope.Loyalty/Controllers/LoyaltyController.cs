@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Upope.Loyalty.Interfaces;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.Loyalty.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Loyalty.Controllers
 {
@@ -22,17 +24,23 @@ namespace Upope.Loyalty.Controllers
     public class LoyaltyController : ControllerBase
     {
         private readonly ILoyaltyService _loyaltyService;
+        private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
         private readonly INotificationManager _notificationManager;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<LoyaltyController> _localizer;
 
         public LoyaltyController(
             ILoyaltyService loyaltyService,
+            IUserService userService,
+            IIdentityService identityService,
             INotificationManager notificationManager,
             IStringLocalizer<LoyaltyController> localizer,
             IMapper mapper)
         {
             _loyaltyService = loyaltyService;
+            _userService = userService;
+            _identityService = identityService;
             _notificationManager = notificationManager;
             _mapper = mapper;
             _localizer = localizer;
@@ -93,10 +101,48 @@ namespace Upope.Loyalty.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        [Authorize]
+        [Route("AddScores")]
+        public IActionResult AddScores(PointViewModel model)
+        {
+            var addCreditsParams = _mapper.Map<AddScoresParams>(model);
+            _loyaltyService.AddScores(addCreditsParams);
+
+            //TODO: (Murat) AddScores notifications should be clarified!
+            //await _notificationManager.SendNotification(accessToken, model.UserId);
+
+            return Ok();
+        }
+
+        [HttpPut("AddWin/{userId}")]
+        [Authorize]
+        public IActionResult AddWin(string userId)
+        {
+            _loyaltyService.AddWin(userId);
+
+            //TODO: (Murat) AddScores notifications should be clarified!
+            //await _notificationManager.SendNotification(accessToken, model.UserId);
+
+            return Ok();
+        }
+
+        [HttpPut("ResetWin/{userId}")]
+        [Authorize]
+        public IActionResult ResetWin(string userId)
+        {
+            _loyaltyService.ResetWin(userId);
+
+            //TODO: (Murat) AddScores notifications should be clarified!
+            //await _notificationManager.SendNotification(accessToken, model.UserId);
+
+            return Ok();
+        }
+
         [HttpPost]
         [Authorize]
         [Route("CreateOrUpdate")]
-        public async Task<IActionResult> CreateOrUpdate(CreateOrUpdateViewModel model)
+        public IActionResult CreateOrUpdate(CreateOrUpdateViewModel model)
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
 
@@ -112,6 +158,62 @@ namespace Upope.Loyalty.Controllers
             var result = _mapper.Map<LoyaltyParams, CreateOrUpdateViewModel>(loyaltyParams);
 
             return Ok(result);
+        }
+
+        [HttpGet("UserStats/{userId}")]
+        [Authorize]
+        public IActionResult GetUserStats(string userId)
+        {
+            var userStats = _loyaltyService.GetUserStats(userId);
+            return Ok(userStats);
+        }
+
+        [HttpGet("WinLeadershipBoard/{page}")]
+        [Authorize]
+        public async Task<IActionResult> WinLeadershipBoard(int page)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var winLeadershipBoard = _loyaltyService.WinLeaderships(page);
+            var winLeadershipBoardViewModel = _mapper.Map<List<WinLeadershipBoardViewModel>>(winLeadershipBoard);
+
+            var userStats = _loyaltyService.GetUserStats(userId);
+            var userStatsViewModel = _mapper.Map<UserStatsViewModel>(userStats);
+
+            return Ok(new { LeadershipBoard = winLeadershipBoardViewModel, UserStats = userStatsViewModel});
+        }
+
+        [HttpGet("ScoreLeadershipBoard/{page}")]
+        [Authorize]
+        public async Task<IActionResult> ScoreLeadershipBoard(int page)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var scoreLeadershipBoard = _loyaltyService.ScoreLeaderships(page);
+            var scoreLeadershipBoardViewModel = _mapper.Map<List<WinLeadershipBoardViewModel>>(scoreLeadershipBoard);
+
+            var userStats = _loyaltyService.GetUserStats(userId);
+            var userStatsViewModel = _mapper.Map<UserStatsViewModel>(userStats);
+
+            return Ok(new { LeadershipBoard = scoreLeadershipBoardViewModel, UserStats = userStatsViewModel });
+        }
+
+        [HttpGet("CreditLeadershipBoard/{page}")]
+        [Authorize]
+        public async Task<IActionResult> CreditLeadershipBoard(int page)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var creditLeadershipBoard = _loyaltyService.CreditLeaderships(page);
+            var creditLeadershipBoardViewModel = _mapper.Map<List<CreditLeadershipBoardViewModel>>(creditLeadershipBoard);
+
+            var userStats = _loyaltyService.GetUserStats(userId);
+            var userStatsViewModel = _mapper.Map<UserStatsViewModel>(userStats);
+
+            return Ok(new { LeadershipBoard = creditLeadershipBoardViewModel, UserStats = userStatsViewModel });
         }
     }
 }

@@ -24,5 +24,16 @@ namespace Upope.Identity.Services.Sync
             var messageBody = JsonConvert.SerializeObject(model);
             var result = await _httpHandler.AuthPostAsync<CreateOrUpdateLoyaltyViewModel>(accessToken, baseUrl, api, messageBody);
         }
+
+        public async Task SyncLoyaltyUserTable(CreateOrUpdateLoyaltyUserViewModel model, string accessToken)
+        {
+
+            var baseUrl = AppSettingsProvider.LoyaltyBaseUrl;
+
+            var api = AppSettingsProvider.LoyaltyCreateOrUpdateUser;
+
+            var messageBody = JsonConvert.SerializeObject(model);
+            var result = await _httpHandler.AuthPostAsync<CreateOrUpdateChallengeUserViewModel>(accessToken, baseUrl, api, messageBody);
+        }
     }
 }

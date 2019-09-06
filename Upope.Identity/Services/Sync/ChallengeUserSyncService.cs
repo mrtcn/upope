@@ -19,7 +19,7 @@ namespace Upope.Identity.Services.Sync
         {
             var baseUrl = AppSettingsProvider.ChallengeBaseUrl;
 
-            var api = AppSettingsProvider.CreateOrUpdateUser;
+            var api = AppSettingsProvider.ChallengeCreateOrUpdateUser;
 
             var messageBody = JsonConvert.SerializeObject(model);
             var result = await _httpHandler.AuthPostAsync<CreateOrUpdateChallengeUserViewModel>(accessToken, baseUrl, api, messageBody);

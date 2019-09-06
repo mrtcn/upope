@@ -142,7 +142,7 @@ namespace Upope.Identity
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Upope Challenge API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Upope Identity API", Version = "v1" });
             });
 
             services.AddAutoMapper();
@@ -151,6 +151,7 @@ namespace Upope.Identity
             services.AddTransient<IHttpHandler, HttpHandler>();
             services.AddTransient<IChallengeUserSyncService, ChallengeUserSyncService>();
             services.AddTransient<ILoyaltySyncService, LoyaltySyncService>();
+            services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddTransient<IGameUserSyncService, GameUserSyncService>();
             
             services.AddTransient<ITokenService, TokenService>();
@@ -194,7 +195,7 @@ namespace Upope.Identity
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Upope Challenge API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Upope Identity API V1");
                 c.RoutePrefix = string.Empty;
             });
 
@@ -205,10 +206,12 @@ namespace Upope.Identity
         private void BuildAppSettingsProvider()
         {
             AppSettingsProvider.ChallengeBaseUrl = Configuration["Upope.Challenge:BaseUrl"].ToString();
-            AppSettingsProvider.CreateOrUpdateUser = Configuration["Upope.Challenge:CreateOrUpdate"].ToString();
+            AppSettingsProvider.ChallengeCreateOrUpdateUser = Configuration["Upope.Challenge:CreateOrUpdate"].ToString();
 
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
             AppSettingsProvider.CreateOrUpdateLoyalty = Configuration["Upope.Loyalty:CreateOrUpdate"].ToString();
+            AppSettingsProvider.LoyaltyCreateOrUpdateUser = Configuration["Upope.Loyalty:UserCreateOrUpdate"].ToString();
+            AppSettingsProvider.LoyaltyUserStats = Configuration["Upope.Loyalty:UserStats"].ToString();
 
             AppSettingsProvider.GameBaseUrl = Configuration["Upope.Game:BaseUrl"].ToString();
             AppSettingsProvider.CreateOrUpdateGameUser = Configuration["Upope.Game:CreateOrUpdateGameUser"].ToString();
