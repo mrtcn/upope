@@ -277,7 +277,7 @@ namespace Upope.Identity.Controllers
             try
             { 
                 var facebookUser = await _facebookService.GetAccountAsync(model.AccessToken);
-
+                
                 if (string.IsNullOrEmpty(facebookUser.Id))
                 {
                     return BadRequest(_localizer.GetString("InvalidTokenFacebook"));
@@ -309,6 +309,7 @@ namespace Upope.Identity.Controllers
                 {
                     user.RefreshToken = refreshToken;
                     user.PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png);
+                    user.LargePictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.LargePictureUrl, projectPath, ImageFormat.Png);
 
                     var result = await _userManager.UpdateAsync(user);
                     if (!result.Succeeded)

@@ -33,6 +33,9 @@ namespace Upope.Identity.Models.FacebookResponse
 
         [JsonProperty(PropertyName = "picture")]
         public Picture Picture { get; set; }
+
+        [JsonProperty(PropertyName = "largePictureUrl")]
+        public string LargePictureUrl { get; set; }
     }
 }
 

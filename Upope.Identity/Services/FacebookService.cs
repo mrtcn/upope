@@ -17,6 +17,7 @@ namespace Upope.Identity.Services
         {
             var result = await _facebookClient.GetAsync<FacebookResponse>(
                 accessToken, "me", "fields=id,name,email,first_name,last_name,age_range,birthday,gender,locale,picture");
+            result.LargePictureUrl = $"https://graph.facebook.com/v3.2/{result.Id}/picture?type=large";
 
             if (result == null)
             {

@@ -56,6 +56,7 @@ namespace Upope.Identity.Entities
         public String GoogleId { get; set; }
 
         public String PictureUrl { get; set; }
+        public String LargePictureUrl { get; set; }
 
         public DateTime? Birthday { get; set; }
         public UserType UserType { get; set; }
