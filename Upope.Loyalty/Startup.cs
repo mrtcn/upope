@@ -130,6 +130,7 @@ namespace Upope.Loyalty
 
             services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<INotificationManager, NotificationManager>();
             services.AddHttpClient();
             services.AddTransient<IHttpHandler, HttpHandler>();
@@ -188,6 +189,11 @@ namespace Upope.Loyalty
             AppSettingsProvider.SendNotification = Configuration["Upope.Notification:SendNotification"].ToString();
             AppSettingsProvider.WatchAdCreditLimit = int.Parse(Configuration["WatchAdCreditLimit"].ToString());
             AppSettingsProvider.WatchAdCreditLimit = int.Parse(Configuration["UpgradeToProCreditLimit"].ToString());
+            AppSettingsProvider.UpgradeToProCreditReward = int.Parse(Configuration["UpgradeToProCreditReward"].ToString());
+            AppSettingsProvider.WatchingAdCreditReward = int.Parse(Configuration["WatchingAdCreditReward"].ToString());
+            AppSettingsProvider.WinRoundCount = int.Parse(Configuration["WinRoundCount"].ToString());
+            AppSettingsProvider.WinInARowModal = int.Parse(Configuration["WinInARowModal"].ToString());
+            AppSettingsProvider.WinInARowFactor = int.Parse(Configuration["WinInARowFactor"].ToString());
         }
     }
 }

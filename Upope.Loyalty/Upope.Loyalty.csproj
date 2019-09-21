@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190825193059_LoyaltyUser.cs" />
+    <Compile Remove="Migrations\20190825193059_LoyaltyUser.Designer.cs" />
     <Compile Remove="Services\IdentityService.cs" />
     <Compile Remove="Services\Interfaces\IIdentityService.cs" />
   </ItemGroup>

@@ -1,9 +1,9 @@
 ﻿
-namespace Upope.Game.ViewModels
+namespace Upope.Game.Models
 {
-    public class CreditsViewModel
+    public class CreditsModel
     {
-        public CreditsViewModel(string userId, int credit)
+        public CreditsModel(string userId, int credit)
         {
             UserId = userId;
             Credit = credit;

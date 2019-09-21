@@ -18,6 +18,9 @@ namespace Upope.Chat
 
             CreateMap<ChatEntity, ChatParams>();
             CreateMap<ChatParams, ChatEntity>();
+
+            CreateMap<User, UserParams>();
+            CreateMap<UserParams, User>();
         }
     }
 }

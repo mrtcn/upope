@@ -30,7 +30,8 @@ namespace Upope.Chat.Controllers
             var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var userId = await _identityService.GetUserId(accessToken);
 
-            _contactService.CreateOrUpdate(new ContactParams(userId, contactUserId));
+            if(!_contactService.IsInContact(userId, contactUserId))
+                _contactService.CreateOrUpdate(new ContactParams(userId, contactUserId));
 
             return Ok();
         }

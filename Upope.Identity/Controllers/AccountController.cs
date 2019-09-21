@@ -43,6 +43,7 @@ namespace Upope.Identity.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
+        private readonly ILoyaltyService _loyaltyService;
         private readonly IGameUserSyncService _gameUserSyncService;
         private readonly IStringLocalizer<AccountController> _localizer;
 
@@ -59,6 +60,7 @@ namespace Upope.Identity.Controllers
            IHostingEnvironment hostingEnvironment,
            IChallengeUserSyncService challengeUserSyncService,
            ILoyaltySyncService loyaltySyncService,
+           ILoyaltyService loyaltyService,
            IGameUserSyncService gameUserSyncService,
            IStringLocalizer<AccountController> localizer)
         {
@@ -74,6 +76,7 @@ namespace Upope.Identity.Controllers
             _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
+            _loyaltyService = loyaltyService;
             _gameUserSyncService = gameUserSyncService;
             _localizer = localizer;
         }
@@ -173,9 +176,15 @@ namespace Upope.Identity.Controllers
         [Authorize]
         public async Task<IActionResult> Profile()
         {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var user = await GetUserAsync();
 
             var profileViewModel = _mapper.Map<ProfileViewModel>(user);
+            var userStats = await _loyaltyService.GetLoyalty(accessToken, user.Id);
+            profileViewModel.Score = userStats.Score;
+            profileViewModel.Credit = userStats.Credit;
+            profileViewModel.WinRecord = userStats.WinRecord;
+            profileViewModel.CurrentWinStreak = userStats.CurrentWinStreak;
 
             return Ok(profileViewModel);
         }
@@ -183,11 +192,18 @@ namespace Upope.Identity.Controllers
         [HttpGet]
         [Route("userProfile/{id}")]
         [Authorize]
-        public IActionResult GetUserProfileById(string id)
+        public async Task<IActionResult> GetUserProfileById(string id)
         {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
             var user = _userManager.Users.FirstOrDefault(x => x.Id == id);
 
             var profileViewModel = _mapper.Map<ProfileViewModel>(user);
+
+            var userStats = await _loyaltyService.GetLoyalty(accessToken, user.Id);
+            profileViewModel.Score = userStats.Score;
+            profileViewModel.Credit = userStats.Credit;
+            profileViewModel.WinRecord = userStats.WinRecord;
+            profileViewModel.CurrentWinStreak = userStats.CurrentWinStreak;
 
             return Ok(profileViewModel);
         }
@@ -378,6 +394,14 @@ namespace Upope.Identity.Controllers
                 };
                 await _loyaltySyncService.SyncLoyaltyTable(createOrUpdateLoyaltyViewModel, accessToken);
             }
+        }
+
+        private async Task SyncLoyaltyUserTable(bool isCreate, ApplicationUser localUser, string accessToken)
+        {
+            var createLoyaltyUserViewModel = _mapper.Map<ApplicationUser, CreateOrUpdateLoyaltyUserViewModel>(localUser);
+            createLoyaltyUserViewModel.UserId = localUser.Id;
+
+            await _loyaltySyncService.SyncLoyaltyUserTable(createLoyaltyUserViewModel, accessToken);
         }
 
         // POST api/externalauth/google

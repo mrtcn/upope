@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Upope.Loyalty.EntityParams;
+using Upope.Loyalty.Models;
 using Upope.ServiceBase;
 
 namespace Upope.Loyalty.Services.Interfaces
@@ -12,5 +13,12 @@ namespace Upope.Loyalty.Services.Interfaces
         Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point);
         void ChargeCredits(ChargeCreditsParams chargeCreditsParams);
         void AddCredits(ChargeCreditsParams chargeCreditsParams);
+        void AddScores(AddScoresParams chargeScoresParams);
+        void AddWin(string userId);
+        void ResetWin(string userId);
+        UserStatsModel GetUserStats(string userId);
+        List<WinLeadershipBoard> WinLeaderships(int page);
+        List<ScoreLeadershipBoard> ScoreLeaderships(int page);
+        List<CreditLeadershipBoard> CreditLeaderships(int page);
     }
 }

@@ -24,7 +24,7 @@ namespace Upope.Game.Managers
         private readonly IGameService _gameService;
         private readonly ILoyaltySyncService _loyaltySyncService;
         private readonly IMapper _mapper;
-        private readonly IHubContext<GameHubs> _hubContext;
+        private readonly IHubContext<GameHub> _hubContext;
 
         public GameManager(
             IStringLocalizer<GameManager> localizer,
@@ -34,7 +34,7 @@ namespace Upope.Game.Managers
             IGameService gameService,
             ILoyaltySyncService loyaltySyncService,
             IMapper mapper,
-            IHubContext<GameHubs> hubContext)
+            IHubContext<GameHub> hubContext)
         {
             _localizer = localizer;
             _roundAnswerService = roundAnswerService;
@@ -44,6 +44,23 @@ namespace Upope.Game.Managers
             _loyaltySyncService = loyaltySyncService;
             _mapper = mapper;
             _hubContext = hubContext;
+        }
+
+        public void SendRematch(string userId, string requestingUserId, int credit, int maxCredit)
+        {
+            var rematchUserInfo = _gameService.RematchUserInfo(userId, requestingUserId, credit, maxCredit);
+            _hubContext.Clients.User(userId).SendAsync("RematchRequest", rematchUserInfo);
+        }
+
+        public void RejectRematch(string userId, string requestingUserId)
+        {
+            _hubContext.Clients.User(userId).SendAsync("RejectRematch", new { UserId = requestingUserId});
+        }
+
+        public void SendRematchRaise(string userId, string requestingUserId, int credit, int maxCredit)
+        {
+            var rematchUserInfo = _gameService.RematchUserInfo(userId, requestingUserId, credit, maxCredit);
+            _hubContext.Clients.User(userId).SendAsync("RematchRaiseRequest", rematchUserInfo);
         }
 
         public GameRoundParams CreateOrUpdateGame(CreateOrUpdateViewModel model)
@@ -126,8 +143,18 @@ namespace Upope.Game.Managers
                 var loserId = gameParams.WinnerId == game.HostUserId ? game.GuestUserId : game.HostUserId;
                 _gameService.CreateOrUpdate(gameParams);
 
-                await _loyaltySyncService.AddCredit(new CreditsViewModel(gameParams.WinnerId, gameEndResult.TotalPoints), accessToken);
-                await _loyaltySyncService.ChargeCredit(new CreditsViewModel(loserId, game.Credit), accessToken);
+                var totalCreditsToAdd = game.Credit + gameEndResult.GainedCredits;
+
+                await _loyaltySyncService.AddCredit(new CreditsModel(gameParams.WinnerId, totalCreditsToAdd), accessToken);
+                await _loyaltySyncService.ChargeCredit(new CreditsModel(loserId, game.Credit), accessToken);
+
+                await _loyaltySyncService.AddScores(new ScoreModel(gameParams.WinnerId, gameEndResult.TotalPoints), accessToken);
+
+                if (!game.IsRematch)
+                {
+                    await _loyaltySyncService.AddWin(gameParams.WinnerId, accessToken);
+                    await _loyaltySyncService.ResetWin(loserId, accessToken);
+                }
 
                 await _hubContext.Clients
                 .Users(new List<string>() { game.HostUserId, game.GuestUserId })

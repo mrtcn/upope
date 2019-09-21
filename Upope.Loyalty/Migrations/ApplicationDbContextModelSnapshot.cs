@@ -29,19 +29,72 @@ namespace Upope.Loyalty.Migrations
 
                     b.Property<int>("Credit");
 
+                    b.Property<int>("CurrentWinStreak");
+
                     b.Property<DateTime?>("LastModifiedDate");
 
                     b.Property<int>("Score");
 
                     b.Property<int>("Status");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired();
 
-                    b.Property<int>("Win");
+                    b.Property<int>("WinRecord");
 
                     b.HasKey("Id");
 
                     b.ToTable("Loyalty");
+                });
+
+            modelBuilder.Entity("Upope.Loyalty.Data.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<int>("Gender");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(250);
+
+                    b.Property<double>("Latitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("Nickname")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("PictureUrl");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Upope.Loyalty.Data.Entities.User", b =>
+                {
+                    b.HasOne("Upope.Loyalty.Data.Entities.Loyalty", "Loyalty")
+                        .WithOne("User")
+                        .HasForeignKey("Upope.Loyalty.Data.Entities.User", "UserId")
+                        .HasPrincipalKey("Upope.Loyalty.Data.Entities.Loyalty", "UserId");
                 });
 #pragma warning restore 612, 618
         }

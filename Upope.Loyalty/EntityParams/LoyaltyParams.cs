@@ -10,7 +10,8 @@ namespace Upope.Loyalty.EntityParams
     {
         public int Id { get; set; }
         public Status Status { get; set; }
-        public int Win { get; set; }
+        public int CurrentWinStreak { get; set; }
+        public int WinRecord { get; set; }
         public int Credit { get; set; }
         public int Score { get; set; }
         public string UserId { get; set; }

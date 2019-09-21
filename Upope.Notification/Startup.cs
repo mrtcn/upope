@@ -186,6 +186,9 @@ namespace Upope.Notification
         {
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
+            AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
+            AppSettingsProvider.ChargeCredits = Configuration["Upope.Loyalty:ChargeCredits"].ToString();
+            AppSettingsProvider.AddCredits = Configuration["Upope.Loyalty:AddCredits"].ToString();
         }
     }
 }

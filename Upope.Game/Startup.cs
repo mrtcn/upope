@@ -200,12 +200,15 @@ namespace Upope.Game
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
             AppSettingsProvider.GetUserProfileUrl = Configuration["Upope.Identity:GetUserProfileUrl"].ToString();
             AppSettingsProvider.WinRoundCount = int.Parse(Configuration["WinRoundCount"].ToString());
-            AppSettingsProvider.WinInARowModal = int.Parse(Configuration["WinInARowModal"].ToString());
             AppSettingsProvider.NotificationBaseUrl = Configuration["Upope.Notification:BaseUrl"].ToString();
             AppSettingsProvider.SendNotification = Configuration["Upope.Notification:SendNotification"].ToString();
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();
+            AppSettingsProvider.LoyaltyUserStats = Configuration["Upope.Loyalty:UserStats"].ToString();
             AppSettingsProvider.ChargeCredits = Configuration["Upope.Loyalty:ChargeCredits"].ToString();
             AppSettingsProvider.AddCredits = Configuration["Upope.Loyalty:AddCredits"].ToString();
+            AppSettingsProvider.ResetWins = Configuration["Upope.Loyalty:ResetWins"].ToString();
+            AppSettingsProvider.AddWin = Configuration["Upope.Loyalty:AddWin"].ToString();
+            AppSettingsProvider.AddScores = Configuration["Upope.Loyalty:AddScores"].ToString();
         }
     }
 }

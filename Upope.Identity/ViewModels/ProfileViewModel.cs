@@ -15,7 +15,8 @@ namespace Upope.Identity.ViewModels
         public Gender Gender { get; set; }
         public String PictureUrl { get; set; }
         public DateTime? Birthday { get; set; }
-        public int Win { get; set; }
+        public int CurrentWinStreak { get; set; }
+        public int WinRecord { get; set; }
         public int Credit { get; set; }
         public int Score { get; set; }
         public UserType UserType { get; set; }

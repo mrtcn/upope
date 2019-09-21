@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <Compile Remove="EntityParams\ChoiceResultType.cs" />
+    <Compile Remove="Migrations\20190825195344_GameUtils2.cs" />
+    <Compile Remove="Migrations\20190825195344_GameUtils2.Designer.cs" />
     <Compile Remove="Services\IdentityService.cs" />
     <Compile Remove="Services\Interfaces\IIdentityService.cs" />
   </ItemGroup>

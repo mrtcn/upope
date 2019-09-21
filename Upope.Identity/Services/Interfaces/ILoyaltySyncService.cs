@@ -7,5 +7,6 @@ namespace Upope.Identity.Services.Interfaces
     public interface ILoyaltySyncService
     {
         Task SyncLoyaltyTable(CreateOrUpdateLoyaltyViewModel model, string accessToken);
+        Task SyncLoyaltyUserTable(CreateOrUpdateLoyaltyUserViewModel model, string accessToken);
     }
 }

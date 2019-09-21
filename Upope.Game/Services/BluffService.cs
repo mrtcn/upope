@@ -16,14 +16,14 @@ namespace Upope.Game.Services
     {
         private readonly IGameService _gameService;
         private readonly IRoundAnswerService _roundAnswerService;
-        private readonly IHubContext<GameHubs> _hubContext;
+        private readonly IHubContext<GameHub> _hubContext;
         private readonly IMapper _mapper;
 
         public BluffService(
             ApplicationDbContext applicationDbContext,
             IGameService gameService,
             IRoundAnswerService roundAnswerService,
-            IHubContext<GameHubs> hubContext,
+            IHubContext<GameHub> hubContext,
             IMapper mapper) : base(applicationDbContext, mapper)
         {
             _mapper = mapper;

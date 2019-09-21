@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Upope.Chat.Data.Entities;
 using Upope.Chat.Data.Mappings;
 
 namespace Upope.Chat
@@ -22,6 +23,7 @@ namespace Upope.Chat
             modelBuilder.ApplyConfiguration(new ChatRoomMapping());
             modelBuilder.ApplyConfiguration(new ChatMapping());
             modelBuilder.ApplyConfiguration(new ContactMapping());
+            modelBuilder.ApplyConfiguration<User>(new UserMapping());
 
             //    modelBuilder.Entity<Point>().HasData(
             //        new Point() { Id = 1, Credit = 10, Status = Status.Active, UserId = "0159adeb-1a12-4edb-8052-c860125ee58b" },

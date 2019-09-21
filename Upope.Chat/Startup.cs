@@ -135,6 +135,7 @@ namespace Upope.Chat
             services.AddTransient<IContactService, ContactService>();
             services.AddTransient<IChatRoomService, ChatRoomService>();
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddSignalR(hubOptions => {
             });

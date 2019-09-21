@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Upope.Game.CustomException;
 using Upope.Game.Interfaces;
+using Upope.Game.Models;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
 using Upope.ServiceBase.Extensions;
@@ -18,17 +20,20 @@ namespace Upope.Game.Controllers
     {
         private readonly IIdentityService _identityService;
         private readonly IGameManager _gameManager;
+        private readonly ILoyaltyService _loyaltyService;
         private readonly IStringLocalizer<GameController> _localizer;
         private readonly IContactService _contactService;
 
         public GameController(
             IIdentityService identityService,
             IGameManager gameManager,
+            ILoyaltyService loyaltyService,
             IStringLocalizer<GameController> localizer,
             IContactService contactService)
         {
             _identityService = identityService;
             _gameManager = gameManager;
+            _loyaltyService = loyaltyService;
             _localizer = localizer;
             _contactService = contactService;
         }
@@ -87,6 +92,76 @@ namespace Upope.Game.Controllers
             {
                 return BadRequest(_localizer.GetString("ExpiredBluff").Value);
             }
+
+            return Ok();
+        }
+
+        [HttpGet("Rematch/{requestedUserId}")]
+        [Authorize]
+        public async Task<IActionResult> Rematch(string requestedUserId)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            var requestingUserStats = await _loyaltyService.GetLoyalty(accessToken, userId);
+            if (requestingUserStats.Credit == 0)
+            {
+                return BadRequest(_localizer.GetString("NotEnoughCreditForRematch").Value);
+            }
+
+            var requestedUserStats = await _loyaltyService.GetLoyalty(accessToken, requestedUserId);
+            if (requestedUserStats.Credit == 0)
+            {
+                return BadRequest(_localizer.GetString("RequestedUserNotEnoughCredit").Value);
+            }
+
+            return Ok(new { MaxCredit = Math.Max(requestedUserStats.Credit, requestingUserStats.Credit)});
+        }
+
+        [HttpPost("SendRematchRequest")]
+        [Authorize]
+        public async Task<IActionResult> SendRematchRequest(RematchRequestModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            _gameManager.SendRematch(model.UserId, userId, model.Credit, model.MaxCredit);
+
+            return Ok();
+        }
+
+        [HttpPost("RaiseRematchRequest")]
+        [Authorize]
+        public async Task<IActionResult> RaiseRematch(RematchRequestModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            _gameManager.SendRematchRaise(model.UserId, userId, model.Credit, model.MaxCredit);
+
+            return Ok();
+        }
+
+        [HttpPost("AcceptRematch")]
+        [Authorize]
+        public async Task<IActionResult> AcceptRematch(RematchRequestModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            _gameManager.CreateOrUpdateGame(new CreateOrUpdateViewModel(0, 0, 1, userId, model.UserId, model.Credit, true));
+
+            return Ok();
+        }
+
+        [HttpPost("RejectRematch")]
+        [Authorize]
+        public async Task<IActionResult> RejectRematch(RejectRematchModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+            var userId = await _identityService.GetUserId(accessToken);
+
+            _gameManager.RejectRematch(model.UserId, userId);
 
             return Ok();
         }
