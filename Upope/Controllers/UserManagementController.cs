@@ -19,17 +19,17 @@ namespace Upope.Controllers
 
         [HttpPost]
         [Route("userprofile")]
-        public async Task<IActionResult> UserProfile()
+        public IActionResult UserProfile()
         {
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPost]
         [Authorize]
         [Route("userprofileauth")]
-        public async Task<IActionResult> UserProfileAuth()
+        public IActionResult UserProfileAuth()
         {
-            return Ok();
+            return Ok(true);
         }
 
         // POST api/values

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace Upope.Game.Managers
         private readonly IBluffService _bluffService;
         private readonly IGameService _gameService;
         private readonly ILoyaltySyncService _loyaltySyncService;
+        private readonly IBotService _botService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IHubContext<GameHub> _hubContext;
 
@@ -33,6 +36,8 @@ namespace Upope.Game.Managers
             IBluffService bluffService,
             IGameService gameService,
             ILoyaltySyncService loyaltySyncService,
+            IBotService botService,
+            IUserService userService,
             IMapper mapper,
             IHubContext<GameHub> hubContext)
         {
@@ -42,6 +47,8 @@ namespace Upope.Game.Managers
             _bluffService = bluffService;
             _gameService = gameService;
             _loyaltySyncService = loyaltySyncService;
+            _botService = botService;
+            _userService = userService;
             _mapper = mapper;
             _hubContext = hubContext;
         }
@@ -71,8 +78,8 @@ namespace Upope.Game.Managers
             var gameRoundParams = new GameRoundParams(gameParams.Id);
             gameRoundParams.Round = gameRoundParams.Id == 0 ? 1 : gameRoundParams.Round;
 
-            _gameRoundService.CreateOrUpdate(gameRoundParams);
-            _gameService.SendGameCreatedMessage(new Services.Models.GameCreatedModel(gameParams.Id, gameParams.HostUserId, gameParams.GuestUserId));
+            var gameRound = _gameRoundService.CreateOrUpdate(gameRoundParams);
+            _gameService.SendGameCreatedMessage(new Services.Models.GameCreatedModel(gameParams.Id, gameParams.HostUserId, gameParams.GuestUserId, gameRound.Id, gameRound.Round, model.IsBotActivated));
 
             return gameRoundParams;
         }
@@ -130,6 +137,15 @@ namespace Upope.Game.Managers
                     var newGameRoundEntity = _gameRoundService.CreateOrUpdate(new GameRoundParams(model.GameId, 0, newRound));
                     roundEndModel.Round = newRound;
                     roundEndModel.GameRoundId = newGameRoundEntity.Id;
+
+                    
+                    if (game.IsBotActivated)
+                    {
+                        var botUser = _userService.GetUserByUserId(game.GuestUserId);
+                        var credentials = await _userService.Login(new Services.Models.LoginModel() { Username = botUser.Nickname, Password = "N123456w!" });
+
+                        await BotSendAnswer(game, newGameRoundEntity, credentials.AccessToken);
+                    }
                     return roundEndModel;
                 }
             }
@@ -168,6 +184,21 @@ namespace Upope.Game.Managers
             roundEndModel.Round = model.Round;
             roundEndModel.GameRoundId = roundAnswerEntity.GameRoundId;
             return roundEndModel;
+        }
+
+        private async Task BotSendAnswer(Data.Entities.Game game, Data.Entities.GameRound newGameRoundEntity, string accessToken)
+        {
+            if (game.IsBotActivated)
+            {
+                Random random = new Random();
+                var delay = random.Next(3, 10);
+
+                await Task.Delay(TimeSpan.FromSeconds(delay));
+
+                var choice = random.Next(1, 3);
+                var randomChoice = (Enum.RockPaperScissorsType)System.Enum.ToObject(typeof(Enum.RockPaperScissorsType), choice);
+                await _botService.SendAnswer(accessToken, new SendChoiceViewModel() { Choice = randomChoice, GameId = game.Id, GameRoundId = newGameRoundEntity.Id, Round = newGameRoundEntity.Round });
+            }
         }
     }
 }

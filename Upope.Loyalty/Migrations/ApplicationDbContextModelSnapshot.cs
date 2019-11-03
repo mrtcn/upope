@@ -61,6 +61,8 @@ namespace Upope.Loyalty.Migrations
 
                     b.Property<int>("Gender");
 
+                    b.Property<bool>("IsBotActivated");
+
                     b.Property<DateTime?>("LastModifiedDate");
 
                     b.Property<string>("LastName")

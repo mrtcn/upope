@@ -25,6 +25,18 @@
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     },
     {
+      "DownstreamPathTemplate": "/UserImage/{path}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identity.upope.com",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/resources/UserImage/{path}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/account/{action}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

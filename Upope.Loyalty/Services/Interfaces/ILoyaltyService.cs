@@ -10,7 +10,8 @@ namespace Upope.Loyalty.Services.Interfaces
     {
         int? UserCredit(string userId);
         LoyaltyParams GetLoyaltyByUserId(string userId);
-        Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point);
+        Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point, bool isBotActivated = false);
+        List<string> ExcludeOutOfRangeUsers(int range, string actualUserId, List<string> destinationUserIds);
         void ChargeCredits(ChargeCreditsParams chargeCreditsParams);
         void AddCredits(ChargeCreditsParams chargeCreditsParams);
         void AddScores(AddScoresParams chargeScoresParams);

@@ -12,6 +12,9 @@ namespace Upope.Loyalty
     {
         public MappingProfile()
         {
+            CreateMap<PointViewModel, AddScoresParams>();
+            CreateMap<AddScoresParams, PointViewModel>();
+
             CreateMap<LoyaltyEntity, LoyaltyParams>();
             CreateMap<LoyaltyParams, LoyaltyEntity>();
 
@@ -29,6 +32,9 @@ namespace Upope.Loyalty
 
             CreateMap<User, UserParams>();
             CreateMap<UserParams, User>();
+
+            CreateMap<UserParams, CreateUserViewModel>();
+            CreateMap<CreateUserViewModel, UserParams>();
 
             CreateMap<WinLeadershipBoard, WinLeadershipBoardViewModel>();
             CreateMap<ScoreLeadershipBoard, ScoreLeadershipBoardViewModel>();

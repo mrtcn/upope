@@ -12,6 +12,7 @@ namespace Upope.Challenge.Data.Entities
         string ChallengerId { get; set; }
         int RewardPoint { get; set; }
         string WinnerId { get; set; }
+        bool IsBotActivated { get; set; }
     }
     public class Challenge: IChallenge
     {
@@ -21,6 +22,7 @@ namespace Upope.Challenge.Data.Entities
         public string ChallengerId { get; set; }
         public int RewardPoint { get; set; }
         public string  WinnerId { get; set; }
+        public bool IsBotActivated { get; set; }
         public List<ChallengeRequest> ChallengeRequests { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }

@@ -13,5 +13,6 @@ namespace Upope.Identity.ViewModels
         public Gender Gender { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool IsBotActivated { get; set; }
     }
 }

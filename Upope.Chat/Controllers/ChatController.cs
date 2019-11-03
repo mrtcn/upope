@@ -5,13 +5,14 @@ using Microsoft.Extensions.Localization;
 using Upope.Chat.EntityParams;
 using Upope.Chat.Services.Interfaces;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Chat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatController : ControllerBase
+    public class ChatController : CustomControllerBase
     {
         private readonly IChatRoomService _chatRoomService;
         private readonly IChatService _chatService;
@@ -42,7 +43,7 @@ namespace Upope.Chat.Controllers
             var isInContact = _contactService.IsInContact(userId, chatUserId);
 
             if (!isInContact)
-                return BadRequest(_localizer.GetString("NotContact").Value);
+                return BadRequest(_localizer.GetString("NotContact"));
 
             var chatRoom = _chatRoomService.GetChatRoom(userId, chatUserId);
             if(chatRoom != null)

@@ -21,14 +21,14 @@ namespace Upope.ClientTests
             var serviceProvider = new ServiceCollection()
                 .AddHttpClient()
                 .AddSingleton<IHttpHandler, HttpHandler>()
-                .AddSingleton<IIdentityService, IdentityService>()                
+                .AddSingleton<IIdentityService, IdentityService>()
                 .BuildServiceProvider();
 
             //configure console logging
             var httpHandler = serviceProvider.GetService<IHttpHandler>();
             var identityService = serviceProvider.GetService<IIdentityService>();
-            
-            
+
+
             Console.WriteLine("Enter your AccessToken!");
             var accessToken = ReadLine().Replace("\r\n", "").Trim();
 
@@ -42,6 +42,8 @@ namespace Upope.ClientTests
             var createChatModel = await httpHandler.AuthPostAsync<CreateChatModel>(accessToken, "http://" + chatIp, $"/api/Chat/ChatRoom/{chatUserId}");
 
             await challengeViewModel.ChatConnect();
+            await challengeViewModel.ChallengeConnect();
+            await challengeViewModel.GameConnect();
 
             while (true)
             {
@@ -50,19 +52,16 @@ namespace Upope.ClientTests
 
                 await challengeViewModel.SendChatMessage(chatUserId, message, createChatModel.ChatRoomId);
             }
-            
+
             //await challengeViewModel.ChallengeConnect();
             //await challengeViewModel.GameConnect();
-            Thread.Sleep(500);
+            //Thread.Sleep(500);
             //await challengeViewModel.SendChallenge();
             //challengeViewModel.SendMessage("User XXX", "Message 1");
             //var key = Console.ReadKey();
             //if (key.KeyChar == 1)
             //    Console.WriteLine(1);
-            while (true)
-            {
-                Thread.Sleep(500);
-            }
+
 
         }
 

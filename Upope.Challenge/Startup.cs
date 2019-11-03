@@ -130,6 +130,7 @@ namespace Upope.Challenge
             services.AddTransient<IHttpHandler, HttpHandler>();
 
             services.AddTransient<IChallengeService, ChallengeService>();
+            services.AddTransient<IBotService, BotService>();
             services.AddTransient<IChallengeRequestService, ChallengeRequestService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IUserService, UserService>();
@@ -190,10 +191,16 @@ namespace Upope.Challenge
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
             AppSettingsProvider.GetUserProfile = Configuration["Upope.Identity:GetUserProfile"].ToString();
+            AppSettingsProvider.Login = Configuration["Upope.Identity:Login"].ToString();
 
 
+            AppSettingsProvider.ChallengeBaseUrl = Configuration["Upope.Challenge:BaseUrl"].ToString();
+            AppSettingsProvider.UpdateChallenge = Configuration["Upope.Challenge:UpdateChallenge"].ToString();
+
+            
             AppSettingsProvider.LoyaltyBaseUrl = Configuration["Upope.Loyalty:BaseUrl"].ToString();      
             AppSettingsProvider.SufficientPointsUrl = Configuration["Upope.Loyalty:SufficientPointsUrl"].ToString();
+            AppSettingsProvider.FilterUsersUrl = Configuration["Upope.Loyalty:FilterUsersUrl"].ToString();
 
             AppSettingsProvider.GameBaseUrl = Configuration["Upope.Game:BaseUrl"].ToString();
             AppSettingsProvider.CreateGameUrl = Configuration["Upope.Game:CreateGameUrl"].ToString();

@@ -7,6 +7,7 @@ using Upope.Challenge.EntityParams;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Services.Interfaces;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,7 +16,7 @@ namespace Upope.Challenge.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : CustomControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IIdentityService _identityService;

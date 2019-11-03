@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +16,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Upope.Identity.DbContext;
 using Upope.Identity.Entities;
+using Upope.Identity.EntityParams;
 using Upope.Identity.Enum;
 using Upope.Identity.Helpers;
 using Upope.Identity.Helpers.Interfaces;
@@ -21,7 +25,9 @@ using Upope.Identity.Models.FacebookResponse;
 using Upope.Identity.Models.GoogleResponse;
 using Upope.Identity.Services.Interfaces;
 using Upope.Identity.ViewModels;
+using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 
 namespace Upope.Identity.Controllers
 {
@@ -29,7 +35,7 @@ namespace Upope.Identity.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class AccountController : ControllerBase
+    public class AccountController : CustomControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -39,12 +45,13 @@ namespace Upope.Identity.Controllers
         private readonly IRandomPasswordHelper _randomPasswordHelper;
         private readonly IExternalAuthService<FacebookResponse> _facebookService;
         private readonly IExternalAuthService<GoogleResponse> _googleService;
-        private readonly ILogger<AccountController> logger;
+        private readonly ILogger<AccountController> _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChallengeUserSyncService _challengeUserSyncService;
         private readonly ILoyaltySyncService _loyaltySyncService;
         private readonly ILoyaltyService _loyaltyService;
         private readonly IGameUserSyncService _gameUserSyncService;
+        private readonly IImageService _imageService;
         private readonly IStringLocalizer<AccountController> _localizer;
 
         public AccountController(
@@ -62,6 +69,7 @@ namespace Upope.Identity.Controllers
            ILoyaltySyncService loyaltySyncService,
            ILoyaltyService loyaltyService,
            IGameUserSyncService gameUserSyncService,
+           IImageService imageService,
            IStringLocalizer<AccountController> localizer)
         {
             _userManager = userManager;
@@ -72,12 +80,13 @@ namespace Upope.Identity.Controllers
             _randomPasswordHelper = randomPasswordHelper;
             _facebookService = facebookService;
             _googleService = googleService;
-            this.logger = logger;
+            _logger = logger;
             _hostingEnvironment = hostingEnvironment;
             _challengeUserSyncService = challengeUserSyncService;
             _loyaltySyncService = loyaltySyncService;
             _loyaltyService = loyaltyService;
             _gameUserSyncService = gameUserSyncService;
+            _imageService = imageService;
             _localizer = localizer;
         }
 
@@ -218,10 +227,20 @@ namespace Upope.Identity.Controllers
             user.Longitude = model.Longitude;
 
             var updatedUser = await _userManager.UpdateAsync(user);
-            if(updatedUser.Succeeded)
+            if (updatedUser.Succeeded)
+            {
+                // Syncing the Challenge DB User table
                 await SyncChallengeUserTable(user, accessToken);
 
-            return Ok();
+                // Syncing the Loyalty DB User table
+                await SyncLoyaltyUserTable(false, user, accessToken);
+
+                // Syncing the Game DB User table
+                await SyncGameUserTable(user, accessToken);
+            }
+                
+
+            return Ok(true);
         }
 
         [HttpPost]
@@ -250,7 +269,8 @@ namespace Upope.Identity.Controllers
                         Longitude = registerModel.Longitude,
                         RefreshToken = refreshToken,
                         PictureUrl = registerModel.ImagePath,
-                        Nickname = registerModel.Username
+                        Nickname = registerModel.Username,
+                        IsBot = registerModel.IsBot
                     };
 
                     user.CreationDate = DateTime.Now;
@@ -260,11 +280,15 @@ namespace Upope.Identity.Controllers
                         await _signInManager.SignInAsync(user, isPersistent: false);
 
                         var accessToken = _tokenService.GenerateAccessToken(user);
+
                         // Syncing the Challenge DB User table
                         await SyncChallengeUserTable(user, accessToken);
 
                         // Syncing the Loyalty DB Loyalty table
                         await SyncLoyaltyTable(true, user, accessToken);
+
+                        // Syncing the Loyalty DB User table
+                        await SyncLoyaltyUserTable(true, user, accessToken);
 
                         // Syncing the Game DB User table
                         await SyncGameUserTable(user, accessToken);
@@ -304,9 +328,8 @@ namespace Upope.Identity.Controllers
                 var isCreate = user == null;
 
                 var refreshToken = _tokenService.GenerateRefreshToken();
-                var projectPath = _hostingEnvironment.ContentRootPath;
 
-                var appUser = new ApplicationUser(facebookUser, refreshToken, projectPath);
+                var appUser = new ApplicationUser(facebookUser, refreshToken);
 
                 if (isCreate)
                 {
@@ -324,8 +347,8 @@ namespace Upope.Identity.Controllers
                 else
                 {
                     user.RefreshToken = refreshToken;
-                    user.PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png);
-                    user.LargePictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.LargePictureUrl, projectPath, ImageFormat.Png);
+                    user.PictureUrl = ImageHelper.SaveImageUrl(facebookUser.Picture.Data.Url, ImageFormat.Png);
+                    user.LargePictureUrl = ImageHelper.SaveImageUrl(facebookUser.LargePictureUrl, ImageFormat.Png);
 
                     var result = await _userManager.UpdateAsync(user);
                     if (!result.Succeeded)
@@ -350,6 +373,9 @@ namespace Upope.Identity.Controllers
                 // Syncing the Loyalty DB Loyalty table
                 await SyncLoyaltyTable(isCreate, localUser, accessToken);
 
+                // Syncing the Loyalty DB User table
+                await SyncLoyaltyUserTable(isCreate, localUser, accessToken);
+
                 // Syncing the Game DB User table
                 await SyncGameUserTable(localUser, accessToken);
 
@@ -357,6 +383,7 @@ namespace Upope.Identity.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, _localizer.GetString("LoginFailed"));
                 return BadRequest(_localizer.GetString("LoginFailed"));
             }
             
@@ -399,6 +426,8 @@ namespace Upope.Identity.Controllers
         private async Task SyncLoyaltyUserTable(bool isCreate, ApplicationUser localUser, string accessToken)
         {
             var createLoyaltyUserViewModel = _mapper.Map<ApplicationUser, CreateOrUpdateLoyaltyUserViewModel>(localUser);
+            createLoyaltyUserViewModel.IsBotActivated = localUser.IsBot;
+
             createLoyaltyUserViewModel.UserId = localUser.Id;
 
             await _loyaltySyncService.SyncLoyaltyUserTable(createLoyaltyUserViewModel, accessToken);
@@ -423,9 +452,11 @@ namespace Upope.Identity.Controllers
                 var isCreate = user == null;
                 var refreshToken = _tokenService.GenerateRefreshToken();
                 var projectPath = _hostingEnvironment.ContentRootPath;
-
+                
                 if (user == null)
                 {
+                    var pictureUrl = ImageHelper.SaveImageUrl(googleUser.Picture, ImageFormat.Jpeg);
+
                     var appUser = new ApplicationUser
                     {
                         FirstName = googleUser.GivenName,
@@ -434,7 +465,8 @@ namespace Upope.Identity.Controllers
                         Email = googleUser.Email,
                         Nickname = Regex.Replace(googleUser.Name, @"[^\w]", "").ToLower(),
                         UserName = Guid.NewGuid().ToString(),
-                        PictureUrl = SaveImageUrlToDisk.SaveImage(googleUser.Picture, projectPath, ImageFormat.Jpeg),
+                        PictureUrl = pictureUrl,
+                        LargePictureUrl = pictureUrl,
                         Birthday = googleUser.Birthday != null ? DateTime.ParseExact(googleUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture) : DateTime.MinValue,
                         RefreshToken = refreshToken
                     };
@@ -510,6 +542,51 @@ namespace Upope.Identity.Controllers
                 User.Claims.Where(c => c.Properties.ContainsKey("unique_name")).Select(c => c.Value).FirstOrDefault());
 
             return user;
+        }
+
+        [HttpGet]
+        [Route("images")]
+        public async Task<IActionResult> Images()
+        {
+            var user = await GetCurrentUserAsync();
+
+            var images = _imageService.GetImages(user.Id);
+            var imageListModel = _mapper.Map<List<ImageListModel>>(images);
+
+            return Ok(imageListModel);
+        }
+
+        [HttpPost]
+        [Route("AddImageByUrl")]
+        public async Task<IActionResult> AddImageByUrl([FromBody]AddImageByUrlViewModel model)
+        {
+            var user = await GetCurrentUserAsync();
+
+            var imagePath = ImageHelper.SaveImageUrl(model.ImagePath, ImageFormat.Png, model.Title);
+
+            var imageParams = _mapper.Map<ImageParams>(model);
+            imageParams.UserId = user.Id;
+            imageParams.ImagePath = imagePath;
+
+            var image = _imageService.CreateOrUpdate(imageParams);
+            var imageModel = _mapper.Map<ImageListModel>(image);
+
+            return Ok(imageModel);
+        }
+
+        [HttpPost]
+        [Route("AddImage")]
+        public async Task<IActionResult> AddImage([FromBody]AddImageViewModel model)
+        {
+            var user = await GetCurrentUserAsync();
+
+            var imagePath = ImageHelper.SaveImage(model.ImageData, model.Title);
+            var imageParams = new ImageParams(user.Id, model.Title, model.Description, imagePath);
+
+            var image = _imageService.CreateOrUpdate(imageParams);
+            var imageModel = _mapper.Map<ImageListModel>(image);
+
+            return Ok(imageModel);
         }
     }
 }

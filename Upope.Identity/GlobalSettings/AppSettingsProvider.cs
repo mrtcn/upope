@@ -3,6 +3,7 @@ namespace Upope.Identity.GlobalSettings
 {
     public static class AppSettingsProvider
     {
+        public static string GatewayUrl { get; set; }
         public static string LoyaltyBaseUrl { get; set; }
         public static string LoyaltyUserStats { get; set; }
         public static string CreateOrUpdateLoyalty { get; set; }

@@ -15,7 +15,7 @@ namespace Upope.Identity.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -129,6 +129,35 @@ namespace Upope.Identity.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Upope.Identity.Data.Entities.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("ImagePath");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("Title");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Image");
+                });
+
             modelBuilder.Entity("Upope.Identity.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -159,6 +188,10 @@ namespace Upope.Identity.Migrations
 
                     b.Property<string>("GoogleId")
                         .HasMaxLength(250);
+
+                    b.Property<bool>("IsBot");
+
+                    b.Property<string>("LargePictureUrl");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -256,6 +289,13 @@ namespace Upope.Identity.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Upope.Identity.Data.Entities.Image", b =>
+                {
+                    b.HasOne("Upope.Identity.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("Images")
+                        .HasForeignKey("ApplicationUserId");
                 });
 #pragma warning restore 612, 618
         }

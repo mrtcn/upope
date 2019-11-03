@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Upope.Challenge.Services;
 using Upope.Game.Filters;
 using Upope.Game.GlobalSettings;
 using Upope.Game.Hubs;
@@ -134,6 +135,9 @@ namespace Upope.Game
             services.AddHttpClient();
 
             services.AddTransient<IHttpHandler, HttpHandler>();
+            services.AddTransient<IBotService, BotService>();
+            services.AddTransient<IGeoLocationService, GeoLocationService>();
+            services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IRoundAnswerService, RoundAnswerService>();
             services.AddTransient<IGameRoundService, GameRoundService>();
@@ -199,6 +203,7 @@ namespace Upope.Game
             AppSettingsProvider.IdentityBaseUrl = Configuration["Upope.Identity:BaseUrl"].ToString();
             AppSettingsProvider.GetUserId = Configuration["Upope.Identity:GetUserId"].ToString();
             AppSettingsProvider.GetUserProfileUrl = Configuration["Upope.Identity:GetUserProfileUrl"].ToString();
+            AppSettingsProvider.Login = Configuration["Upope.Identity:Login"].ToString();
             AppSettingsProvider.WinRoundCount = int.Parse(Configuration["WinRoundCount"].ToString());
             AppSettingsProvider.NotificationBaseUrl = Configuration["Upope.Notification:BaseUrl"].ToString();
             AppSettingsProvider.SendNotification = Configuration["Upope.Notification:SendNotification"].ToString();
@@ -209,6 +214,8 @@ namespace Upope.Game
             AppSettingsProvider.ResetWins = Configuration["Upope.Loyalty:ResetWins"].ToString();
             AppSettingsProvider.AddWin = Configuration["Upope.Loyalty:AddWin"].ToString();
             AppSettingsProvider.AddScores = Configuration["Upope.Loyalty:AddScores"].ToString();
+            AppSettingsProvider.GameBaseUrl = Configuration["Upope.Game:BaseUrl"].ToString();
+            AppSettingsProvider.SendChoice = Configuration["Upope.Game:SendChoice"].ToString();
         }
     }
 }

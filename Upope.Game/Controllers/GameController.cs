@@ -10,13 +10,14 @@ using Upope.Game.Models;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Game.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController : CustomControllerBase
     {
         private readonly IIdentityService _identityService;
         private readonly IGameManager _gameManager;
@@ -90,10 +91,10 @@ namespace Upope.Game.Controllers
             var isSuccess = await _gameManager.SendBluff(userId, model);
             if (isSuccess)
             {
-                return BadRequest(_localizer.GetString("ExpiredBluff").Value);
+                return BadRequest(_localizer.GetString("ExpiredBluff"));
             }
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpGet("Rematch/{requestedUserId}")]
@@ -106,13 +107,13 @@ namespace Upope.Game.Controllers
             var requestingUserStats = await _loyaltyService.GetLoyalty(accessToken, userId);
             if (requestingUserStats.Credit == 0)
             {
-                return BadRequest(_localizer.GetString("NotEnoughCreditForRematch").Value);
+                return BadRequest(_localizer.GetString("NotEnoughCreditForRematch"));
             }
 
             var requestedUserStats = await _loyaltyService.GetLoyalty(accessToken, requestedUserId);
             if (requestedUserStats.Credit == 0)
             {
-                return BadRequest(_localizer.GetString("RequestedUserNotEnoughCredit").Value);
+                return BadRequest(_localizer.GetString("RequestedUserNotEnoughCredit"));
             }
 
             return Ok(new { MaxCredit = Math.Max(requestedUserStats.Credit, requestingUserStats.Credit)});
@@ -127,7 +128,7 @@ namespace Upope.Game.Controllers
 
             _gameManager.SendRematch(model.UserId, userId, model.Credit, model.MaxCredit);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPost("RaiseRematchRequest")]
@@ -139,7 +140,7 @@ namespace Upope.Game.Controllers
 
             _gameManager.SendRematchRaise(model.UserId, userId, model.Credit, model.MaxCredit);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPost("AcceptRematch")]
@@ -151,7 +152,7 @@ namespace Upope.Game.Controllers
 
             _gameManager.CreateOrUpdateGame(new CreateOrUpdateViewModel(0, 0, 1, userId, model.UserId, model.Credit, true));
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPost("RejectRematch")]
@@ -163,7 +164,7 @@ namespace Upope.Game.Controllers
 
             _gameManager.RejectRematch(model.UserId, userId);
 
-            return Ok();
+            return Ok(true);
         }
     }
 }

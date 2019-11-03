@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 using Upope.Challenge.CustomExceptions;
 using Upope.Challenge.Data.Entities;
 using Upope.Challenge.EntityParams;
+using Upope.Challenge.Enums;
 using Upope.Challenge.GlobalSettings;
 using Upope.Challenge.Hubs;
 using Upope.Challenge.Services.Interfaces;
 using Upope.Challenge.Services.Models;
+using Upope.Challenge.ViewModels;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
 using Upope.ServiceBase.Handler;
@@ -25,6 +27,7 @@ namespace Upope.Challenge.Services
     public class ChallengeRequestService : EntityServiceBase<ChallengeRequest>, IChallengeRequestService
     {
         private readonly IUserService _userService;
+        private readonly IBotService _botService;
         private readonly IChallengeService _challengeService;
         private readonly IGeoLocationService _geoLocationService;
         private readonly IHubContext<ChallengeHub> _hubContext;
@@ -34,6 +37,7 @@ namespace Upope.Challenge.Services
         public ChallengeRequestService(
             ApplicationDbContext applicationDbContext,
             IUserService userService,
+            IBotService botService,
             IChallengeService challengeService,
             IGeoLocationService geoLocationService,
             IMapper mapper, 
@@ -41,6 +45,7 @@ namespace Upope.Challenge.Services
             IHubContext<ChallengeHub> hubContext) : base(applicationDbContext, mapper)
         {
             _userService = userService;
+            _botService = botService;
             _challengeService = challengeService;
             _geoLocationService = geoLocationService;
             _hubContext = hubContext;
@@ -67,7 +72,6 @@ namespace Upope.Challenge.Services
         {
             base.OnSaveChangedAsync(entityParams, entity);
             var challengeRequestParams = entityParams as ChallengeRequestParams;
-            var accessToken = challengeRequestParams.AccessToken;
 
             entity.Challenger = Entities
                 .Include(x => x.Challenger)
@@ -200,16 +204,18 @@ namespace Upope.Challenge.Services
 
         public async Task<IReadOnlyList<string>> CreateChallengeRequests(CreateChallengeRequestModel model)
         {
+            var filterUsersViewModel = new FilterUsersViewModel(model.ChallengeOwnerId, model.Points, model.Range, model.IsBotActivated);
             var userIds = await GetChallengerIds(
                 new GetChallengerIdsModel(
-                    model.AccessToken, 
-                    AppSettingsProvider.LoyaltyBaseUrl, 
-                    AppSettingsProvider.SufficientPointsUrl + "/" + model.Points));
+                    model.AccessToken,
+                    filterUsersViewModel,
+                    AppSettingsProvider.LoyaltyBaseUrl,
+                    AppSettingsProvider.FilterUsersUrl));
 
-            var filteredUserId = ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, userIds);
-            filteredUserId = ApplyGenderFilter(model.Gender, model.ChallengeOwnerId, filteredUserId);
+            //var filteredUserId = ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, userIds);
+            //filteredUserId = ApplyGenderFilter(model.Gender, model.ChallengeOwnerId, filteredUserId);
 
-            foreach (var userId in filteredUserId)
+            foreach (var userId in userIds)
             {
                 var challengeRequestParams = new ChallengeRequestParams(Status.Active, model.ChallengeOwnerId, userId, model.ChallengeId, Enums.ChallengeRequestStatus.Waiting);
                 CreateOrUpdate(challengeRequestParams);
@@ -218,7 +224,28 @@ namespace Upope.Challenge.Services
                     .SendAsync("ChallengeRequestReceived", JsonConvert.SerializeObject(GetChallengeRequest(challengeRequestParams.Id)));
             }
 
-            return filteredUserId;
+            if (model.IsBotActivated)
+            {
+                var acceptingUserId = userIds.FirstOrDefault();
+                var botUser = _userService.GetUserByUserId(acceptingUserId);
+                var challengeRequest = Entities.FirstOrDefault(x => x.ChallengeId == model.ChallengeId && x.ChallengerId == acceptingUserId && x.ChallengeOwnerId == model.ChallengeOwnerId);
+
+                await BotActivationAsync(model, challengeRequest.Id, botUser.Nickname);
+            }
+
+            return userIds;
+        }
+
+        private async Task BotActivationAsync(CreateChallengeRequestModel model, int challengeRequestId, string nickname)
+        {
+            Random random = new Random();
+            var delay = random.Next(3, 10);
+
+            await Task.Delay(TimeSpan.FromSeconds(delay));
+
+            var credentials = await _userService.Login(new LoginModel() { Username = nickname, Password = "N123456w!" });
+            await _botService.SendUpdateChallengeRequest(credentials.AccessToken, challengeRequestId,
+                new UpdateChallengeInputViewModel() { ChallengeRequestAnswer = ChallengeRequestStatus.Accepted });
         }
 
         private async Task CreateChallengeRequestForUser(CreateChallengeRequestForUserModel model)
@@ -298,9 +325,11 @@ namespace Upope.Challenge.Services
                 model.BaseUrl = AppSettingsProvider.LoyaltyBaseUrl;
 
             if (string.IsNullOrEmpty(model.Api))
-                model.Api = AppSettingsProvider.SufficientPointsUrl;
+                model.Api = AppSettingsProvider.FilterUsersUrl;
 
-            var userIds = await _httpHandler.AuthGetAsync<IReadOnlyList<string>>(model.AccessToken, model.BaseUrl, model.Api);
+            var message = JsonConvert.SerializeObject(model.FilterUsersViewModel);
+
+            var userIds = await _httpHandler.AuthPostAsync<List<string>>(model.AccessToken, model.BaseUrl, model.Api, message);
 
             if(userIds.Any())
                 userIds.Except(NotAvailableUserIds(userIds.ToList()));

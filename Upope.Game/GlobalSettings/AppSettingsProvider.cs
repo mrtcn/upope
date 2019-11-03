@@ -6,6 +6,7 @@ namespace Upope.Game.GlobalSettings
         public static string IdentityBaseUrl { get; set; }
         public static string GetUserId { get; set; }
         public static string GetUserProfileUrl { get; set; }
+        public static string Login { get; set; }
         public static int WinRoundCount { get; set; }
         public static string NotificationBaseUrl { get; set; }
         public static string SendNotification { get; set; }
@@ -16,5 +17,7 @@ namespace Upope.Game.GlobalSettings
         public static string ResetWins { get; set; }
         public static string AddWin { get; set; }
         public static string AddScores { get; set; }
+        public static string GameBaseUrl { get; set; }
+        public static string SendChoice { get; set; }
     }
 }

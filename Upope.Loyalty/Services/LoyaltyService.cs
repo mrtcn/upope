@@ -8,6 +8,7 @@ using Upope.Loyalty.Models;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.ServiceBase;
 using Upope.ServiceBase.Enums;
+using Upope.ServiceBase.Models;
 using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Loyalty.Services
@@ -17,16 +18,19 @@ namespace Upope.Loyalty.Services
         private readonly IMapper _mapper;
         private readonly IIdentityService _identityService;
         private readonly IUserService _userService;
+        private readonly IGeoLocationService _geoLocationService;
 
         public LoyaltyService(
             ApplicationDbContext applicationDbContext,
             IIdentityService identityService,
             IUserService userService,
+            IGeoLocationService geoLocationService,
             IMapper mapper) : base(applicationDbContext, mapper)
         {
             _mapper = mapper;
             _identityService = identityService;
             _userService = userService;
+            _geoLocationService = geoLocationService;
         }
 
         public int? UserCredit(string userId)
@@ -47,19 +51,44 @@ namespace Upope.Loyalty.Services
             return loyaltyParams;
         }
 
-        public async Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point)
+        public async Task<List<LoyaltyParams>> SufficientPoints(string accessToken, int point, bool isBotActivated = false)
         {
             var userId = await _identityService.GetUserId(accessToken);
 
             var sufficientPoints = Entities
+                .Include(x => x.User)
                 .Where(x => x.Credit >= point 
                     && x.Status == Status.Active
-                    && x.UserId != userId)
+                    && x.UserId != userId
+                    && x.User.IsBotActivated == isBotActivated)
                 .Take(5).ToList();
 
             var loyaltyParams = _mapper.Map<List<LoyaltyParams>>(sufficientPoints);
 
             return loyaltyParams;
+        }
+        public List<string> ExcludeOutOfRangeUsers(int range, string actualUserId, List<string> destinationUserIds)
+        {
+            if (destinationUserIds == null || destinationUserIds.Count == 0)
+                return null;
+
+            if (range == 0)
+                return destinationUserIds;
+
+            var userIds = destinationUserIds.ToList();
+            var actualUser = _userService.GetUserByUserId(actualUserId);
+            foreach (var userId in userIds.ToList())
+            {
+                var destinationUser = _userService.GetUserByUserId(userId);
+                var distance = _geoLocationService.GetDistance(
+                    new CoordinateModel(actualUser.Latitude, actualUser.Longitude),
+                    new CoordinateModel(destinationUser.Latitude, destinationUser.Longitude));
+
+                if (distance > range)
+                    userIds.Remove(userId);
+            }
+
+            return userIds;
         }
 
         public void ChargeCredits(ChargeCreditsParams chargeCreditsParams)

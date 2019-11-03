@@ -17,6 +17,7 @@ namespace Upope.Loyalty.Data.Entities
         Gender Gender { get; set; }
         double Latitude { get; set; }
         double Longitude { get; set; }
+        bool IsBotActivated { get; set; }
     }
 
     public class User : IUser
@@ -36,6 +37,7 @@ namespace Upope.Loyalty.Data.Entities
         public Gender Gender { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool IsBotActivated { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public Loyalty Loyalty { get; set; }

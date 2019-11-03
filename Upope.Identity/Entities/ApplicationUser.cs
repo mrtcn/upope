@@ -2,11 +2,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Upope.Identity.Enum;
+using Upope.Identity.Data.Entities;
 using Upope.Identity.Helpers;
 using Upope.Identity.Models.FacebookResponse;
 using Upope.ServiceBase.Enums;
@@ -21,7 +22,7 @@ namespace Upope.Identity.Entities
 
         }
 
-        public ApplicationUser(FacebookResponse facebookUser, string refreshToken, string projectPath)
+        public ApplicationUser(FacebookResponse facebookUser, string refreshToken)
         {
             FirstName = facebookUser.FirstName;
             LastName = facebookUser.LastName;
@@ -29,8 +30,8 @@ namespace Upope.Identity.Entities
             Email = facebookUser.Email;
             Nickname = Regex.Replace(facebookUser.Name, @"[^\w]", "").ToLower();
             UserName = Guid.NewGuid().ToString();
-            PictureUrl = SaveImageUrlToDisk.SaveImage(facebookUser.Picture.Data.Url, projectPath, ImageFormat.Png);
-            Birthday = DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            PictureUrl = ImageHelper.SaveImageUrl(facebookUser.Picture.Data.Url, ImageFormat.Png);
+            Birthday = (string.IsNullOrWhiteSpace(facebookUser.Birthday)) ? null : (DateTime?)DateTime.ParseExact(facebookUser.Birthday, "MM/dd/yyyy", CultureInfo.InvariantCulture);
             Gender = facebookUser.Gender.TryConvertToEnum<Gender>().GetValueOrDefault();
             RefreshToken = refreshToken;
         }
@@ -64,5 +65,7 @@ namespace Upope.Identity.Entities
         public double Longitude { get; set; }
         public String RefreshToken { get; set; }
         public DateTime CreationDate { get; set; }
+        public bool IsBot { get; set; }
+        public List<Image> Images { get; set; }
     }
 }

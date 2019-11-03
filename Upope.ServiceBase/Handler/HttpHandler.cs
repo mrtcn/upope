@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.ServiceBase.Models.ApiModels;
 
 namespace Upope.ServiceBase.Handler
 {
@@ -14,6 +15,8 @@ namespace Upope.ServiceBase.Handler
         Task<T> AuthGetAsync<T>(string token, string baseUrl, string api) where T : class;
         Task<T> AuthPutAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T : class;
         Task AuthPutAsync(string token, string baseUrl, string api, string messageBody = null);
+        Task<T> PostAsync<T>(string baseUrl, string api, string messageBody = null) where T : class;
+        Task PostAsync(string baseUrl, string api, string messageBody = null);
     }
     public class HttpHandler: IHttpHandler
     {
@@ -22,6 +25,52 @@ namespace Upope.ServiceBase.Handler
         public HttpHandler(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<T> PostAsync<T>(string baseUrl, string api, string messageBody = null) where T : class
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUrl);
+
+                StringContent stringContent = null;
+                if (!string.IsNullOrEmpty(messageBody))
+                {
+                    stringContent = new StringContent(messageBody, UnicodeEncoding.UTF8, "application/json");
+                }
+
+                var result = await httpClient.PostAsync(api, stringContent);
+                string resultContent = await result.Content.ReadAsStringAsync();
+
+                var responseStatus = JsonConvert.DeserializeObject<HttpResponse>(resultContent);
+                var response = JsonConvert.SerializeObject(responseStatus.Response);
+
+                var resultObject = JsonConvert.DeserializeObject<T>(response);
+
+                return resultObject;
+            }
+        }
+
+        public async Task PostAsync(string baseUrl, string api, string messageBody = null)
+        {
+            using (var httpClient = _httpClientFactory.CreateClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUrl);
+
+                StringContent stringContent = null;
+                if (!string.IsNullOrEmpty(messageBody))
+                {
+                    stringContent = new StringContent(messageBody, UnicodeEncoding.UTF8, "application/json");
+                }
+
+                var result = await httpClient.PostAsync(api, stringContent);
+                string resultContent = await result.Content.ReadAsStringAsync();
+
+                var responseStatus = JsonConvert.DeserializeObject<HttpResponse>(resultContent);
+                var response = JsonConvert.SerializeObject(responseStatus.Response);
+
+                var resultObject = JsonConvert.DeserializeObject(response);
+            }
         }
 
         public async Task<T> AuthPostAsync<T>(string token, string baseUrl, string api, string messageBody = null) where T: class
@@ -40,7 +89,10 @@ namespace Upope.ServiceBase.Handler
                 var result = await httpClient.PostAsync(api, stringContent);
                 string resultContent = await result.Content.ReadAsStringAsync();
 
-                var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
+                var responseStatus = JsonConvert.DeserializeObject<HttpResponse>(resultContent);
+                var response = JsonConvert.SerializeObject(responseStatus.Response);
+
+                var resultObject = JsonConvert.DeserializeObject<T>(response);
 
                 return resultObject;
             }
@@ -62,7 +114,10 @@ namespace Upope.ServiceBase.Handler
                 var result = await httpClient.PutAsync(api, stringContent);
                 string resultContent = await result.Content.ReadAsStringAsync();
 
-                var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
+                var responseStatus = JsonConvert.DeserializeObject<HttpResponse>(resultContent);
+                var response = JsonConvert.SerializeObject(responseStatus.Response);
+
+                var resultObject = JsonConvert.DeserializeObject<T>(response);
 
                 return resultObject;
             }
@@ -77,8 +132,10 @@ namespace Upope.ServiceBase.Handler
 
                 var result = await httpClient.GetAsync(api);
                 string resultContent = await result.Content.ReadAsStringAsync();
+                var responseStatus = JsonConvert.DeserializeObject<HttpResponse>(resultContent);
+                var response = JsonConvert.SerializeObject(responseStatus.Response);
 
-                var resultObject = JsonConvert.DeserializeObject<T>(resultContent);
+                var resultObject = JsonConvert.DeserializeObject<T>(response);
 
                 return resultObject;
             }

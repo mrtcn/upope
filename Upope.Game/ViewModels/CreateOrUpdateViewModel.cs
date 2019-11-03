@@ -20,5 +20,6 @@
         public string GuestUserId { get; set; }
         public int Credit { get; set; }
         public bool IsRematch { get; set; }
+        public bool IsBotActivated { get; set; }
     }
 }

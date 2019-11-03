@@ -32,7 +32,7 @@ namespace Upope.Game.Services
                 .Where(x => x.GameRound.GameId == gameId && x.UserId == winnerId && x.IsSuperBluff && x.Status == Status.Active).Count();
 
             var loseAmount = _gameService.Entities.Include(x => x.GameRounds)
-                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId != winnerId && x.Status == Status.Active).Count();
+                .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId != winnerId && !string.IsNullOrWhiteSpace(x.WinnerId) && x.Status == Status.Active).Count();
 
             var winAmount = _gameService.Entities.Include(x => x.GameRounds)
                 .Where(x => x.Id == gameId).SelectMany(x => x.GameRounds).Where(x => x.WinnerId == winnerId && x.Status == Status.Active).Count();

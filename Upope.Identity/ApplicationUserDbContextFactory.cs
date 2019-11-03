@@ -13,6 +13,7 @@ namespace Upope.Identity
             var dbContext = new ApplicationUserDbContext(new DbContextOptionsBuilder<ApplicationUserDbContext>().UseSqlServer(
                new ConfigurationBuilder()
                    .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), $"appsettings.json"))
+                   .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), $"appsettings.Development.json"))
                    .Build()
                    .GetConnectionString("DatabaseConnection")
                ).Options);

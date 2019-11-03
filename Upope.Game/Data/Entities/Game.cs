@@ -13,6 +13,7 @@ namespace Upope.Game.Data.Entities
         string GuestUserId { get; set; }
         string WinnerId { get; set; }
         bool IsRematch { get; set; }
+        bool IsBotActivated { get; set; }
     }
 
     public class Game : IGame
@@ -25,6 +26,7 @@ namespace Upope.Game.Data.Entities
         public string WinnerId { get; set; }
         public int Credit { get; set; }
         public bool IsRematch { get; set; }
+        public bool IsBotActivated { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
         public List<GameRound> GameRounds { get; set; }

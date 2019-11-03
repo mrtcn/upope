@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Upope.Identity.Enum;
 using Upope.ServiceBase.Enums;
 
 namespace Upope.Identity.ViewModels
@@ -14,6 +10,7 @@ namespace Upope.Identity.ViewModels
         public String LastName { get; set; }
         public Gender Gender { get; set; }
         public String PictureUrl { get; set; }
+        public String LargePictureUrl { get; set; }
         public DateTime? Birthday { get; set; }
         public int CurrentWinStreak { get; set; }
         public int WinRecord { get; set; }

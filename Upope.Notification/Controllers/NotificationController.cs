@@ -10,6 +10,7 @@ using Upope.Notification.Services;
 using Upope.Notification.Services.Interfaces;
 using Upope.Notification.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Models;
 using Upope.ServiceBase.Services.Interfaces;
 
@@ -17,7 +18,7 @@ namespace Upope.Notification.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NotificationController : ControllerBase
+    public class NotificationController : CustomControllerBase
     {
         private readonly IHubContext<NotificationHub, ITypedHubClient> _hubContext;
         private readonly INotificationService _notificationService;
@@ -101,7 +102,7 @@ namespace Upope.Notification.Controllers
 
             await _hubContext.Clients.User(model.UserId).ReceiveNotification(notificationModel);
 
-            return Ok();
+            return Ok(true);
         }
 
 
@@ -115,7 +116,7 @@ namespace Upope.Notification.Controllers
             await _loyaltySyncService.AddCredit(new CreditsViewModel(userId, model.Credits), accessToken);
 
             if (model.NotificationId == null)
-                return Ok();
+                return Ok(true);
 
             var notification = _notificationService.Get(model.NotificationId.GetValueOrDefault());
             var notificationEntityParams = _mapper.Map<NotificationEntityParams>(notification);

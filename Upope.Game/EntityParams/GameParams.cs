@@ -15,6 +15,7 @@ namespace Upope.Game.EntityParams
         public string WinnerId { get; set; }
         public int Credit { get; set; }
         public bool IsRematch { get; set; }
+        public bool IsBotActivated { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

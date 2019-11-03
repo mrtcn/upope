@@ -18,6 +18,7 @@ namespace Upope.Loyalty.EntityParams
         public Gender Gender { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool IsBotActivated { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? LastModifiedDate { get; set; }
     }

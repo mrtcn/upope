@@ -2,7 +2,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.ClientTests.ViewModel
 {
@@ -14,8 +13,10 @@ namespace Upope.ClientTests.ViewModel
         public ChallengeViewModel(string accessToken)
         {
             // localhost for UWP/iOS or special IP for Android
-            var challengeIp = "challenge.upope.com";
-            var gameIp = "game.upope.com";
+            var challengeIp = "localhost:7000";
+            //var challengeIp = "challenge.upope.com";
+            var gameIp = "localhost:8000";
+            //var gameIp = "game.upope.com";
             var chatIp = "localhost:9100";
             //var ip = "localhost:56224";
 
@@ -27,17 +28,17 @@ namespace Upope.ClientTests.ViewModel
                         options.AccessTokenProvider = () => Task.FromResult(accessToken);
                     }).Build();
 
-                //challengeHubConnection = new HubConnectionBuilder()
-                //    .WithUrl($"http://{challengeIp}/challengehub", options =>
-                //    {
-                //        options.AccessTokenProvider = () => Task.FromResult(accessToken);
-                //    }).Build();
+                challengeHubConnection = new HubConnectionBuilder()
+                    .WithUrl($"http://{challengeIp}/challengehub", options =>
+                    {
+                        options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                    }).Build();
 
-                //gameHubConnection = new HubConnectionBuilder()
-                //    .WithUrl($"http://{gameIp}/gamehub", options =>
-                //    {
-                //        options.AccessTokenProvider = () => Task.FromResult(accessToken);
-                //    }).Build();
+                gameHubConnection = new HubConnectionBuilder()
+                    .WithUrl($"http://{gameIp}/gamehub", options =>
+                    {
+                        options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                    }).Build();
             }
             catch(Exception ex)
             {
@@ -53,7 +54,7 @@ namespace Upope.ClientTests.ViewModel
             catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
 

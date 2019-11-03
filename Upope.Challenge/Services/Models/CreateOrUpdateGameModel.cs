@@ -6,6 +6,7 @@ namespace Upope.Challenge.Services.Models
         public int Id { get; set; }
         public string HostUserId { get; set; }
         public string GuestUserId { get; set; }
+        public bool IsBotActivated { get; set; }
         public int Credit { get; set; }
     }
 }

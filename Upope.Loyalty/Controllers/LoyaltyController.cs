@@ -1,49 +1,40 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Upope.Identity.ViewModels;
 using Upope.Loyalty.EntityParams;
 using Upope.Loyalty.Interfaces;
 using Upope.Loyalty.Services.Interfaces;
 using Upope.Loyalty.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Services.Interfaces;
 
 namespace Upope.Loyalty.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoyaltyController : ControllerBase
+    public class LoyaltyController : CustomControllerBase
     {
         private readonly ILoyaltyService _loyaltyService;
-        private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
         private readonly INotificationManager _notificationManager;
         private readonly IMapper _mapper;
-        private readonly IStringLocalizer<LoyaltyController> _localizer;
 
         public LoyaltyController(
             ILoyaltyService loyaltyService,
-            IUserService userService,
             IIdentityService identityService,
             INotificationManager notificationManager,
-            IStringLocalizer<LoyaltyController> localizer,
             IMapper mapper)
         {
             _loyaltyService = loyaltyService;
-            _userService = userService;
             _identityService = identityService;
             _notificationManager = notificationManager;
             _mapper = mapper;
-            _localizer = localizer;
         }
 
         [HttpGet]
@@ -58,6 +49,21 @@ namespace Upope.Loyalty.Controllers
             var pointViewModel = _mapper.Map<GetPointViewModel>(point);
 
             return Ok(pointViewModel);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("FilterUsers")]
+        public async Task<IActionResult> FilterUsers(FilterUsersViewModel model)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString().GetAccessTokenFromHeaderString();
+
+            var sufficientPoints = await _loyaltyService.SufficientPoints(accessToken, model.Point, model.IsBotActivated);
+            var sufficientUserIds = sufficientPoints.Select(x => x.UserId).ToList();
+            var userIds = _loyaltyService.ExcludeOutOfRangeUsers(model.Range, model.ChallengeOwnerId, sufficientUserIds);
+            
+
+            return Ok(userIds);
         }
 
         [HttpGet]
@@ -84,7 +90,7 @@ namespace Upope.Loyalty.Controllers
             _loyaltyService.ChargeCredits(chargeCreditsParams);
             await _notificationManager.SendNotification(accessToken, model.UserId);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPut]
@@ -98,7 +104,7 @@ namespace Upope.Loyalty.Controllers
             _loyaltyService.AddCredits(chargeCreditsParams);
             await _notificationManager.SendNotification(accessToken, model.UserId);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPut]
@@ -112,7 +118,7 @@ namespace Upope.Loyalty.Controllers
             //TODO: (Murat) AddScores notifications should be clarified!
             //await _notificationManager.SendNotification(accessToken, model.UserId);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPut("AddWin/{userId}")]
@@ -124,7 +130,7 @@ namespace Upope.Loyalty.Controllers
             //TODO: (Murat) AddScores notifications should be clarified!
             //await _notificationManager.SendNotification(accessToken, model.UserId);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPut("ResetWin/{userId}")]
@@ -136,7 +142,7 @@ namespace Upope.Loyalty.Controllers
             //TODO: (Murat) AddScores notifications should be clarified!
             //await _notificationManager.SendNotification(accessToken, model.UserId);
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpPost]

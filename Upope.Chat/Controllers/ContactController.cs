@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Upope.Chat.EntityParams;
 using Upope.Chat.Services.Interfaces;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.ServiceBase.Models;
 using Upope.ServiceBase.Services.Interfaces;
 
@@ -11,7 +12,7 @@ namespace Upope.Chat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContactController : ControllerBase
+    public class ContactController : CustomControllerBase
     {
         private readonly IContactService _contactService;
         private readonly IIdentityService _identityService;
@@ -33,7 +34,7 @@ namespace Upope.Chat.Controllers
             if(!_contactService.IsInContact(userId, contactUserId))
                 _contactService.CreateOrUpdate(new ContactParams(userId, contactUserId));
 
-            return Ok();
+            return Ok(true);
         }
 
         [HttpDelete("Contact/{contactUserId}")]
@@ -45,7 +46,7 @@ namespace Upope.Chat.Controllers
             var contactParams = _contactService.GetContact(userId, contactUserId);
             _contactService.Remove(new RemoveEntityParams(contactParams.Id, null, true, false));
 
-            return Ok();
+            return Ok(true);
         }
     }
 }

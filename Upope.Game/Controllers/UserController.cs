@@ -7,6 +7,7 @@ using Upope.Game.EntityParams;
 using Upope.Game.Services.Interfaces;
 using Upope.Game.ViewModels;
 using Upope.ServiceBase.Extensions;
+using Upope.ServiceBase.Helpers;
 using Upope.ServiceBase.Services.Interfaces;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,7 +16,7 @@ namespace Upope.Game.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : CustomControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IIdentityService _identityService;

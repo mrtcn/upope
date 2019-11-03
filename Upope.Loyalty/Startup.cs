@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Upope.Challenge.Services;
 using Upope.Loyalty.Filters;
 using Upope.Loyalty.GlobalSettings;
 using Upope.Loyalty.Interfaces;
@@ -128,6 +129,7 @@ namespace Upope.Loyalty
             }, ServiceLifetime.Transient, ServiceLifetime.Transient);
             services.AddAutoMapper();
 
+            services.AddTransient<IGeoLocationService, GeoLocationService>();
             services.AddTransient<ILoyaltyService, LoyaltyService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IUserService, UserService>();
